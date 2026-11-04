@@ -1,0 +1,13 @@
+# 依赖目录（可由 package.json 还原，不入库）
+node_modules/
+vendor/
+
+# 构建产物与大体积压缩包（发布件，非源码）
+dist/*.zip
+dist/*.tar.gz
+*.log
+
+# 临时文件
+.workbuddy/tmp/
+.DS_Store
+Thumbs.db

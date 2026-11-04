@@ -1,0 +1,107 @@
+[
+  {
+    "category": "前端开发",
+    "courseId": 1,
+    "ok": true,
+    "chapterId": 2,
+    "videoSrc": "http://127.0.0.1:8000/static/vod/frontend/semantic-html.mp4",
+    "play": {
+      "ok": true,
+      "t0": 0,
+      "t1": 2.896587,
+      "readyState": 4,
+      "duration": 1720,
+      "error": null
+    }
+  },
+  {
+    "category": "Python 算法",
+    "courseId": 2,
+    "ok": true,
+    "chapterId": 8,
+    "videoSrc": "http://127.0.0.1:8000/static/vod/python/sort-stability.mp4",
+    "play": {
+      "ok": true,
+      "t0": 0,
+      "t1": 2.913379,
+      "readyState": 4,
+      "duration": 441,
+      "error": null
+    }
+  },
+  {
+    "category": "YOLO 视觉",
+    "courseId": 3,
+    "ok": true,
+    "chapterId": 14,
+    "videoSrc": "http://127.0.0.1:8000/static/vod/vision/dataset-build.mp4",
+    "play": {
+      "ok": true,
+      "t0": 0,
+      "t1": 2.912265,
+      "readyState": 4,
+      "duration": 1394,
+      "error": null
+    }
+  },
+  {
+    "category": "Docker 部署",
+    "courseId": 4,
+    "ok": true,
+    "chapterId": 20,
+    "videoSrc": "http://127.0.0.1:8000/static/vod/devops/dockerfile.mp4",
+    "play": {
+      "ok": true,
+      "t0": 0,
+      "t1": 2.911924,
+      "readyState": 4,
+      "duration": 534,
+      "error": null
+    }
+  },
+  {
+    "category": "数据库",
+    "courseId": 5,
+    "ok": true,
+    "chapterId": 26,
+    "videoSrc": "http://127.0.0.1:8000/static/vod/database/table-design.mp4",
+    "play": {
+      "ok": true,
+      "t0": 0,
+      "t1": 2.910167,
+      "readyState": 4,
+      "duration": 1243,
+      "error": null
+    }
+  },
+  {
+    "category": "网络安全",
+    "courseId": 6,
+    "ok": true,
+    "chapterId": 32,
+    "videoSrc": "http://127.0.0.1:8000/static/vod/security/security-basics.mp4",
+    "play": {
+      "ok": true,
+      "t0": 0,
+      "t1": 2.901617,
+      "readyState": 4,
+      "duration": 2484,
+      "error": null
+    }
+  },
+  {
+    "category": "警务业务知识",
+    "courseId": 9,
+    "ok": true,
+    "chapterId": 46,
+    "videoSrc": "http://127.0.0.1:8000/static/vod/police/criminal-law-intro.mp4",
+    "play": {
+      "ok": true,
+      "t0": 0,
+      "t1": 2.916426,
+      "readyState": 4,
+      "duration": 1023,
+      "error": null
+    }
+  }
+]

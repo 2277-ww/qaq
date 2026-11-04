@@ -1,0 +1,240 @@
+{
+  "courses": [
+    {
+      "course_id": 1,
+      "category": "frontend",
+      "chapters": [
+        { "chapter_id": 1, "title": "第一章 结构与样式" },
+        {
+          "chapter_id": 2,
+          "title": "页面骨架与语义化标签",
+          "bvid": "BV1XJ411X7Ud",
+          "page": 16,
+          "slug": "semantic-html"
+        },
+        {
+          "chapter_id": 3,
+          "title": "盒模型与页面布局",
+          "bvid": "BV1XJ411X7Ud",
+          "page": 45,
+          "slug": "box-model"
+        },
+        { "chapter_id": 4, "title": "第二章 交互与工程化" },
+        {
+          "chapter_id": 5,
+          "title": "DOM 事件与网页交互",
+          "bvid": "BV1sc411p7RQ",
+          "page": 1,
+          "slug": "dom-event"
+        },
+        {
+          "chapter_id": 6,
+          "title": "模块化与构建工具",
+          "bvid": "BV11g411y7Sd",
+          "page": 1,
+          "slug": "webpack"
+        }
+      ]
+    },
+    {
+      "course_id": 2,
+      "category": "python",
+      "chapters": [
+        { "chapter_id": 7, "title": "第一章 排序算法" },
+        {
+          "chapter_id": 8,
+          "title": "排序算法稳定性与复杂度",
+          "bvid": "BV1U2WmzfEqp",
+          "page": 141,
+          "slug": "sort-stability"
+        },
+        {
+          "chapter_id": 9,
+          "title": "冒泡排序思路与代码实现",
+          "bvid": "BV1U2WmzfEqp",
+          "page": 142,
+          "slug": "bubble-sort"
+        },
+        { "chapter_id": 10, "title": "第二章 查找与进阶算法" },
+        {
+          "chapter_id": 11,
+          "title": "二分查找：递归与迭代",
+          "bvid": "BV1U2WmzfEqp",
+          "page": 148,
+          "slug": "binary-search"
+        },
+        {
+          "chapter_id": 12,
+          "title": "快速排序图解与实现",
+          "bvid": "BV1U2WmzfEqp",
+          "page": 161,
+          "slug": "quick-sort"
+        }
+      ]
+    },
+    {
+      "course_id": 3,
+      "category": "vision",
+      "chapters": [
+        { "chapter_id": 13, "title": "第一章 数据与标注" },
+        {
+          "chapter_id": 14,
+          "title": "数据集组织规范",
+          "bvid": "BV1d1W9z9E2G",
+          "page": 4,
+          "slug": "dataset-build"
+        },
+        {
+          "chapter_id": 15,
+          "title": "标注工具与质量控制",
+          "bvid": "BV1bEsKeHEJg",
+          "page": 1,
+          "slug": "labeling"
+        },
+        { "chapter_id": 16, "title": "第二章 训练与推理" },
+        {
+          "chapter_id": 17,
+          "title": "训练参数与指标解读",
+          "bvid": "BV1AyLkz7EKe",
+          "page": 1,
+          "slug": "train-metrics"
+        },
+        {
+          "chapter_id": 18,
+          "title": "推理服务封装",
+          "bvid": "BV1d1W9z9E2G",
+          "page": 3,
+          "slug": "inference"
+        }
+      ]
+    },
+    {
+      "course_id": 4,
+      "category": "devops",
+      "chapters": [
+        { "chapter_id": 19, "title": "第一章 镜像与容器" },
+        {
+          "chapter_id": 20,
+          "title": "Dockerfile 编写要点",
+          "bvid": "BV1CJ411T7BK",
+          "page": 20,
+          "slug": "dockerfile"
+        },
+        {
+          "chapter_id": 21,
+          "title": "镜像分层与体积优化",
+          "bvid": "BV1CJ411T7BK",
+          "page": 18,
+          "slug": "image-layer"
+        },
+        { "chapter_id": 22, "title": "第二章 编排与运维" },
+        {
+          "chapter_id": 23,
+          "title": "Compose 多服务编排",
+          "bvid": "BV1CJ411T7BK",
+          "page": 24,
+          "slug": "compose"
+        },
+        {
+          "chapter_id": 24,
+          "title": "容器化部署实战：MySQL",
+          "bvid": "BV1CJ411T7BK",
+          "page": 14,
+          "slug": "deploy-mysql"
+        }
+      ]
+    },
+    {
+      "course_id": 5,
+      "category": "database",
+      "chapters": [
+        { "chapter_id": 25, "title": "第一章 建模与索引" },
+        {
+          "chapter_id": 26,
+          "title": "范式与表结构设计",
+          "bvid": "BV1Kr4y1i7ru",
+          "page": 8,
+          "slug": "table-design"
+        },
+        {
+          "chapter_id": 27,
+          "title": "B+ 树索引原理",
+          "bvid": "BV1Kr4y1i7ru",
+          "page": 69,
+          "slug": "btree-index"
+        },
+        { "chapter_id": 28, "title": "第二章 事务与优化" },
+        {
+          "chapter_id": 29,
+          "title": "事务隔离级别",
+          "bvid": "BV1Kr4y1i7ru",
+          "page": 55,
+          "slug": "isolation"
+        },
+        {
+          "chapter_id": 30,
+          "title": "慢查询分析与优化",
+          "bvid": "BV1Kr4y1i7ru",
+          "page": 76,
+          "slug": "slow-query"
+        }
+      ]
+    },
+    {
+      "course_id": 6,
+      "category": "security",
+      "chapters": [
+        { "chapter_id": 31, "title": "第一章 安全基础" },
+        {
+          "chapter_id": 32,
+          "title": "网络安全基础概念",
+          "bvid": "BV1uzLc68EY9",
+          "page": 6,
+          "slug": "security-basics"
+        },
+        {
+          "chapter_id": 33,
+          "title": "计算机病毒与木马",
+          "bvid": "BV1uzLc68EY9",
+          "page": 11,
+          "slug": "virus-trojan"
+        },
+        { "chapter_id": 34, "title": "第二章 Web 攻击与检测" },
+        {
+          "chapter_id": 35,
+          "title": "XSS 攻击与检测",
+          "bvid": "BV1uzLc68EY9",
+          "page": 18,
+          "slug": "xss"
+        },
+        {
+          "chapter_id": 36,
+          "title": "SQL 注入与防护",
+          "bvid": "BV1uzLc68EY9",
+          "page": 19,
+          "slug": "sqli"
+        }
+      ]
+    }
+  ],
+  "police_course": {
+    "course": "公安业务基础知识",
+    "category": "police",
+    "chapters": [
+      {
+        "title": "第一章 刑法基础",
+        "lessons": [
+          { "title": "刑法概述与基本原则", "bvid": "BV1MQP5zUEXm", "page": 3, "slug": "criminal-law-intro", "summary": "刑法的性质、任务与基本原则，公安执法中的刑法适用基础。" },
+          { "title": "犯罪构成与认定", "bvid": "BV1MQP5zUEXm", "page": 6, "slug": "crime-constitution", "summary": "犯罪构成四要件与认定方法，常见罪名分析思路。" }
+        ]
+      },
+      {
+        "title": "第二章 行政执法实务",
+        "lessons": [
+          { "title": "行政处罚法要点", "bvid": "BV1MQP5zUEXm", "page": 53, "slug": "admin-penalty", "summary": "行政处罚的种类、程序与执法规范要点。" },
+          { "title": "治安管理处罚法（分则）", "bvid": "BV1MQP5zUEXm", "page": 55, "slug": "public-order", "summary": "扰乱公共秩序等常见治安违法行为的认定与处罚。" }
+        ]
+      }
+    ]
+  }
+}

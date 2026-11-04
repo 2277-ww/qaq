@@ -1,0 +1,20 @@
+const { chromium } = require('playwright');
+const OUT = 'C:/Users/paradox/Desktop/自学·平台/research/shots';
+(async () => {
+  const browser = await chromium.launch({ channel: 'msedge', headless: true });
+  const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 2, locale: 'zh-CN' });
+  const page = await ctx.newPage();
+  await page.goto('https://admin.playedu.xyz/login', { waitUntil: 'networkidle' });
+  await page.fill('input[type=text]', 'admin@playedu.xyz');
+  await page.fill('input[type=password]', '123123');
+  await page.click('button:has-text("立即登录")');
+  await page.waitForTimeout(4000);
+  await page.click('text=课程中心');
+  await page.waitForTimeout(1200);
+  await page.click('text=线上课', { timeout: 8000 }).catch(e => console.log('no 线上课'));
+  await page.waitForTimeout(3500);
+  console.log('URL:', page.url());
+  await page.screenshot({ path: OUT + '/pe_04_admin_course.png' });
+  console.log('TEXT:', (await page.evaluate(() => document.body.innerText.replace(/\n+/g, ' | '))).slice(0, 700));
+  await browser.close();
+})();

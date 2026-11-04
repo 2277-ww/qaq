@@ -1,0 +1,3 @@
+# 部署时排除（仅发布站点本身）
+README.md
+.vercelignore

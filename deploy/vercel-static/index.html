@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自学平台 · 基于酷瓜云课堂的改造实践</title>
+<meta name="description" content="自学平台：在开源网校系统酷瓜云课堂（CTC 1.8.3）基础上改造的自主学习平台，含品牌重塑、学习闭环、点播同步等改造说明与界面实录。">
+<style>
+  :root{
+    --ink:#12161c; --ink-2:#4b5563; --ink-3:#7b8493;
+    --line:#e5e8ee; --bg:#f6f8fb; --card:#ffffff;
+    --brand:#1b4f8a; --brand-2:#0f7f86; --accent:#0f7f86;
+    --shadow:0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+  a{color:var(--brand);text-decoration:none}
+
+  header.hero{
+    background:linear-gradient(180deg,#ffffff 0%,#f9fbfd 100%);
+    border-bottom:1px solid var(--line);
+    padding:64px 0 48px;
+  }
+  .logo-row{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+  .mark{
+    width:44px;height:44px;border-radius:12px;flex:0 0 auto;
+    background:linear-gradient(140deg,var(--brand) 0%,var(--brand-2) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:19px;letter-spacing:.5px;
+  }
+  .logo-row b{font-size:19px;letter-spacing:.5px}
+  .logo-row span{color:var(--ink-3);font-size:13px;margin-left:2px}
+  h1{font-size:40px;line-height:1.25;margin:0 0 16px;letter-spacing:-.5px;font-weight:700}
+  h1 em{font-style:normal;color:var(--brand)}
+  .lede{font-size:17px;color:var(--ink-2);max-width:760px;margin:0 0 26px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    font-size:12.5px;color:var(--ink-2);background:#fff;border:1px solid var(--line);
+    border-radius:999px;padding:5px 12px;
+  }
+  .chip b{color:var(--ink);font-weight:600}
+
+  .notice{
+    margin:34px 0 0;padding:16px 18px;border:1px solid #f0dfc0;background:#fffbf1;
+    border-radius:10px;font-size:14px;color:#6b5327;
+  }
+  .notice b{color:#8a5a00}
+
+  section{padding:56px 0}
+  section + section{border-top:1px solid var(--line)}
+  h2{font-size:22px;margin:0 0 8px;letter-spacing:-.2px}
+  .sub{color:var(--ink-3);font-size:14px;margin:0 0 28px}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 22px 20px;box-shadow:var(--shadow);
+  }
+  .card h3{margin:0 0 8px;font-size:15.5px}
+  .card p{margin:0;color:var(--ink-2);font-size:14px}
+  .num{
+    display:inline-flex;width:24px;height:24px;border-radius:7px;margin-right:9px;
+    align-items:center;justify-content:center;font-size:12px;font-weight:700;
+    color:var(--brand);background:#eef4fb;vertical-align:1px;
+  }
+
+  .shots{display:grid;grid-template-columns:1fr;gap:26px}
+  figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  figure img{display:block;width:100%;height:auto}
+  figcaption{padding:12px 16px;font-size:13px;color:var(--ink-2);border-top:1px solid var(--line);background:#fcfdff}
+  figcaption b{color:var(--ink);font-weight:600}
+
+  .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .fact{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px}
+  .fact .k{font-size:12px;color:var(--ink-3);letter-spacing:.4px}
+  .fact .v{font-size:17px;font-weight:650;margin-top:4px}
+
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14px}
+  th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:#fbfcfe;font-weight:600;font-size:13px;color:var(--ink-2)}
+  tr:last-child td{border-bottom:none}
+  td.no{color:#b4423a;font-weight:600}
+  td.ok{color:#1a7f5a;font-weight:600}
+
+  footer{padding:40px 0 56px;color:var(--ink-3);font-size:13px}
+  footer p{margin:0 0 6px}
+  @media (max-width:860px){
+    h1{font-size:30px}
+    .grid,.facts{grid-template-columns:1fr}
+    .wrap{padding:0 18px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="logo-row">
+      <div class="mark">自</div>
+      <div><b>自学平台</b> <span>SelfLearn</span></div>
+    </div>
+    <h1>在开源网校 <em>酷瓜云课堂</em> 上<br>改出一套自主学习平台</h1>
+    <p class="lede">
+      以 CTC 1.8.3（GPL-2.0）为底座，保留课程、章节、点播与后台体系，
+      重做品牌标识，移除会员与登录门槛，补齐学习笔记、章节收藏、成长值三条学习主线，
+      并新增片源同步与演示数据工具链。
+    </p>
+    <div class="chips">
+      <span class="chip"><b>PHP</b> 7.3</span>
+      <span class="chip"><b>Phalcon</b> 3.4</span>
+      <span class="chip"><b>MySQL</b> 5.7</span>
+      <span class="chip"><b>Redis</b> 5.0</span>
+      <span class="chip"><b>Layui</b> 2.x</span>
+      <span class="chip"><b>Volt</b> 模板</span>
+      <span class="chip"><b>GatewayWorker</b></span>
+    </div>
+
+    <div class="notice">
+      <b>说明：</b>本页是纯静态展示，用于说明改造内容与界面实录。
+      平台本体是 PHP 7.3 + Phalcon C 扩展的服务端应用，依赖 MySQL、Redis、可写磁盘与常驻 WebSocket 进程，
+      无法在 Vercel 的 Serverless 运行时装起来——可部署的安装包见交付目录 <code>dist/</code>。
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>改造了什么</h2>
+    <p class="sub">相对上游 master 快照：新增 37 项、删除 34 项、修改 117 项。</p>
+    <div class="grid">
+      <div class="card">
+        <h3><span class="num">1</span>品牌去原厂化</h3>
+        <p>新增 <code>App\Library\Branding</code> 作为站点名称、标语、Logo 的唯一读取入口，配置收敛到 <code>brand.*</code>；
+        配套迁移改写库中历史品牌数据，模板与控制器里不再出现品牌字面量。</p>
+      </div>
+      <div class="card">
+        <h3><span class="num">2</span>移除会员体系</h3>
+        <p>下线 VIP 的模型、仓储、缓存、控制器与视图，课程不再区分会员/非会员，
+        计费与权益相关的定时任务一并删除。</p>
+      </div>
+      <div class="card">
+        <h3><span class="num">3</span>免登录学习</h3>
+        <p>移除账户、第三方登录与后台会话控制，改为访客模式：学习行为按会话记录，
+        前台不再有注册/登录断点。</p>
+      </div>
+      <div class="card">
+        <h3><span class="num">4</span>学习闭环</h3>
+        <p>新增学习笔记、章节收藏与成长值三件套（模型/仓储/服务/校验/视图齐全），
+        成长事件通过 outbox 表落库异步结算，个人中心可见进度与累计时长。</p>
+      </div>
+      <div class="card">
+        <h3><span class="num">5</span>点播片源同步</h3>
+        <p>后台新增"视频同步源"：登记 manifest 清单地址，一键同步/补偿，
+        每条同步留失败原因与时间戳，支持按分类或课程归位。</p>
+      </div>
+      <div class="card">
+        <h3><span class="num">6</span>演示数据工具链</h3>
+        <p><code>tools/</code> 下四个脚本：造课、造学习记录、绑定片源、回填观看进度，
+        让一台干净机器十分钟内具备可演示的内容。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>界面实录</h2>
+    <p class="sub">本地实例（PHP 内置服务器 + MySQL + Redis）实拍，1440 宽桌面视口。</p>
+    <div class="shots">
+      <figure>
+        <img src="assets/home.jpg" alt="首页顶部：品牌标识与推荐课程">
+        <figcaption><b>首页</b>　品牌 Logo、站名与导航统一为「自学平台」，课程卡片标注"全员免费"。</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/course.jpg" alt="课程详情页">
+        <figcaption><b>课程详情</b>　保留章节、目录、评分与学习人数；会员价与购买入口已随会员体系移除。</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/admin.jpg" alt="后台仪表盘">
+        <figcaption><b>后台仪表盘</b>　课程、用户、订单等运营指标，入口按改造后的功能集精简。</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/vodsync.jpg" alt="后台视频同步源管理">
+        <figcaption><b>视频同步源</b>　登记 manifest 地址、查看已同步/失败条数与最近同步时间，支持单源重试与全量补偿。</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>工程规模</h2>
+    <p class="sub">不含 vendor 与演示视频。</p>
+    <div class="facts">
+      <div class="fact"><div class="k">PHP 文件</div><div class="v">约 1 600</div></div>
+      <div class="fact"><div class="k">控制器 / 服务</div><div class="v">93 / 63</div></div>
+      <div class="fact"><div class="k">模型 / 仓储</div><div class="v">77 / 67</div></div>
+      <div class="fact"><div class="k">数据库迁移</div><div class="v">30</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>为什么没跑在 Vercel 上</h2>
+    <p class="sub">逐条比对运行时约束，六项硬性不满足。</p>
+    <table>
+      <thead>
+        <tr><th style="width:22%">维度</th><th style="width:34%">本项目要求</th><th>Vercel Serverless</th><th style="width:10%">结论</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PHP 版本</td><td>PHP 7.3（Phalcon 3.4 只支持到 7.3）</td><td>社区 runtime 支持 7.4–8.5，无 7.3</td><td class="no">不满足</td></tr>
+        <tr><td>Phalcon 扩展</td><td>ext-phalcon 3.4（C 扩展）</td><td>镜像内不含，构建期无法注入</td><td class="no">不满足</td></tr>
+        <tr><td>数据库</td><td>MySQL 5.7 长连接 + 30 个迁移</td><td>无内置数据库</td><td class="no">不满足</td></tr>
+        <tr><td>缓存与会话</td><td>Redis 5</td><td>无内置 Redis</td><td class="no">不满足</td></tr>
+        <tr><td>文件系统</td><td>storage 可写（Volt 编译、上传、日志）</td><td>只读，仅 /tmp 且冷启动丢失</td><td class="no">不满足</td></tr>
+        <tr><td>常驻进程</td><td>GatewayWorker 8282 + 定时调度器</td><td>仅请求触发的无状态函数</td><td class="no">不满足</td></tr>
+      </tbody>
+    </table>
+    <p class="sub" style="margin-top:18px">
+      可行的替代：云服务器（Nginx + php7.3-fpm + phalcon + MySQL + Redis）或支持容器的托管平台；
+      安装包内已附运行环境清单、迁移步骤与 Nginx 重写配置。
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>自学平台 · 基于酷瓜云课堂 CTC 1.8.3 改造（上游 GPL-2.0，衍生分发同样遵循 GPL-2.0）</p>
+    <p>本页为静态展示页，不含业务逻辑；系统本体与演示数据不在此站。</p>
+  </div>
+</footer>
+
+</body>
+</html>

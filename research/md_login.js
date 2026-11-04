@@ -1,0 +1,23 @@
+const { chromium } = require('playwright');
+const OUT = 'C:/Users/paradox/Desktop/自学·平台/research/shots';
+(async () => {
+  const browser = await chromium.launch({ channel: 'msedge', headless: true });
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2, locale: 'zh-CN' });
+  const page = await ctx.newPage();
+  await page.goto('https://sandbox.moodledemo.net/', { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(2500);
+  await page.screenshot({ path: OUT + '/md_00_home.png' });
+  await page.click('a:has-text("登录")').catch(e => console.log('login click', e.message.slice(0,40)));
+  await page.waitForTimeout(3000);
+  console.log('URL:', page.url());
+  const ins = await page.$$eval('input', els => els.map(e => e.type + ':' + (e.name||e.id)));
+  console.log('INPUTS:', JSON.stringify(ins.slice(0,6)));
+  await page.fill('#username', 'student');
+  await page.fill('#password', 'sandbox24');
+  await page.click('#loginbtn');
+  await page.waitForTimeout(5000);
+  console.log('after:', page.url());
+  console.log('TEXT:', (await page.evaluate(() => document.body.innerText.replace(/\n+/g,' | '))).slice(0, 500));
+  await page.screenshot({ path: OUT + '/md_01_dashboard.png' });
+  await browser.close();
+})();

@@ -1,0 +1,20 @@
+# 不进入镜像的内容（体积与敏感信息）
+public/static/vod
+_removed_auth
+_removed_vip
+storage/cache
+storage/log
+storage/tmp
+config/config.php
+.git
+.gitignore
+.vercel
+node_modules
+repro
+research
+dist
+docs
+build
+deploy
+*.zip
+*.log

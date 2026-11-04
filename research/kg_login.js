@@ -1,0 +1,20 @@
+const { chromium } = require('playwright');
+const OUT = 'C:/Users/paradox/Desktop/自学·平台/research/shots';
+(async () => {
+  const browser = await chromium.launch({ channel: 'msedge', headless: true, args: ['--autoplay-policy=no-user-gesture-required'] });
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2, locale: 'zh-CN' });
+  const page = await ctx.newPage();
+  await page.goto('https://ctc.koogua.com/account/login', { waitUntil: 'networkidle' });
+  await page.waitForTimeout(2000);
+  console.log('INPUTS:', JSON.stringify(await page.$$eval('input', els => els.map(e => e.type + ':' + (e.name||e.id||e.placeholder)))));
+  await page.fill('input[name=account], input[type=text]', '100015@163.com');
+  await page.fill('input[type=password]', '123456');
+  await page.click('button[type=submit], .btn-login, button:has-text("登录")').catch(e=>console.log('btn', e.message.slice(0,50)));
+  await page.waitForTimeout(4000);
+  console.log('URL:', page.url());
+  console.log('TEXT:', (await page.evaluate(() => document.body.innerText.replace(/\n+/g,' | '))).slice(0, 400));
+  await page.screenshot({ path: OUT + '/kg_after_login.png' });
+  const links = await page.$$eval('a', els => els.map(e => e.innerText.trim().slice(0,14) + '|' + e.getAttribute('href')).filter(x=>/我的|学习|收藏|笔记|个人/.test(x)));
+  console.log('USER LINKS:', JSON.stringify([...new Set(links)].slice(0,20)));
+  await browser.close();
+})();
