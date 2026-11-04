@@ -8,6 +8,12 @@ dist/*.tar.gz
 *.log
 
 # 临时文件
-.workbuddy/tmp/
+.workbuddy/
 .DS_Store
 Thumbs.db
+
+# 本地凭据（切勿入库）
+.env
+.env.*
+*.pem
+*.key

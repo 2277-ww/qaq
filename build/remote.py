@@ -13,15 +13,31 @@ import paramiko
 
 HOST = os.environ.get("CTC_HOST", "8.138.34.151")
 USER = os.environ.get("CTC_USER", "root")
-PWD = os.environ.get("CTC_PWD", "12345678@Fy")
+
+# 凭据只从环境变量或本地密钥读取，禁止硬编码进仓库
+PWD = os.environ.get("CTC_PWD", "")
+KEY = os.environ.get("CTC_KEY", os.path.expanduser("~/.ssh/ctc_ed25519"))
 
 
 def client():
     c = paramiko.SSHClient()
     c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    c.connect(HOST, port=22, username=USER, password=PWD,
+
+    kw = dict(port=22, username=USER,
               timeout=25, banner_timeout=30, auth_timeout=30,
               look_for_keys=False, allow_agent=False)
+
+    if os.path.exists(KEY):
+        kw["key_filename"] = KEY
+    elif PWD:
+        kw["password"] = PWD
+    else:
+        raise SystemExit(
+            "缺少凭据：请设置环境变量 CTC_PWD，"
+            "或把私钥放到 %s（可用 CTC_KEY 指定路径）" % KEY
+        )
+
+    c.connect(HOST, **kw)
     return c
 
 
