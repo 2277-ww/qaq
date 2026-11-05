@@ -1,0 +1,10 @@
+--- .workbuddy/tmp/srv/app/Http/Home/Views/user/console/menu.volt	2026-11-05 18:00:10.023090700 +0800
++++ .workbuddy/tmp/work/app/Http/Home/Views/user/console/menu.volt	2026-11-05 18:18:22.881232200 +0800
+@@ -12,6 +12,7 @@
+     <div class="layui-card-body">
+         <ul class="my-menu">
+             <li><a href="{{ url({'for':'home.uc.growth'}) }}">个人成长档案</a></li>
++            <li><a href="{{ url({'for':'home.uc.progress'}) }}">学习进度</a></li>
+             <li><a href="{{ url({'for':'home.uc.notes'}) }}">我的笔记</a></li>
+             <li><a href="{{ url({'for':'home.uc.favorites'},{'type':'chapter'}) }}">收藏视频</a></li>
+         </ul>

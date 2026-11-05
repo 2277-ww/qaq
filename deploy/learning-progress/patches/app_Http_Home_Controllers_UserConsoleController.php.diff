@@ -1,0 +1,55 @@
+--- .workbuddy/tmp/srv/app/Http/Home/Controllers/UserConsoleController.php	2026-11-05 18:00:09.678661600 +0800
++++ .workbuddy/tmp/work/app/Http/Home/Controllers/UserConsoleController.php	2026-11-05 18:18:18.704243800 +0800
+@@ -9,6 +9,8 @@
+ 
+ use App\Services\Logic\Growth\Profile as GrowthProfileService;
+ use App\Services\Logic\Growth\Sync as GrowthSyncService;
++use App\Services\Logic\Learning\Progress as LearningProgressService;
++use App\Services\Logic\Learning\Sync as LearningSyncService;
+ use App\Services\Logic\Note\NoteList as NoteListService;
+ use App\Services\Logic\User\Console\AnswerList as AnswerListService;
+ use App\Services\Logic\User\Console\ArticleList as ArticleListService;
+@@ -187,6 +189,43 @@
+ 
+         return $this->jsonSuccess(['data' => $result, 'msg' => $msg]);
+     }
++
++    /**
++     * @Get("/progress", name="home.uc.progress")
++     */
++    public function progressAction()
++    {
++        $service = new LearningProgressService();
++
++        $progress = $service->handle();
++
++        $this->seo->prependTitle('学习进度');
++
++        $this->view->pick('user/console/progress');
++        $this->view->setVar('progress', $progress);
++    }
++
++    /**
++     * @Post("/progress/sync", name="home.uc.progress_sync")
++     */
++    public function progressSyncAction()
++    {
++        $courseId = (int)$this->request->getPost('course_id', 'int', 0);
++
++        $service = new LearningSyncService();
++
++        $result = $courseId > 0 ? $service->pushCourse($courseId) : $service->handle();
++
++        if ($result['dead'] > 0) {
++            $msg = sprintf('已推送 %d 条，%d 条失败待排查', $result['sent'], $result['dead']);
++        } elseif ($result['sent'] > 0) {
++            $msg = sprintf('已推送 %d 条学习进度到考试平台', $result['sent']);
++        } else {
++            $msg = '当前进度已是最新，无需重复推送';
++        }
++
++        return $this->jsonSuccess(['data' => $result, 'msg' => $msg]);
++    }
+ 
+     /**
+      * @Get("/consults", name="home.uc.consults")

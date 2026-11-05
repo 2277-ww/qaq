@@ -1,0 +1,48 @@
+--- .workbuddy/tmp/srv/config/config.php	2026-11-05 18:00:10.308488600 +0800
++++ .workbuddy/tmp/work/config/config.php	2026-11-05 18:18:47.237882600 +0800
+@@ -196,6 +196,45 @@
+ $config['growth']['timeout'] = 5;
+ 
+ /**
++ * 统一网关
++ *
++ * base_uri: 网关入口根地址（如 https://api.jingyuan.edu.cn）。留空表示未接入网关，
++ *           学习进度事件仍会入箱并标记为已投递（本地直连模式，用于复现环境演示）。
++ * internal_sign_secret: 内部签名密钥，与网关约定；生产必须配置且不得入库。
++ * verify_sign: 是否校验入站 X-Internal-Sign。生产必须为 true，复现环境可置 false 联调。
++ * timestamp_skew: 入站时间戳允许偏移（秒）。
++ */
++$config['gateway']['base_uri'] = '';
++
++$config['gateway']['app_code'] = 'learning';
++
++$config['gateway']['internal_sign_secret'] = '';
++
++$config['gateway']['verify_sign'] = false;
++
++$config['gateway']['timestamp_skew'] = 300;
++
++$config['gateway']['timeout'] = 5;
++
++/**
++ * 考试平台对接
++ *
++ * push_path: 经网关投递学习进度的路径（由考试平台契约约定）。
++ * user_prefix: 未接入 OIDC 前对外 userId 的占位前缀，接入后以 kg_identity_binding.sub 为准。
++ * min_progress_delta: 进度增量上报的最小百分比差，低于该值合并到下一次。
++ * retry_max: 投递失败最大重试次数，超过转死信。
++ */
++$config['exam']['enabled'] = true;
++
++$config['exam']['push_path'] = '/api/v1/exam/learning/progress';
++
++$config['exam']['user_prefix'] = 'usr_';
++
++$config['exam']['min_progress_delta'] = 5;
++
++$config['exam']['retry_max'] = 6;
++
++/**
+  * 内置身份（无登录模式）
+  *
+  * 本复现环境不提供注册与登录入口，所有前台/后台请求统一以内置账号的身份执行。

@@ -1,0 +1,12 @@
+--- .workbuddy/tmp/srv/scheduler.php	2026-11-05 18:00:10.440789400 +0800
++++ .workbuddy/tmp/work/scheduler.php	2026-11-05 18:18:41.424734800 +0800
+@@ -24,6 +24,9 @@
+ $scheduler->php($script, $bin, ['--task' => 'sync_learning', '--action' => 'main'])
+     ->everyMinute(7);
+ 
++$scheduler->php($script, $bin, ['--task' => 'exam_sync', '--action' => 'main'])
++    ->everyMinute(3);
++
+ $scheduler->php($script, $bin, ['--task' => 'teacher_live_notice', '--action' => 'consume'])
+     ->everyMinute(9);
+ 

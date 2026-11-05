@@ -1,0 +1,56 @@
+--- .workbuddy/tmp/srv/app/Console/Tasks/SyncLearningTask.php	2026-11-05 18:00:10.117531200 +0800
++++ .workbuddy/tmp/work/app/Console/Tasks/SyncLearningTask.php	2026-11-05 18:18:37.290965400 +0800
+@@ -17,7 +17,9 @@
+ use App\Repos\CourseUser as CourseUserRepo;
+ use App\Repos\Learning as LearningRepo;
+ use App\Services\Growth\Collect as GrowthCollect;
++use App\Services\Learning\Collect as ExamCollect;
+ use App\Services\Logic\Growth\Sync as GrowthSync;
++use App\Services\Logic\Learning\Sync as ExamSync;
+ use App\Services\Logic\Point\History\ChapterStudy as ChapterStudyPointHistory;
+ use App\Services\Sync\Learning as LearningSyncService;
+ 
+@@ -51,6 +53,13 @@
+         $growthSync = new GrowthSync();
+ 
+         $growthSync->flush(0, 500);
++
++        /**
++         * 学习进度事件投递到考试平台（单次限量，避免拖慢同步任务）
++         */
++        $examSync = new ExamSync();
++
++        $examSync->flush(0, 20);
+     }
+ 
+     /**
+@@ -260,14 +269,23 @@
+ 
+         $courseUser->update();
+ 
+-        /**
+-         * 首次完成课程时投递 course.completed
+-         */
+-        if ($courseUser->status == CourseUserModel::STATUS_COMPLETED && !$wasCompleted) {
++        $course = $courseRepo->findById($learning->course_id);
++
++        if ($course) {
+ 
+-            $course = $courseRepo->findById($learning->course_id);
++            /**
++             * 进度变化入箱，经网关增量推送给考试平台
++             * 节流与去重由 ExamCollect 内部处理（单调递增 + 最小增量 + 完成事实去重）
++             */
++            $examCollect = new ExamCollect();
++
++            $examCollect->progressUpdated($courseUser, $course);
++
++            /**
++             * 首次完成课程时投递 course.completed 到成长档案
++             */
++            if ($courseUser->status == CourseUserModel::STATUS_COMPLETED && !$wasCompleted) {
+ 
+-            if ($course) {
+                 $collect = new GrowthCollect();
+                 $collect->courseCompleted($courseUser, $course);
+             }
