@@ -434,3 +434,48 @@ python3 verify_account_link.py --group platform --base http://127.0.0.1
 正确凭据 → confirmed、错误密码与不存在账号同结论、首次建号写 `forum_uid`、二次登录不重复建号、论坛不可达时的降级提示。
 
 详见 `docs/论坛账号登录对接说明_V1.0.md`。
+
+---
+
+# 第八轮：账号确认接入网关的端到端验证（2026-11-06）
+
+## 这一轮补的是「验证缺口」
+
+前一轮把签名函数与论坛方 `account_verify_client.py` 做了基准对拍（5/5），但那只证明**函数算得对**。签名函数对、发出去的请求却过不了验签，是完全可能的——头没带上、body 被二次编码、path 与签名时不一致，都会导致 40105。
+
+所以本轮起了一个**按文档规范独立实现验签**的本地网关，让真实的 `GatewaySign::headers()` + 真实 curl 打过去。
+
+```bash
+cd l2_e2e
+python3 runner.py           # PHP_BIN 可指定 php 路径
+```
+
+结果 **9/9**：五头齐备、正确签名 200、nonce 重放 40107、签名篡改 40105、时间戳超窗 40106、未知 AppKey 40108、错误密码 40104、带 query 的路径验签通过、中文 body 验签通过。
+
+后两条是重点：query 验证 `canonicalQuery` 的 `(key, value)` 排序与 `+` 空格编码；中文 body 验证 UTF-8 字节哈希——这两处是最容易「本地对拍通过、跨语言实现不一致」的地方。
+
+## 同时确认的两件事
+
+1. **`jy-learning-svc` 是网关预置的四个 AppKey 之一**（接口说明第 159 行）。前几轮标为 P0 的「AppKey 真名未确认」正式解除。
+2. **平台侧不需要改网关**。接口说明第 155 行：网关与论坛的连接已建好（`account-verify` 路由），四个平台只要领密钥、实现签名、调接口、联调。
+
+## 配置现状
+
+| 项 | 值 |
+| --- | --- |
+| `gateway.account_base` | `http://8.138.246.181` |
+| `gateway.account_path` | `/answer/api/v1/account/verify` |
+| `gateway.app_key` | `jy-learning-svc` |
+| `gateway.app_secret` | **`''`（缺，唯一阻塞项）** |
+| `gateway.account_timeout` | 5（文档 S 级 3s 是网关到论坛的预算，客户端留一跳余量） |
+
+## 新增文件
+
+```
+l2_e2e/
+├── fake_gateway.py    按文档规范验签的本地网关（5 头 + 时间窗 + nonce + 白名单）
+├── php_client.php     用真实 GatewaySign::headers() 发请求，8 个用例
+└── runner.py          同进程起服务再调 PHP，避免后台进程被回收
+```
+
+操作步骤、失败码对照与偏差说明见 `docs/论坛账号确认_接入网关操作单_V1.0.md`。
