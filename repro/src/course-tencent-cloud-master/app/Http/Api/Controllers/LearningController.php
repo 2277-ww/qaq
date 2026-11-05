@@ -249,16 +249,28 @@ class LearningController extends Controller
     }
 
     /**
-     * @Get("/completion/{userId}/{courseId:[0-9]+}", name="api.learning.completion")
+     * 课程完成状态（考试准入回源的权威接口）
+     *
+     * 规范 6.4.1 要求 courseId 对外为不透明字符串（course_9），
+     * 因此路由不能把形态限死为纯数字：考试平台按契约传 course_9，
+     * 旧的数字调用也要继续可用，两种形态都在 resolveCourseId() 里归一。
+     *
+     * @Get("/completion/{userId}/{courseId:[A-Za-z0-9_\-]+}", name="api.learning.completion")
      */
     public function completionAction($userId, $courseId)
     {
         $this->assertReadable($userId);
 
+        $resolved = $this->resolveCourseId($courseId);
+
+        if ($resolved <= 0) {
+            return $this->fail('VALIDATION_ERROR', 'courseId 需为 course_9 或纯数字形态', 400);
+        }
+
         $service = new ProgressService();
 
-        return $this->respond(function () use ($service, $userId, $courseId) {
-            return $service->completion($this->resolveUserId($userId), (int)$courseId);
+        return $this->respond(function () use ($service, $userId, $resolved) {
+            return $service->completion($this->resolveUserId($userId), $resolved);
         });
     }
 
@@ -809,6 +821,29 @@ class LearningController extends Controller
         $identity = new IdentityKey();
 
         return (int)$identity->resolveUserId($userKey);
+    }
+
+    /**
+     * 解析对外形态的课程 ID
+     *
+     * 规范 6.2 要求对外 ID 为不透明字符串（course_9 形态），内部主键仍是整型。
+     * 两种形态都接受，转换只在这一处发生，避免各接口各写一遍 (int) 强转——
+     * (int)'course_9' 会得到 0，这种静默失败比报错更难查。
+     *
+     * @param string $courseKey
+     * @return int
+     */
+    protected function resolveCourseId($courseKey)
+    {
+        if (is_numeric($courseKey)) {
+            return (int)$courseKey;
+        }
+
+        if (preg_match('/^course_(\d+)$/', (string)$courseKey, $match)) {
+            return (int)$match[1];
+        }
+
+        return 0;
     }
 
     /**
