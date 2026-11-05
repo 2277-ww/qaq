@@ -59,10 +59,13 @@ class Progress extends LogicService
 
         $identity = new IdentityKey();
 
+        $sync = new Sync();
+
         return [
             'userId' => $identity->forUserId($user->id),
             'overview' => $data['overview'],
             'courses' => $data['courses'],
+            'peers' => $sync->peerStats($user->id),
             'ruleVersion' => self::RULE_VERSION,
             'generatedAt' => gmdate('Y-m-d\TH:i:s\Z'),
         ];
@@ -302,6 +305,8 @@ class Progress extends LogicService
                 'progress' => (int)$row->progress,
                 'status' => (int)$row->status,
                 'status_text' => $row->getStatusText(),
+                'acked' => $row->isAcked(),
+                'remote_id' => (string)$row->remote_id,
                 'response_code' => (int)$row->response_code,
                 'retry_count' => (int)$row->retry_count,
                 'time_text' => date('Y-m-d H:i:s', (int)$row->occurred_at),

@@ -7,8 +7,11 @@
  * eventId / eventType / eventVersion / occurredAt / sourcePlatform /
  * sourceEntityId / actorId / correlationId / requestId / data。
  *
- * 纪律：跨平台通道只发目录内事件。learning.progress.updated 为进度增量，
- * course.completed 为完成事实，两者都由考试平台订阅。
+ * 纪律（接入说明 8.1）：跨平台正式通道只发事件目录内类型，目前是 course.completed。
+ * learning.progress.updated 属本地扩展事件，默认不投递（中间态由对端回源
+ * GET /progress 获取），只有对端显式开启 extensions 并配置独立路径时才走扩展通道。
+ *
+ * 多对端：事件带 target，标识发给考试平台 / 实训平台 / 论坛平台，投递时按 target 路由。
  */
 
 namespace App\Services\Learning;
@@ -40,13 +43,14 @@ class Collect extends Service
      * @param CourseModel $course
      * @param string $actorKey 操作者对外主键，留空取本人
      * @param string $requestId 单次请求 ID，留空自动生成
+     * @param string $target 对端标识（exam|training|forum）
      * @return ExamOutboxModel|null
      */
-    public function progressUpdated(CourseUserModel $courseUser, CourseModel $course, $actorKey = '', $requestId = '')
+    public function progressUpdated(CourseUserModel $courseUser, CourseModel $course, $actorKey = '', $requestId = '', $target = 'exam')
     {
         if ($courseUser->user_id <= 0 || $course->id <= 0) return null;
 
-        if (!$this->isEnabled()) return null;
+        if (!$this->isEnabled($target)) return null;
 
         $progress = (int)$courseUser->progress;
 
@@ -56,17 +60,27 @@ class Collect extends Service
 
         $eventType = $completed ? ExamOutboxModel::TYPE_COMPLETED : ExamOutboxModel::TYPE_PROGRESS;
 
+        /**
+         * 通道纪律：事件不在该对端白名单内则不入箱，
+         * 避免下游收到未定义类型后按「未知主版本」隔离告警。
+         */
+        $registry = new Peers();
+
+        $channel = $registry->allows($target, $eventType);
+
+        if ($channel === '') return null;
+
         $repo = new ExamOutboxRepo();
 
         if ($completed) {
 
-            if ($repo->existsFact($eventType, $courseUser->user_id, $course->id, self::EVENT_VERSION)) {
+            if ($repo->existsFact($eventType, $courseUser->user_id, $course->id, self::EVENT_VERSION, $target)) {
                 return null;
             }
 
         } else {
 
-            $lastProgress = $repo->findLastProgress($courseUser->user_id, $course->id);
+            $lastProgress = $repo->findLastProgress($courseUser->user_id, $course->id, $target);
 
             if ($progress <= $lastProgress) return null;
 
@@ -116,6 +130,8 @@ class Collect extends Service
 
         $outbox = new ExamOutboxModel();
 
+        $outbox->target = $target;
+        $outbox->channel = $channel;
         $outbox->event_id = $eventId;
         $outbox->event_type = $eventType;
         $outbox->event_version = self::EVENT_VERSION;
@@ -138,13 +154,42 @@ class Collect extends Service
     }
 
     /**
-     * 是否开启向考试平台推送
+     * 是否开启向该对端推送
      *
+     * @param string $target
      * @return bool
      */
-    public function isEnabled()
+    public function isEnabled($target = 'exam')
     {
-        return (bool)$this->getConfig()->path('exam.enabled', true);
+        return (new Peers())->isEnabled($target);
+    }
+
+    /**
+     * 完成事实扇出：给每个已启用且允许该事件的对端各入箱一条
+     *
+     * 课程完成是事件目录内的类型，考试平台、实训平台、论坛平台都可订阅；
+     * 各自独立入箱（独立 eventId、独立 target），某个对端失败不影响其他对端。
+     *
+     * @param CourseUserModel $courseUser
+     * @param CourseModel $course
+     * @return array target => eventId
+     */
+    public function courseCompletedFanout(CourseUserModel $courseUser, CourseModel $course)
+    {
+        $result = [];
+
+        $registry = new Peers();
+
+        foreach ($registry->enabled() as $target => $peer) {
+
+            if ($registry->allows($target, ExamOutboxModel::TYPE_COMPLETED) === '') continue;
+
+            $outbox = $this->progressUpdated($courseUser, $course, '', '', $target);
+
+            if ($outbox) $result[$target] = (string)$outbox->event_id;
+        }
+
+        return $result;
     }
 
     /**

@@ -7,13 +7,13 @@
 
 namespace App\Http\Home\Controllers;
 
-use App\Http\Home\Services\UserConsole as HomeUserConsoleService;
-use App\Services\Logic\Account\OAuthProvider as OAuthProviderService;
-use App\Services\Logic\User\Console\AccountInfo as AccountInfoService;
+use App\Services\Logic\Growth\Profile as GrowthProfileService;
+use App\Services\Logic\Growth\Sync as GrowthSyncService;
+use App\Services\Logic\Learning\Progress as LearningProgressService;
+use App\Services\Logic\Learning\Sync as LearningSyncService;
+use App\Services\Logic\Note\NoteList as NoteListService;
 use App\Services\Logic\User\Console\AnswerList as AnswerListService;
 use App\Services\Logic\User\Console\ArticleList as ArticleListService;
-use App\Services\Logic\User\Console\ConnectDelete as ConnectDeleteService;
-use App\Services\Logic\User\Console\ConnectList as ConnectListService;
 use App\Services\Logic\User\Console\ConsultList as ConsultListService;
 use App\Services\Logic\User\Console\ContactInfo as ContactInfoService;
 use App\Services\Logic\User\Console\ContactUpdate as ContactUpdateService;
@@ -31,28 +31,12 @@ use App\Services\Logic\User\Console\ProfileUpdate as ProfileUpdateService;
 use App\Services\Logic\User\Console\QuestionList as QuestionListService;
 use App\Services\Logic\User\Console\RefundList as RefundListService;
 use App\Services\Logic\User\Console\ReviewList as ReviewListService;
-use Phalcon\Mvc\Dispatcher;
 
 /**
  * @RoutePrefix("/uc")
  */
 class UserConsoleController extends Controller
 {
-
-    public function beforeExecuteRoute(Dispatcher $dispatcher)
-    {
-        parent::beforeExecuteRoute($dispatcher);
-
-        if ($this->authUser->id == 0) {
-            $dispatcher->forward([
-                'controller' => 'account',
-                'action' => 'login',
-            ]);
-            return false;
-        }
-
-        return true;
-    }
 
     public function initialize()
     {
@@ -97,45 +81,6 @@ class UserConsoleController extends Controller
 
         $this->view->pick('user/console/contact');
         $this->view->setVar('contact', $contact);
-    }
-
-    /**
-     * @Get("/account", name="home.uc.account")
-     */
-    public function accountAction()
-    {
-        $type = $this->request->getQuery('type', 'string', 'info');
-
-        $service = new AccountInfoService();
-
-        $account = $service->handle();
-
-        $service = new OAuthProviderService();
-
-        $oauthProvider = $service->handle();
-
-        $service = new ConnectListService();
-
-        $connects = $service->handle();
-
-        $service = new HomeUserConsoleService();
-
-        $wechatOAConnect = $service->getWeChatOAConnect();
-
-        if ($type == 'info') {
-            $this->view->pick('user/console/account_info');
-        } elseif ($type == 'phone') {
-            $this->view->pick('user/console/account_phone');
-        } elseif ($type == 'email') {
-            $this->view->pick('user/console/account_email');
-        } elseif ($type == 'password') {
-            $this->view->pick('user/console/account_password');
-        }
-
-        $this->view->setVar('wechat_oa_connected', $wechatOAConnect ? 1 : 0);
-        $this->view->setVar('oauth_provider', $oauthProvider);
-        $this->view->setVar('connects', $connects);
-        $this->view->setVar('account', $account);
     }
 
     /**
@@ -201,6 +146,87 @@ class UserConsoleController extends Controller
 
         $this->view->pick('user/console/favorites');
         $this->view->setVar('pager', $pager);
+    }
+
+    /**
+     * @Get("/notes", name="home.uc.notes")
+     */
+    public function notesAction()
+    {
+        $service = new NoteListService();
+
+        $pager = $service->handle();
+
+        $this->view->pick('user/console/notes');
+        $this->view->setVar('pager', $pager);
+    }
+
+    /**
+     * @Get("/growth", name="home.uc.growth")
+     */
+    public function growthAction()
+    {
+        $service = new GrowthProfileService();
+
+        $profile = $service->handle();
+
+        $this->seo->prependTitle('个人成长档案');
+
+        $this->view->pick('user/console/growth');
+        $this->view->setVar('profile', $profile);
+    }
+
+    /**
+     * @Post("/growth/sync", name="home.uc.growth_sync")
+     */
+    public function growthSyncAction()
+    {
+        $service = new GrowthSyncService();
+
+        $result = $service->handle();
+
+        $msg = sprintf('已同步 %d 条事件', $result['sent']);
+
+        return $this->jsonSuccess(['data' => $result, 'msg' => $msg]);
+    }
+
+    /**
+     * @Get("/progress", name="home.uc.progress")
+     */
+    public function progressAction()
+    {
+        $service = new LearningProgressService();
+
+        $progress = $service->handle();
+
+        $this->seo->prependTitle('学习进度');
+
+        $this->view->pick('user/console/progress');
+        $this->view->setVar('progress', $progress);
+    }
+
+    /**
+     * @Post("/progress/sync", name="home.uc.progress_sync")
+     */
+    public function progressSyncAction()
+    {
+        $courseId = (int)$this->request->getPost('course_id', 'int', 0);
+
+        $service = new LearningSyncService();
+
+        $result = $courseId > 0 ? $service->pushCourse($courseId) : $service->handle();
+
+        if ($result['dead'] > 0) {
+            $msg = sprintf('已推送 %d 条，%d 条失败待排查', $result['sent'], $result['dead']);
+        } elseif ($result['sent'] > 0) {
+            $msg = sprintf('已推送 %d 条学习进度事件', $result['sent']);
+        } elseif (!empty($result['note'])) {
+            $msg = $result['note'];
+        } else {
+            $msg = '当前进度已是最新，无需重复推送';
+        }
+
+        return $this->jsonSuccess(['data' => $result, 'msg' => $msg]);
     }
 
     /**
@@ -339,25 +365,6 @@ class UserConsoleController extends Controller
         $service->handle();
 
         $content = ['msg' => '更新收货信息成功'];
-
-        return $this->jsonSuccess($content);
-    }
-
-    /**
-     * @Post("/connect/{id:[0-9]+}/delete", name="home.uc.unconnect")
-     */
-    public function deleteConnectAction($id)
-    {
-        $service = new ConnectDeleteService();
-
-        $service->handle($id);
-
-        $location = $this->url->get(['for' => 'home.uc.account']);
-
-        $content = [
-            'location' => $location,
-            'msg' => '解除登录绑定成功',
-        ];
 
         return $this->jsonSuccess($content);
     }

@@ -53,9 +53,36 @@
                     <div class="kg-lp-channel-stats">
                         <span>待推送 <b>{{ progress.sync.pending }}</b></span>
                         <span>已推送 <b>{{ progress.sync.sent }}</b></span>
+                        <span>已确认 <b>{{ progress.sync.acked }}</b></span>
                         <span>待重试 <b>{{ progress.sync.failed }}</b></span>
                         <span>失败 <b>{{ progress.sync.dead }}</b></span>
                         <span class="kg-lp-last">最近推送 {{ progress.sync.last_sent_text }}</span>
+                        {% if progress.sync.auth_mode == 'signature' %}
+                            <span class="layui-badge layui-bg-green" title="考试平台调用需带 X-Internal-Sign，HMAC-SHA256 校验">入站签名校验</span>
+                        {% elseif progress.sync.auth_mode == 'token' %}
+                            <span class="layui-badge layui-bg-cyan" title="考试平台调用需带 Bearer 令牌">入站令牌校验</span>
+                        {% else %}
+                            <span class="layui-badge layui-bg-orange" title="当前只校验 X-App-Code，发放 peers.exam.secret 后自动升级为签名校验">入站仅编码校验</span>
+                        {% endif %}
+                    </div>
+                    <div class="kg-lp-peers">
+                        <span class="kg-lp-peers-label">对接通道</span>
+                        {% for peer in progress.sync.peers %}
+                            <span class="kg-lp-peer {% if peer.enabled %}is-on{% else %}is-off{% endif %}">
+                                <i></i>{{ peer.name }}
+                                {% if peer.enabled %}
+                                    <em>已推送 {{ peer.sent }}</em>
+                                {% else %}
+                                    <em>接口已预留</em>
+                                {% endif %}
+                            </span>
+                        {% endfor %}
+                        {% if progress.sync.query_enabled %}
+                            <span class="kg-lp-peer is-on">
+                                <i></i>考试平台回源
+                                <em>进度 / 准入可查</em>
+                            </span>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -139,10 +166,11 @@
                             <colgroup>
                                 <col width="12%">
                                 <col>
-                                <col width="10%">
-                                <col width="10%">
-                                <col width="17%">
+                                <col width="9%">
+                                <col width="9%">
                                 <col width="16%">
+                                <col width="14%">
+                                <col width="14%">
                             </colgroup>
                             <thead>
                             <tr>
@@ -152,6 +180,7 @@
                                 <th>状态</th>
                                 <th>发生时间</th>
                                 <th>事件编号</th>
+                                <th>对端单号</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -168,6 +197,7 @@
                                     </td>
                                     <td class="kg-lp-muted">{{ item.time_text }}</td>
                                     <td class="kg-lp-mono">{{ item.event_id }}</td>
+                                    <td class="kg-lp-mono">{% if item.remote_id %}{{ item.remote_id }}{% else %}<span class="kg-lp-muted">待回执</span>{% endif %}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -180,7 +210,8 @@
                 <div class="kg-lp-tips">
                     <p><b>上报口径</b>：课程进度 = 已完成课时 / 课程总课时；课时观看达到 30% 视为完成。进度按增量上报，距上次上报不足 5 个百分点时合并，避免高频请求打满网关。</p>
                     <p><b>传输方式</b>：事件先写入发件箱（kg_exam_outbox），再由投递器经统一网关发送，带 X-Internal-Sign 内部签名与 Idempotency-Key；失败按 1s/5s/30s/2min/10min/1h 退避重试，第 6 次仍失败转死信。</p>
-                    <p><b>考试平台</b>：可调用 GET /api/v1/learning/completion/{userId}/{courseId} 回源课程完成状态，作为开放随堂测试的依据；本平台不反向读取考试数据。</p>
+                    <p><b>考试平台</b>：先调 GET /api/v1/learning/peers/exam/handshake 拿契约与签名规范，再用 GET /peers/exam/students/{userId}/progress 与 /completion/{courseId} 回源学习进度、判定准入；本平台不反向读取考试数据。</p>
+                    <p><b>回执与补拉</b>：考试平台入库后回传 exam.progress.ack（POST /peers/exam/receipts），同步记录才会显示「已确认」并回填对端单号；漏推可用 GET /peers/exam/pull 按游标补拉，对账后可 POST /peers/exam/replay 重放失败事件。</p>
                 </div>
 
             </div>
@@ -206,6 +237,14 @@
         .kg-lp-endpoint { color: #8A6D2F; font-size: 12px; }
         .kg-lp-channel-stats { margin-top: 8px; padding-top: 8px; border-top: 1px dashed #E7D9BB; font-size: 12px; color: #7A5B1E; display: flex; flex-wrap: wrap; gap: 16px; }
         .kg-lp-channel-stats b { color: #0B1F3A; font-size: 14px; margin-left: 2px; }
+        .kg-lp-peers { margin-top: 10px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .kg-lp-peers-label { font-size: 12px; color: #7A5B1E; }
+        .kg-lp-peer { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 9px; border-radius: 2px; background: #FFF; border: 1px solid #E7D9BB; color: #4A3B14; }
+        .kg-lp-peer i { width: 6px; height: 6px; border-radius: 50%; background: #C8C2B4; display: inline-block; }
+        .kg-lp-peer.is-on i { background: #2E9E5B; }
+        .kg-lp-peer.is-on { border-color: #C7E3CF; background: #F3FAF5; }
+        .kg-lp-peer em { font-style: normal; color: #8A7A4E; }
+        .kg-lp-peer.is-on em { color: #2E9E5B; }
         .kg-lp-last { margin-left: auto; color: #98A2B3; }
         .kg-lp-section { margin-bottom: 26px; }
         .kg-lp-section h3 { font-size: 15px; font-weight: 600; color: #0B1F3A; margin: 0 0 10px; padding-left: 9px; border-left: 3px solid #C8A24A; line-height: 1.2; }
