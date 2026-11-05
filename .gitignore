@@ -5,7 +5,12 @@ vendor/
 # 构建产物与大体积压缩包（发布件，非源码）
 dist/*.zip
 dist/*.tar.gz
+deploy/releases/*.tar.gz
 *.log
+
+# Python 字节码
+__pycache__/
+*.pyc
 
 # 临时文件
 .workbuddy/
