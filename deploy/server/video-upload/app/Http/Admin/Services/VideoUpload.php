@@ -8,6 +8,12 @@
  * 存储布局：
  *   /www/media/vod/{course_id}/{Ym}/{upload_id}.{ext}   正式文件
  *   /www/media/tmp/{upload_id}/{index}.part             分片暂存（合并后删除）
+ *   /www/media/tmp/{upload_id}/source.{ext}             待转码源文件
+ *
+ * 编码校验与转码：
+ *   合并后用 ffprobe 读取真实编码。H.264(+AAC/MP3) 与 WebM(VP8/VP9/AV1) 直接归档；
+ *   其余编码（HEVC / ProRes / AC-3 等）在后台用 ffmpeg 转成 H.264 + AAC mp4，
+ *   转码期间前端轮询 finish 接口获取进度，完成后 URL 改为 .mp4 直链。
  */
 
 namespace App\Http\Admin\Services;
@@ -49,6 +55,23 @@ class VideoUpload extends Injectable
      * 上传地址前缀
      */
     const URL_PREFIX = '/media/vod/';
+
+    /**
+     * 可执行文件
+     */
+    const FFPROBE = '/usr/bin/ffprobe';
+
+    const FFMPEG = '/usr/bin/ffmpeg';
+
+    /**
+     * 需要转码时的源视频时长上限（秒），超过直接拒绝，避免长时间占用 CPU
+     */
+    const MAX_TRANSCODE_DURATION = 2700;
+
+    /**
+     * 转码输出的最大分辨率（短边不放大，长边不超过 1920）
+     */
+    const MAX_WIDTH = 1920;
 
     /**
      * 初始化上传会话
@@ -193,6 +216,13 @@ class VideoUpload extends Injectable
             return $this->fail('上传会话不存在或已过期');
         }
 
+        // 已经在转码：本接口同时作为转码进度查询入口（幂等）
+        $job = $this->readJob($dir);
+
+        if ($job !== null) {
+            return $this->transcodeStatus($dir, $job);
+        }
+
         $total = (int)$meta['chunks'];
 
         $missing = [];
@@ -232,18 +262,38 @@ class VideoUpload extends Injectable
         $realSize = filesize($merged);
 
         if ($realSize !== (int)$meta['size']) {
-            @unlink($merged);
+            $this->cleanTmp($dir);
             return $this->fail(sprintf('合并后大小不符：实际 %d 字节，应为 %d 字节', $realSize, $meta['size']));
         }
 
         $format = $this->sniff($merged);
 
         if ($format === null) {
-            @unlink($merged);
+            $this->cleanTmp($dir);
             return $this->fail('文件内容不是有效的 MP4 / WebM 视频（已校验容器魔数）');
         }
 
         $courseId = (int)$meta['course_id'];
+
+        // 读取真实编码：容器对不代表浏览器能播（HEVC / ProRes / AC-3 常见于相机与剪辑导出）
+        $probe = $this->probe($merged);
+
+        if ($probe === null) {
+            $this->cleanTmp($dir);
+            return $this->fail('无法解析视频轨道，文件可能已损坏（容器头正常但索引缺失）');
+        }
+
+        $plan = $this->planTranscode($format, $probe);
+
+        if ($plan === 'reject') {
+            $this->cleanTmp($dir);
+            return $this->fail(sprintf(
+                '视频编码为 %s，需要转码，但时长 %s 超过自动转码上限 %s，请先在本地转成 H.264 再上传',
+                strtoupper($probe['video_codec']),
+                $this->durationText($probe['duration']),
+                $this->durationText(self::MAX_TRANSCODE_DURATION)
+            ));
+        }
 
         $ym = date('Ym');
 
@@ -252,6 +302,10 @@ class VideoUpload extends Injectable
         if (!$this->ensureDir($subDir)) {
             @unlink($merged);
             return $this->fail('媒体目录不可写，请检查 /www/media/vod 权限');
+        }
+
+        if ($plan === 'transcode') {
+            return $this->beginTranscode($dir, $merged, $meta, $probe, $format, $subDir);
         }
 
         $ext = $format === 'webm' ? 'webm' : $meta['ext'];
@@ -275,13 +329,409 @@ class VideoUpload extends Injectable
             'code' => 0,
             'msg' => '上传完成',
             'data' => [
+                'state' => 'done',
                 'url' => $url,
                 'size' => $realSize,
                 'filename' => $meta['filename'],
                 'course_id' => $courseId,
                 'format' => $format,
+                'video_codec' => $probe['video_codec'],
+                'audio_codec' => $probe['audio_codec'],
+                'duration' => $probe['duration'],
+                'duration_text' => $this->durationText($probe['duration']),
+                'width' => $probe['width'],
+                'height' => $probe['height'],
+                'transcoded' => false,
             ],
         ];
+    }
+
+    /**
+     * 启动后台转码，立即返回
+     *
+     * php-fpm 的执行时间只有 30s，500MB 视频转码需要数分钟，
+     * 因此用 setsid + nohup 把 ffmpeg 抛到后台，前端轮询 finish 接口取进度。
+     *
+     * @param string $dir 会话目录
+     * @param string $merged 合并后的源文件
+     * @param array $meta 会话元数据
+     * @param array $probe 探测结果
+     * @param string $format 容器格式
+     * @param string $subDir 归档目录
+     * @return array
+     */
+    protected function beginTranscode($dir, $merged, $meta, $probe, $format, $subDir)
+    {
+        $uploadId = $meta['upload_id'];
+
+        $courseId = (int)$meta['course_id'];
+
+        $ym = date('Ym');
+
+        $source = $dir . '/source.' . ($format === 'webm' ? 'webm' : 'mp4');
+
+        if (!@rename($merged, $source)) {
+            @unlink($merged);
+            return $this->fail('转码暂存失败，请检查磁盘空间');
+        }
+
+        $dest = $subDir . '/' . $uploadId . '.mp4';
+
+        $url = self::URL_PREFIX . $courseId . '/' . $ym . '/' . $uploadId . '.mp4';
+
+        $job = [
+            'upload_id' => $uploadId,
+            'state' => 'transcoding',
+            'source' => $source,
+            'dest' => $dest,
+            'url' => $url,
+            'duration' => $probe['duration'],
+            'video_codec' => $probe['video_codec'],
+            'audio_codec' => $probe['audio_codec'],
+            'width' => $probe['width'],
+            'height' => $probe['height'],
+            'filename' => $meta['filename'],
+            'created' => time(),
+        ];
+
+        file_put_contents($dir . '/job.json', json_encode($job, JSON_UNESCAPED_UNICODE));
+
+        // 分片已合并，先腾出空间
+        foreach (glob($dir . '/*.part') as $part) {
+            @unlink($part);
+        }
+
+        if (!$this->startTranscode($dir, $source, $dest, $probe)) {
+            $this->cleanTmp($dir);
+            return $this->fail('转码进程启动失败，请检查 ffmpeg 是否可用');
+        }
+
+        return [
+            'code' => 0,
+            'msg' => '上传完成，正在转码…',
+            'data' => [
+                'state' => 'transcoding',
+                'upload_id' => $uploadId,
+                'url' => '',
+                'percent' => 0,
+                'size' => is_file($source) ? filesize($source) : 0,
+                'filename' => $meta['filename'],
+                'course_id' => $courseId,
+                'video_codec' => $probe['video_codec'],
+                'audio_codec' => $probe['audio_codec'],
+                'duration' => $probe['duration'],
+                'duration_text' => $this->durationText($probe['duration']),
+                'width' => $probe['width'],
+                'height' => $probe['height'],
+                'transcoded' => true,
+            ],
+        ];
+    }
+
+    /**
+     * 生成并拉起转码脚本
+     *
+     * 只转视频/音频编码，容器固定为 mp4 + faststart（边下边播需要 moov 前置）。
+     *
+     * @param string $dir 会话目录
+     * @param string $source 源文件
+     * @param string $dest 目标文件
+     * @param array $probe 探测结果
+     * @return bool
+     */
+    protected function startTranscode($dir, $source, $dest, $probe)
+    {
+        $ffmpeg = escapeshellarg(self::FFMPEG);
+        $src = escapeshellarg($source);
+        $out = escapeshellarg($dir . '/out.mp4');
+        $dst = escapeshellarg($dest);
+        $rc = escapeshellarg($dir . '/rc');
+        $progress = escapeshellarg($dir . '/progress.txt');
+
+        // 只取首条视频/音频轨，避免字幕与数据轨导致 mp4 封装失败
+        $script = "#!/bin/sh\n"
+            . "cd " . escapeshellarg($dir) . " || exit 1\n"
+            . "timeout 3000 {$ffmpeg} -hide_banner -nostdin -y -i {$src} "
+            . "-map 0:v:0 -map 0:a:0? "
+            . "-c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p "
+            . "-vf \"scale='min(" . self::MAX_WIDTH . ",iw)':-2\" "
+            . "-c:a aac -b:a 128k -ac 2 "
+            . "-movflags +faststart -map_metadata -1 -f mp4 "
+            . "-progress {$progress} -nostats {$out} >> " . escapeshellarg($dir . '/run.log') . " 2>&1\n"
+            . "if [ \$? -eq 0 ] && [ -s {$out} ]; then\n"
+            . "  if mv -f {$out} {$dst}; then chmod 0664 {$dst}; rm -f {$src}; echo 0 > {$rc}; exit 0; fi\n"
+            . "fi\n"
+            . "echo 1 > {$rc}\nexit 1\n";
+
+        if (file_put_contents($dir . '/run.sh', $script) === false) {
+            return false;
+        }
+
+        @chmod($dir . '/run.sh', 0755);
+
+        exec(sprintf(
+            'setsid nohup /bin/sh %s >> %s 2>&1 < /dev/null &',
+            escapeshellarg($dir . '/run.sh'),
+            escapeshellarg($dir . '/run.out')
+        ));
+
+        // 给 ffmpeg 一点启动时间，能立刻失败（如缺少编码器）就直接报错
+        usleep(600000);
+
+        return !is_file($dir . '/rc') || trim((string)file_get_contents($dir . '/rc')) === '0';
+    }
+
+    /**
+     * 查询转码状态
+     *
+     * @param string $dir 会话目录
+     * @param array $job 任务描述
+     * @return array
+     */
+    protected function transcodeStatus($dir, $job)
+    {
+        $rcFile = $dir . '/rc';
+
+        if (is_file($rcFile)) {
+            $rc = trim((string)file_get_contents($rcFile));
+
+            if ($rc === '0' && is_file($job['dest'])) {
+                $size = filesize($job['dest']);
+                $this->cleanTmp($dir);
+                return [
+                    'code' => 0,
+                    'msg' => '转码完成',
+                    'data' => [
+                        'state' => 'done',
+                        'url' => $job['url'],
+                        'size' => $size,
+                        'filename' => $job['filename'],
+                        'video_codec' => 'h264',
+                        'audio_codec' => 'aac',
+                        'duration' => $job['duration'] ?? 0,
+                        'duration_text' => $this->durationText($job['duration'] ?? 0),
+                        'source_codec' => $job['video_codec'],
+                        'transcoded' => true,
+                        'percent' => 100,
+                    ],
+                ];
+            }
+
+            $log = (string)@file_get_contents($dir . '/run.log');
+            $tail = trim(substr($log, -400));
+            $this->cleanTmp($dir);
+
+            return $this->fail('转码失败，请检查源文件是否完整' . ($tail === '' ? '' : '：' . $tail));
+        }
+
+        $elapsed = time() - (int)($job['created'] ?? time());
+
+        if ($elapsed > 3600) {
+            $this->cleanTmp($dir);
+            return $this->fail('转码超时（超过 1 小时），已放弃该文件');
+        }
+
+        return [
+            'code' => 0,
+            'msg' => '转码中',
+            'data' => [
+                'state' => 'transcoding',
+                'upload_id' => $job['upload_id'],
+                'url' => '',
+                'percent' => $this->transcodePercent($dir, $job),
+                'elapsed' => $elapsed,
+                'source_codec' => $job['video_codec'],
+                'duration_text' => $this->durationText($job['duration'] ?? 0),
+                'transcoded' => true,
+            ],
+        ];
+    }
+
+    /**
+     * 从 ffmpeg -progress 输出解析进度百分比
+     *
+     * @param string $dir 会话目录
+     * @param array $job 任务描述
+     * @return int
+     */
+    protected function transcodePercent($dir, $job)
+    {
+        $duration = (float)($job['duration'] ?? 0);
+
+        if ($duration <= 0) {
+            return 0;
+        }
+
+        $file = $dir . '/progress.txt';
+
+        if (!is_file($file)) {
+            return 0;
+        }
+
+        $handle = @fopen($file, 'rb');
+
+        if (!$handle) {
+            return 0;
+        }
+
+        $percent = 0;
+
+        while (($line = fgets($handle)) !== false) {
+            if (strpos($line, 'out_time_ms=') === 0) {
+                $us = (int)trim(substr($line, 12));
+                if ($us > 0) {
+                    $percent = (int)floor($us / 1000000 / $duration * 100);
+                }
+            }
+        }
+
+        fclose($handle);
+
+        return max(0, min(99, $percent));
+    }
+
+    /**
+     * 读取转码任务描述
+     *
+     * @param string $dir 会话目录
+     * @return array|null
+     */
+    protected function readJob($dir)
+    {
+        $file = $dir . '/job.json';
+
+        if (!is_file($file)) {
+            return null;
+        }
+
+        $job = json_decode((string)file_get_contents($file), true);
+
+        if (!is_array($job) || empty($job['dest'])) {
+            return null;
+        }
+
+        return $job;
+    }
+
+    /**
+     * 用 ffprobe 读取容器与轨道信息
+     *
+     * @param string $path
+     * @return array|null
+     */
+    protected function probe($path)
+    {
+        if (!is_file(self::FFPROBE)) {
+            return null;
+        }
+
+        $cmd = sprintf(
+            '%s -v error -print_format json -show_format -show_streams %s 2>/dev/null',
+            escapeshellarg(self::FFPROBE),
+            escapeshellarg($path)
+        );
+
+        $raw = @shell_exec($cmd);
+
+        if (!is_string($raw) || $raw === '') {
+            return null;
+        }
+
+        $json = json_decode($raw, true);
+
+        if (!is_array($json) || empty($json['streams'])) {
+            return null;
+        }
+
+        $video = null;
+        $audio = null;
+
+        foreach ($json['streams'] as $stream) {
+            $type = $stream['codec_type'] ?? '';
+
+            // 封面图也会被当作 video 轨道，按 attached_pic 排除
+            if ($type === 'video' && $video === null && empty($stream['disposition']['attached_pic'])) {
+                $video = $stream;
+            } elseif ($type === 'audio' && $audio === null) {
+                $audio = $stream;
+            }
+        }
+
+        if ($video === null) {
+            return null;
+        }
+
+        $duration = 0.0;
+
+        if (isset($json['format']['duration'])) {
+            $duration = (float)$json['format']['duration'];
+        } elseif (isset($video['duration'])) {
+            $duration = (float)$video['duration'];
+        }
+
+        return [
+            'video_codec' => strtolower((string)($video['codec_name'] ?? '')),
+            'audio_codec' => $audio === null ? '' : strtolower((string)($audio['codec_name'] ?? '')),
+            'width' => (int)($video['width'] ?? 0),
+            'height' => (int)($video['height'] ?? 0),
+            'duration' => $duration,
+            'format_name' => (string)($json['format']['format_name'] ?? ''),
+        ];
+    }
+
+    /**
+     * 判断是否需要转码
+     *
+     * @param string $container mp4 / webm
+     * @param array $probe 探测结果
+     * @return string keep / transcode / reject
+     */
+    protected function planTranscode($container, $probe)
+    {
+        $video = $probe['video_codec'];
+        $audio = $probe['audio_codec'];
+
+        if ($container === 'webm' && in_array($video, ['vp8', 'vp9', 'av1'], true)) {
+            return 'keep';
+        }
+
+        $audioOk = $audio === '' || in_array($audio, ['aac', 'mp3'], true);
+
+        if ($video === 'h264' && $audioOk) {
+            return 'keep';
+        }
+
+        if ($probe['duration'] > self::MAX_TRANSCODE_DURATION) {
+            return 'reject';
+        }
+
+        return 'transcode';
+    }
+
+    /**
+     * 秒数转可读时长
+     */
+    protected function durationText($seconds)
+    {
+        $seconds = (int)round((float)$seconds);
+
+        if ($seconds <= 0) {
+            return '未知时长';
+        }
+
+        $h = intdiv($seconds, 3600);
+        $m = intdiv($seconds % 3600, 60);
+        $s = $seconds % 60;
+
+        if ($h > 0) {
+            return sprintf('%d 小时 %d 分', $h, $m);
+        }
+
+        if ($m > 0) {
+            return sprintf('%d 分 %d 秒', $m, $s);
+        }
+
+        return sprintf('%d 秒', $s);
     }
 
     /**

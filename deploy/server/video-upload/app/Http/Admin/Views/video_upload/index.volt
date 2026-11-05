@@ -280,7 +280,9 @@
                 courseId: 0,
                 startAt: 0,
                 aborted: false,
-                resultUrl: ''
+                resultUrl: '',
+                pollTimer: null,
+                transcodeNote: ''
             };
 
             var $drop = $('#drop-zone');
@@ -366,26 +368,71 @@
             }
 
             function failUpload(msg) {
+                stopPoll();
                 $cancel.attr('disabled', true);
                 $start.attr('disabled', false);
-                layer.msg(msg, {icon: 2, time: 5000});
+                layer.msg(msg, {icon: 2, time: 8000});
+            }
+
+            function stopPoll() {
+                if (state.pollTimer) {
+                    clearTimeout(state.pollTimer);
+                    state.pollTimer = null;
+                }
+            }
+
+            // 归档完成（转码与否都在这里收尾）
+            function doneUpload(res) {
+                stopPoll();
+                state.resultUrl = res.url;
+                $('#result-url').text(location.origin + res.url).attr('href', res.url);
+                $('#result-preview').attr('href', res.url);
+                $('#result-box').removeClass('layui-hide');
+                setProgress(100, (res.transcoded ? '转码完成' : '上传完成') + '，共 ' + fmtSize(res.size), '');
+                $cancel.attr('disabled', true);
+                $start.attr('disabled', false);
+                layer.msg(res.transcoded ? '转码完成，已生成 H.264' : '上传成功', {icon: 1});
+                loadChapters(state.courseId);
+            }
+
+            // 轮询转码进度：finish 接口在转码期间兼作状态查询
+            function pollTranscode(percent) {
+                stopPoll();
+                var text = percent > 0
+                    ? '正在转码为 H.264（源 ' + state.transcodeNote + '），已完成 ' + percent + '%，请保持页面打开…'
+                    : '正在转码为 H.264（源 ' + state.transcodeNote + '），即将开始…';
+                setProgress(percent > 0 ? percent : 2, text, '');
+                $cancel.attr('disabled', true);
+                state.pollTimer = setTimeout(function () {
+                    $.post(URLS.finish, {upload_id: state.uploadId}, function (res) {
+                        if (res.code !== 0) {
+                            return failUpload(res.msg || '转码失败');
+                        }
+                        if (res.state === 'transcoding') {
+                            return pollTranscode(res.percent || 0);
+                        }
+                        doneUpload(res);
+                    }, 'json').fail(function () {
+                        // 网络抖动不中断轮询
+                        pollTranscode(percent);
+                    });
+                }, 3000);
             }
 
             function doFinish() {
-                setProgress(100, '正在合并分片并校验…', '');
+                setProgress(100, '正在合并分片并校验编码…', '');
                 $.post(URLS.finish, {upload_id: state.uploadId}, function (res) {
                     if (res.code !== 0) {
-                        return failUpload('合并失败：' + res.msg);
+                        return failUpload(res.msg || '合并失败');
                     }
-                    state.resultUrl = res.url;
-                    $('#result-url').text(location.origin + res.url).attr('href', res.url);
-                    $('#result-preview').attr('href', res.url);
-                    $('#result-box').removeClass('layui-hide');
-                    setProgress(100, '上传完成，共 ' + fmtSize(res.size), '');
-                    $cancel.attr('disabled', true);
-                    $start.attr('disabled', false);
-                    layer.msg('上传成功', {icon: 1});
-                    loadChapters(state.courseId);
+                    if (res.state === 'transcoding') {
+                        if (!state.transcodeNote) {
+                            state.transcodeNote = (res.video_codec || '未知').toUpperCase() +
+                                (res.duration_text ? '，' + res.duration_text : '');
+                        }
+                        return pollTranscode(res.percent || 0);
+                    }
+                    doneUpload(res);
                 }, 'json').fail(function () {
                     failUpload('合并请求失败，请查看服务端日志');
                 });
@@ -479,9 +526,10 @@
 
             $cancel.on('click', function () {
                 state.aborted = true;
+                stopPoll();
                 $cancel.attr('disabled', true);
                 $start.attr('disabled', false);
-                layer.msg('已取消，未完成的分片会在 24 小时后自动清理');
+                layer.msg('已取消，未完成的分片会在 24 小时后自动清理（转码已在后台进行，不受影响）');
             });
 
             function loadChapters(courseId) {

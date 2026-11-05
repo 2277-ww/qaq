@@ -42,8 +42,17 @@ echo "=== 4. nginx 配置 ==="
 cp -f $SRC/ctc.conf /etc/nginx/conf.d/ctc.conf
 nginx -t
 
-echo "=== 5. 清理模板缓存 ==="
+echo "=== 5. 清理缓存 ==="
 rm -rf $APP/storage/cache/volt/*
+rm -rf $APP/storage/cache/annotations/*
+
+# 注解缓存在 Redis（env=pro），新增控制器后必须清理。
+# 否则首次解析失败的结果会被缓存 7 天，改代码也不会生效。
+echo "--- 清理 Redis 注解缓存 ---"
+redis-cli -n 3 keys '_PHCR_ANNOTATION_*' | while IFS= read -r k; do
+    redis-cli -n 3 del "$k" > /dev/null
+done
+echo "剩余: $(redis-cli -n 3 keys '_PHCR_ANNOTATION_*' | wc -l)"
 
 echo "=== 6. 重载服务 ==="
 systemctl reload nginx

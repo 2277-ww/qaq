@@ -1,0 +1,18 @@
+# 证书告警通道配置（ctc-cert-watch.sh 会 source 本文件）
+#
+# 企业微信群机器人：
+#   ALERT_WEBHOOK_TYPE=wecom
+#   ALERT_WEBHOOK_URL=https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxxxxxxx
+#
+# 钉钉群机器人（安全设置里必须加自定义关键词「证书」）：
+#   ALERT_WEBHOOK_TYPE=dingtalk
+#   ALERT_WEBHOOK_URL=https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxx
+#
+# Slack / 其它接受 {"text": "..."} 的地址：
+#   ALERT_WEBHOOK_TYPE=slack
+#   ALERT_WEBHOOK_URL=https://hooks.slack.com/services/xxx
+#
+# 留空则只写 /var/log/ctc/cert-watch.log，不影响续期本身。
+
+ALERT_WEBHOOK_TYPE=wecom
+ALERT_WEBHOOK_URL=
