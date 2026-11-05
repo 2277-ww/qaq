@@ -1,0 +1,13 @@
+--- .workbuddy/tmp/srv2/scheduler.php	2026-11-05 22:40:46.444131600 +0800
++++ .workbuddy/tmp/work2/scheduler.php	2026-11-05 22:44:10.373045900 +0800
+@@ -27,6 +27,10 @@
+ $scheduler->php($script, $bin, ['--task' => 'exam_sync', '--action' => 'main'])
+     ->everyMinute(3);
+ 
++// 跨平台进度对账：每天补一次推送缺口（方案 C 兜底）
++$scheduler->php($script, $bin, ['--task' => 'peer_reconcile', '--action' => 'main'])
++    ->daily(3, 47);
++
+ $scheduler->php($script, $bin, ['--task' => 'teacher_live_notice', '--action' => 'consume'])
+     ->everyMinute(9);
+ 

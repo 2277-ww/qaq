@@ -1,0 +1,175 @@
+--- .workbuddy/tmp/srv2/app/Services/Logic/Learning/Sync.php	2026-11-05 22:40:45.631064800 +0800
++++ .workbuddy/tmp/work2/app/Services/Logic/Learning/Sync.php	2026-11-05 22:45:30.156801900 +0800
+@@ -9,6 +9,9 @@
+  * 投递走统一网关，退避间隔与死信规则对齐接入说明 8.4：
+  * 1s / 5s / 30s / 2min / 10min / 1h，第 6 次仍失败转死信；
+  * 4xx 属契约错误，不重试，直接置死信并告警。
++ *
++ * 多对端：一条发送记录带 target，投递时按 target 取路径与白名单；
++ * 未启用的对端跳过（保留待发状态），启用后自动补发，不丢事件。
+  */
+ 
+ namespace App\Services\Logic\Learning;
+@@ -20,6 +23,7 @@
+ use App\Repos\ExamOutbox as ExamOutboxRepo;
+ use App\Services\Learning\Collect as CollectService;
+ use App\Services\Learning\Gateway as GatewayService;
++use App\Services\Learning\Peers as PeersService;
+ use App\Services\Logic\Service as LogicService;
+ 
+ class Sync extends LogicService
+@@ -45,10 +49,26 @@
+ 
+         $result['queued'] = $queued;
+ 
++        $result['note'] = $this->policyNote($queued);
++
+         return $result;
+     }
+ 
+     /**
++     * 没有新事件入箱时给出原因，避免使用者误以为推送失效
++     *
++     * @param int $queued
++     * @return string
++     */
++    protected function policyNote($queued)
++    {
++        if ($queued > 0) return '';
++
++        return '当前是进度中间态：不在跨平台事件目录内，由考试平台回源 '
++            . 'GET /api/v1/learning/progress 查询；课程首次完成时才推送 course.completed。';
++    }
++
++    /**
+      * 同步单门课程
+      *
+      * @param int $courseId
+@@ -68,6 +88,8 @@
+ 
+         $result['queued'] = $queued;
+ 
++        $result['note'] = $this->policyNote($queued);
++
+         return $result;
+     }
+ 
+@@ -167,15 +189,15 @@
+      * @param int $limit
+      * @return array
+      */
+-    public function flush($userId = 0, $limit = 200)
++    public function flush($userId = 0, $limit = 200, $target = '')
+     {
+         $repo = new ExamOutboxRepo();
+ 
+         $gateway = new GatewayService();
+ 
+-        $events = $repo->findDue($limit, $userId);
++        $registry = new PeersService();
+ 
+-        $path = (string)$this->getConfig()->path('exam.push_path', '/api/v1/exam/learning/progress');
++        $events = $repo->findDue($limit, $userId, $target);
+ 
+         $maxRetry = (int)$this->getConfig()->path('exam.retry_max', 6);
+ 
+@@ -183,15 +205,28 @@
+         $failed = 0;
+         $dead = 0;
+ 
++        $byPeer = [];
++
+         if ($events) {
+ 
+             foreach ($events as $event) {
+ 
++                $peerKey = (string)$event->target;
++
++                if ($peerKey === '') $peerKey = 'exam';
++
++                /**
++                 * 未启用的对端不投递、也不算失败：事件留在待发状态，
++                 * 对端启用后由下一轮定时器自动补发。
++                 */
++                if (!$registry->isEnabled($peerKey)) continue;
++
+                 $error = '';
+                 $code = 0;
+ 
+-                $ok = $gateway->send(
+-                    $path,
++                $ok = $gateway->sendEvent(
++                    $peerKey,
++                    (string)$event->event_type,
+                     $event->getPayloadArray(),
+                     $event->event_id,
+                     $event->request_id,
+@@ -211,6 +246,8 @@
+ 
+                     $sent++;
+ 
++                    $byPeer[$peerKey] = ($byPeer[$peerKey] ?? 0) + 1;
++
+                 } else {
+ 
+                     $event->retry_count = (int)$event->retry_count + 1;
+@@ -250,12 +287,49 @@
+             'sent' => $sent,
+             'failed' => $failed,
+             'dead' => $dead,
++            'byPeer' => $byPeer,
+             'mode' => $gateway->getMode(),
+             'endpoint' => $gateway->getEndpoint(),
+         ];
+     }
+ 
+     /**
++     * 各对端投递统计（页面与接口共用）
++     *
++     * @param int $userId
++     * @return array
++     */
++    public function peerStats($userId = 0)
++    {
++        $repo = new ExamOutboxRepo();
++
++        $registry = new PeersService();
++
++        $result = [];
++
++        foreach ($registry->all() as $key => $peer) {
++
++            $lastSent = $repo->findLastSentTime($userId, $key);
++
++            $result[] = [
++                'peer' => $key,
++                'name' => $peer['name'],
++                'enabled' => $peer['enabled'],
++                'events' => $peer['events'],
++                'extensions' => $peer['extensions'],
++                'endpoint' => $peer['enabled'] ? $registry->endpoint($key) : '',
++                'pending' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_PENDING, $key),
++                'sent' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_SENT, $key),
++                'failed' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_FAILED, $key),
++                'dead' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_DEAD, $key),
++                'last_sent_text' => $lastSent > 0 ? date('Y-m-d H:i', $lastSent) : '暂无',
++            ];
++        }
++
++        return $result;
++    }
++
++    /**
+      * 同步统计（页面与接口共用）
+      *
+      * @param int $userId 0 表示全部用户
+@@ -278,7 +352,8 @@
+             'last_sent_text' => $lastSent > 0 ? date('Y-m-d H:i', $lastSent) : '暂无',
+             'mode' => $gateway->getMode(),
+             'endpoint' => $gateway->getEndpoint(),
+-            'enabled' => (bool)$this->getConfig()->path('exam.enabled', true),
++            'enabled' => (new PeersService())->isEnabled('exam'),
++            'peers' => $this->peerStats($userId),
+         ];
+     }
+ 

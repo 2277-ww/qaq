@@ -1,0 +1,1043 @@
+diff --git a/repro/src/course-tencent-cloud-master/app/Http/Api/Controllers/LearningController.php b/repro/src/course-tencent-cloud-master/app/Http/Api/Controllers/LearningController.php
+index 6c749bf..8c4f0f5 100644
+--- a/repro/src/course-tencent-cloud-master/app/Http/Api/Controllers/LearningController.php
++++ b/repro/src/course-tencent-cloud-master/app/Http/Api/Controllers/LearningController.php
+@@ -12,16 +12,52 @@
+  *   POST /api/v1/learning/progress/push                  触发进度推送（服务态）
+  *   GET  /api/v1/learning/sync/{eventId}                 查询单条推送状态
+  *
++ * 预留（实训平台 / 论坛平台对接）：
++ *   GET  /api/v1/learning/peers                          能力发现：对端、事件类型、路径
++ *   POST /api/v1/learning/internal/peers/{source}/events          接收对端回传事件（服务态）
++ *   GET  /api/v1/learning/internal/peers/{source}/events/{eventId} 查询回传事件受理状态
++ *
++ * 预留（考试平台对接，双向）：
++ *   POST /api/v1/learning/internal/peers/{source}/receipts        接收投递回执（服务态）
++ *   GET  /api/v1/learning/internal/peers/{source}/pull            按游标增量拉取（服务态）
++ *   POST /api/v1/learning/internal/peers/{source}/replay          失败事件重放（服务态，需 Idempotency-Key）
++ *   GET  /api/v1/learning/internal/peers/{source}/handshake       对接握手：契约版本、鉴权要求、能力清单
++ *   GET  /api/v1/learning/internal/peers/{source}/students/{userId}/progress      服务态查学习进度
++ *   GET  /api/v1/learning/internal/peers/{source}/students/{userId}/completion/{courseId}  服务态查准入判定
++ *
++ * 鉴权三条通道（按可信度从高到低）：
++ * 1) 用户态：统一网关注入 X-User-Id / X-Auth-Mode / X-Timestamp / X-Internal-Sign，
++ *    按 gateway.verify_sign 校验签名，身份即该用户；
++ * 2) 网关服务态：网关 L2 验过对端 AppKey 后注入 X-Auth-Mode=service，
++ *    没有 X-App-Code，对端身份由路径里的 {source} 决定，只能读该通道开放的能力；
++ * 3) 对端直连态：对端自带 X-App-Code + X-Request-Id + X-Timestamp + X-Internal-Sign，
++ *    按 peers.<对端>.auth_mode 校验（signature / token / none），身份只限自己的通道。
++ *    用于对端与网关同机直连、或尚未过网关的联调阶段。
++ *
++ * 注意 2 与 3 的签名规范不同，但都写在 X-Internal-Sign 这个头名上：
++ *   网关服务态 —— 七字段（user/role/client/tokenExp/requestId/authMode/timestamp）
++ *   对端直连态 —— 四字段（appCode / requestId / timestamp / sha256(body)）
++ * 区分依据是 X-Auth-Mode：网关一定注入该头且值为 service（L2）或 user（L1），
++ * 因此服务态分支优先于 X-App-Code 判定。对端经网关调用时即使多带一个
++ * X-App-Code 也不会被误判成直连态，但建议不带，避免排障时两条链路混淆。
++ *
+  * 约定：
+- * 1) 只信任网关注入的可信头，且按 gateway.verify_sign 校验 X-Internal-Sign；
+- * 2) 响应体统一 {code, message, data, requestId}，code 为字符串业务码；
+- * 3) 写操作必须带 Idempotency-Key。
++ * 1) 响应体统一 {code, message, data, requestId}，code 为字符串业务码；
++ * 2) 写操作必须带 Idempotency-Key。
+  */
+ 
+ namespace App\Http\Api\Controllers;
+ 
+ use App\Exceptions\BadRequest as BadRequestException;
++use App\Services\Learning\Gateway;
++use App\Services\Learning\GatewaySign;
+ use App\Services\Learning\IdentityKey;
++use App\Services\Learning\Inbox as InboxService;
++use App\Services\Learning\PeerAuth;
++use App\Services\Learning\Peers as PeersService;
++use App\Services\Learning\Pull as PullService;
++use App\Services\Learning\Receipt as ReceiptService;
++use App\Services\Learning\Replay as ReplayService;
+ use App\Services\Learning\TrustedHeader;
+ use App\Services\Logic\Learning\Progress as ProgressService;
+ use App\Services\Logic\Learning\Sync as SyncService;
+@@ -43,22 +79,145 @@ class LearningController extends Controller
+     {
+         parent::beforeExecuteRoute($dispatcher);
+ 
+-        $service = new TrustedHeader();
++        if ((string)$dispatcher->getActionName() === 'unauthorized') return true;
+ 
+-        $trusted = $service->verify();
++        $trusted = (new TrustedHeader())->verify();
+ 
+         $this->trusted = $trusted;
+ 
+-        if (!$trusted['ok']) {
+-            $message = $trusted['error'] == 'bad_signature'
+-                ? '请求签名校验失败' : '网关身份头校验失败';
++        /**
++         * 带用户身份的网关调用优先：这类请求已经过统一身份认证，
++         * 对端服务态鉴权只用于「没有用户」的机器调用。
++         */
++        if ($trusted['ok'] && $trusted['userId'] !== '') {
++            return true;
++        }
++
++        /**
++         * 网关服务态（L2）：网关验过对端 AppKey 后注入 X-Auth-Mode=service。
++         *
++         * 这类请求没有用户身份，也没有 X-App-Code——网关只把七头加内部签名
++         * 转给上游，不透传 AppKey。因此对端身份由 URL 里的 {source} 决定，
++         * 由 peerGuard 校验该通道是否登记、能力是否开通。
++         *
++         * 安全性依据：走到这里说明 TrustedHeader 已按 gateway.verify_sign
++         * 校验过内部签名，伪造一个 X-Auth-Mode 头无法通过。
++         *
++         * 注意 message 中的 mode 与直连对端（peer）区分开：前者对端未知、
++         * 只受通道约束；后者已由 X-App-Code 认到具体对端，必须收紧到自己的通道。
++         */
++        if ($trusted['ok'] && $trusted['mode'] === 'service') {
++
++            $this->trusted['mode'] = 'peer-service';
++
++            $this->trusted['peer'] = '';
++
++            return true;
++        }
++
++        $peer = (new PeerAuth())->authenticate();
++
++        if ($peer['ok']) {
++
++            $this->trusted = [
++                'ok' => true,
++                'error' => '',
++                'userId' => '',
++                'roles' => [],
++                'mode' => 'peer',
++                'peer' => $peer['peer'],
++                'authMode' => $peer['authMode'],
++                'verified' => $peer['verified'],
++                'requestId' => $peer['requestId'],
++                'tokenExp' => 0,
++                'clientId' => $peer['clientId'],
++            ];
++
++            return true;
++        }
+ 
+-            $this->sendEnvelope('AUTH_REQUIRED', $message, $trusted['requestId'], 401);
++        /**
++         * 握手与能力发现免鉴权：对端接入前还没拿到密钥，只能先读契约；
++         * 两者都不返回任何学生数据。
++         *
++         * 这里按请求路径判断，不用 dispatcher 的 action 名——action 会受
++         * camelize / 后缀 / 命名风格配置影响，一旦取值变化就会把握手挡在
++         * 鉴权外面，对端反而拿不到签名规范。
++         */
++        $path = (string)parse_url((string)$this->request->getURI(), PHP_URL_PATH);
++
++        $open = (bool)preg_match(
++            '#^/api/v1/learning/(internal/)?peers(/[A-Za-z0-9_\-]+/handshake)?$#',
++            $path
++        );
++
++        if ($open) return true;
++
++        /**
++         * 未接入网关的复现环境：TrustedHeader 已放行但没有用户身份，
++         * 按本机调用处理（便于本地联调与运维脚本），生产环境应开启 verify_sign。
++         *
++         * 但请求一旦声明了 X-App-Code，就必须通过对端鉴权——否则随便填一个
++         * 编码就能绕过校验，等于没有鉴权。
++         */
++        if ($trusted['ok'] && $peer['appCode'] === '') {
++
++            $this->trusted['mode'] = 'local';
++
++            return true;
++        }
++
++        $map = [
++            'bad_signature' => '请求签名校验失败',
++            'missing_signature' => '缺少 X-Internal-Sign',
++            'missing_request_id' => '缺少 X-Request-Id（参与签名）',
++            'missing_app_code' => '缺少 X-App-Code，无法识别调用方',
++            'unknown_app_code' => 'X-App-Code 未注册',
++            'peer_disabled' => '该对端通道未启用',
++            'bad_token' => '对端令牌校验失败',
++            'missing_timestamp' => '缺少 X-Timestamp',
++            'timestamp_expired' => '请求时间戳超出允许窗口',
++            'secret_not_configured' => '对端密钥未配置，无法校验签名',
++            'token_not_configured' => '对端令牌未配置，无法校验',
++        ];
+ 
+-            return false;
++        $message = $map[$peer['error']] ?? '网关身份头校验失败';
++
++        /**
++         * 在 beforeExecuteRoute 里中断 dispatch 时，框架不会把 response 送出去。
++         * 这里 forward 到统一的未授权动作，走正常动作返回流程，
++         * 保证调用方拿到完整契约错误体（只有状态码对对接方毫无帮助）。
++         */
++        $dispatcher->forward([
++            'controller' => 'learning',
++            'action' => 'unauthorized',
++            'params' => [$message],
++        ]);
++
++        return false;
++    }
++
++    /**
++     * 统一未授权响应（由 beforeExecuteRoute forward 进入）
++     *
++     * 注意：不注册路由注解，避免对外多开一个入口；forward 不需要路由。
++     *
++     * @param string $message
++     * @return \Phalcon\Http\Response
++     */
++    public function unauthorizedAction($message = '网关身份头校验失败')
++    {
++        /**
++         * forward 会重新进入 dispatch，此时 $this->trusted 可能已被重置，
++         * 请求编号直接从请求头取，没有再生成一个，保证与调用方手里的值一致。
++         */
++        $requestId = trim((string)$this->request->getHeader('X-Request-Id'));
++
++        if ($requestId === '') {
++            $requestId = (new Gateway())->makeRequestId();
+         }
+ 
+-        return true;
++        return $this->sendEnvelope('AUTH_REQUIRED', (string)$message, $requestId, 401);
+     }
+ 
+     /**
+@@ -103,6 +262,377 @@ class LearningController extends Controller
+         });
+     }
+ 
++    /**
++     * 能力发现：对端接入前自检用
++     *
++     * @Get("/peers", name="api.learning.peers")
++     */
++    public function peersAction()
++    {
++        $registry = new PeersService();
++
++        return $this->ok([
++            'peers' => $registry->describe(),
++            'catalog' => PeersService::CATALOG,
++            'generatedAt' => gmdate('Y-m-d\TH:i:s\Z'),
++        ]);
++    }
++
++    /**
++     * 对接握手：对端接入的第一步，拿契约版本、鉴权要求、能力清单与路径
++     *
++     * 免鉴权，但不返回任何学生数据。对端可用它自检「我的 appCode 配对了没」
++     * 「我该签哪个串」「哪条能力还没对我开通」，避免双方靠猜路径联调。
++     *
++     * @Get("/peers/{source}/handshake", name="api.learning.peer_handshake")
++     */
++    public function peerHandshakeAction($source)
++    {
++        $registry = new PeersService();
++
++        $peer = $registry->get($source);
++
++        $appCode = trim((string)$this->request->getHeader('X-App-Code'));
++
++        $resolved = $registry->findByAppCode($appCode);
++
++        $auth = new PeerAuth();
++
++        $authMode = $registry->authMode($source);
++
++        $prefix = '/api/v1/learning/internal/peers/' . $source;
++
++        return $this->ok([
++            'contract' => 'learning-progress/1.0',
++            'peer' => (string)$source,
++            'peerName' => $peer['name'],
++            'peerEnabled' => $peer['enabled'],
++            'serverTime' => gmdate('Y-m-d\TH:i:s\Z'),
++            'timestamp' => time(),
++            'timezone' => 'UTC',
++            'declaredAppCode' => $appCode,
++            'appCodeMatched' => $resolved !== '' && $resolved === (string)$source,
++            'auth' => [
++                'mode' => $authMode,
++                'upgradable' => $authMode === 'none',
++                'headers' => ['X-App-Code', 'X-Request-Id', 'X-Timestamp', 'X-Internal-Sign'],
++                'signature' => [
++                    'algorithm' => 'HMAC-SHA256',
++                    'output' => 'hex-lowercase',
++                    'secretRef' => 'peers.' . $source . '.secret',
++                    'canonical' => $auth->canonicalPattern(),
++                    'skewSeconds' => $auth->skewSeconds(),
++                ],
++                'token' => [
++                    'header' => 'Authorization: Bearer <token>',
++                    'alternative' => 'X-Api-Key: <token>',
++                    'enabled' => $authMode === 'token',
++                ],
++            ],
++            'catalog' => PeersService::CATALOG,
++            /**
++             * 经统一网关调用本平台的入口规范
++             *
++             * 对端在本平台「上游」位置时，请求必须先过网关。网关对机器调用
++             * 只认 L2 签名，本平台自建的 X-App-Code 那套到不了这一层；
++             * 网关验完后会剥离 L2 头、重算七字段 X-Internal-Sign 注入本平台，
++             * 所以对端只需要签 L2，本平台验的是网关重算结果。
++             */
++            'gatewayEntry' => [
++                'baseUri' => (new Gateway())->getBaseUri(),
++                'route' => '/api/v1/learning/*',
++                'note' => '服务态调用走网关 L2；learning-internal 配额为 200 QPS/AppKey',
++                'l2' => [
++                    'enabled' => (new GatewaySign())->isEnabled($source),
++                    'appKey' => (new GatewaySign())->appKey($source),
++                    'headers' => GatewaySign::HEADERS,
++                    'algorithm' => GatewaySign::ALG,
++                    'canonical' => (new GatewaySign())->canonicalPattern(),
++                    'skewSeconds' => (int)$this->getConfig()->path('gateway.timestamp_skew', 300),
++                    'nonceTtlSeconds' => 600,
++                    'queryRule' => '按 (key, value) 字典序排序后重新编码，空格编码为 "+"',
++                    'errors' => GatewaySign::ERRORS,
++                ],
++                'upstreamSignature' => [
++                    'header' => 'X-Internal-Sign',
++                    'algorithm' => 'HMAC-SHA256',
++                    'note' => '网关重算后注入，对端无需自行生成；本平台按 gateway.verify_sign 校验',
++                ],
++            ],
++            'outboundReady' => (new Gateway())->isConfigured($source),
++            'notice' => (new Gateway())->isConfigured($source)
++                ? '' : '本平台尚未配置该对端网关地址，进度事件只入箱、暂不外发；配好 base_uri 后自动补发',
++            'capabilities' => [
++                'push' => [
++                    'enabled' => $peer['enabled'],
++                    'path' => $peer['push_path'],
++                    'endpoint' => $peer['enabled'] ? $registry->endpoint($source) : '',
++                    'mode' => (new Gateway())->getMode($source),
++                    'events' => $peer['events'],
++                    'idempotencyKey' => 'eventId',
++                ],
++                'receipts' => [
++                    'enabled' => $peer['ack'],
++                    'path' => $peer['ack'] ? $prefix . '/receipts' : '',
++                    'eventTypes' => $peer['ack'] ? [(new ReceiptService())->ackEventType($source)] : [],
++                ],
++                'pull' => [
++                    'enabled' => $peer['pull'],
++                    'path' => $peer['pull'] ? $prefix . '/pull' : '',
++                    'limit' => $peer['pull'] ? (int)$peer['pull_limit'] : 0,
++                    'cursor' => 'afterId',
++                ],
++                'replay' => [
++                    'enabled' => $peer['replay'],
++                    'path' => $peer['replay'] ? $prefix . '/replay' : '',
++                    'requiredHeader' => 'Idempotency-Key',
++                ],
++                'query' => [
++                    'enabled' => $peer['query'],
++                    'progressPath' => $peer['query'] ? $prefix . '/students/{userId}/progress' : '',
++                    'completionPath' => $peer['query'] ? $prefix . '/students/{userId}/completion/{courseId}' : '',
++                ],
++                'eventStatus' => [
++                    'path' => $prefix . '/events/{eventId}',
++                ],
++                'inboundEvents' => $registry->inboundEvents($source),
++            ],
++            'envelope' => [
++                'eventId' => 'evt_0123456789ABCDEF',
++                'eventType' => 'course.completed',
++                'eventVersion' => '1.0',
++                'occurredAt' => '2026-11-05T10:00:00Z',
++                'sourcePlatform' => 'learning',
++                'sourceEntityId' => 'course_2',
++                'actorId' => 'usr_10000',
++                'correlationId' => '',
++                'requestId' => 'req_0123456789ABCDEF',
++                'data' => [
++                    'userId' => 'usr_10000',
++                    'courseId' => 'course_2',
++                    'progress' => 100,
++                    'completed' => true,
++                ],
++            ],
++        ]);
++    }
++
++    /**
++     * 服务态查询单个学生的学习进度（考试平台开放随堂测试用）
++     *
++     * @Get("/peers/{source}/students/{userId:[A-Za-z0-9_\-]+}/progress", name="api.learning.peer_student_progress")
++     */
++    public function peerStudentProgressAction($source, $userId)
++    {
++        if ($guard = $this->peerGuard($source, 'query')) return $guard;
++
++        $service = new ProgressService();
++
++        return $this->respond(function () use ($service, $userId) {
++            return $service->snapshot($this->resolveUserId($userId));
++        });
++    }
++
++    /**
++     * 服务态查询准入判定（考试平台开考前回源）
++     *
++     * @Get("/peers/{source}/students/{userId:[A-Za-z0-9_\-]+}/completion/{courseId:[0-9]+}", name="api.learning.peer_student_completion")
++     */
++    public function peerStudentCompletionAction($source, $userId, $courseId)
++    {
++        if ($guard = $this->peerGuard($source, 'query')) return $guard;
++
++        $service = new ProgressService();
++
++        return $this->respond(function () use ($service, $userId, $courseId) {
++            return $service->completion($this->resolveUserId($userId), (int)$courseId);
++        });
++    }
++
++    /**
++     * 接收对端回传的事件（实训平台 / 论坛平台）
++     *
++     * @Post("/peers/{source}/events", name="api.learning.peer_event")
++     */
++    public function peerEventAction($source)
++    {
++        if ($guard = $this->peerGuard($source)) return $guard;
++
++        $body = $this->request->getJsonRawBody(true);
++
++        if (!is_array($body) || count($body) == 0) {
++            return $this->fail('VALIDATION_ERROR', '请求体必须是事件封套 JSON', 400);
++        }
++
++        $service = new InboxService();
++
++        $result = $service->accept((string)$source, $body, $this->trusted['requestId']);
++
++        if (!$result['ok']) {
++
++            $map = ['PEER_NOT_OPEN' => 403, 'EVENT_NOT_ALLOWED' => 422];
++
++            $status = $map[$result['code']] ?? 400;
++
++            return $this->fail($result['code'], $result['message'], $status);
++        }
++
++        return $this->sendEnvelope('OK', $result['message'], $this->trusted['requestId'], 202, [
++            'status' => $result['status'],
++            'inboxId' => $result['inboxId'],
++            'eventId' => $result['eventId'],
++        ]);
++    }
++
++    /**
++     * 查询回传事件受理状态
++     *
++     * @Get("/peers/{source}/events/{eventId}", name="api.learning.peer_event_status")
++     */
++    public function peerEventStatusAction($source, $eventId)
++    {
++        if ($guard = $this->peerGuard($source)) return $guard;
++
++        $service = new InboxService();
++
++        $row = $service->status((string)$source, (string)$eventId);
++
++        if (!$row) {
++            return $this->fail('NOT_FOUND', '该事件未受理', 404);
++        }
++
++        return $this->ok([
++            'source' => $row->source,
++            'eventId' => $row->event_id,
++            'eventType' => $row->event_type,
++            'eventVersion' => $row->event_version,
++            'status' => (int)$row->status,
++            'statusText' => $row->getStatusText(),
++            'receivedAt' => gmdate('Y-m-d\TH:i:s\Z', (int)$row->received_at),
++            'processedAt' => $row->processed_at > 0 ? gmdate('Y-m-d\TH:i:s\Z', (int)$row->processed_at) : null,
++        ]);
++    }
++
++    /**
++     * 接收对端投递回执（考试平台确认已入库）
++     *
++     * @Post("/peers/{source}/receipts", name="api.learning.peer_receipt")
++     */
++    public function peerReceiptAction($source)
++    {
++        if ($guard = $this->peerGuard($source)) return $guard;
++
++        $body = $this->request->getJsonRawBody(true);
++
++        if (!is_array($body) || count($body) == 0) {
++            return $this->fail('VALIDATION_ERROR', '请求体必须是事件封套 JSON', 400);
++        }
++
++        $service = new ReceiptService();
++
++        $result = $service->apply((string)$source, $body, $this->trusted['requestId']);
++
++        if (!$result['ok']) {
++
++            $map = [
++                'RECEIPT_NOT_OPEN' => 403,
++                'EVENT_NOT_ALLOWED' => 422,
++                'TARGET_EVENT_NOT_FOUND' => 422,
++            ];
++
++            $status = $map[$result['code']] ?? 400;
++
++            return $this->fail($result['code'], $result['message'], $status);
++        }
++
++        return $this->sendEnvelope('OK', $result['message'], $this->trusted['requestId'], 202, $result['data']);
++    }
++
++    /**
++     * 对端增量拉取（考试平台补漏推）
++     *
++     * @Get("/peers/{source}/pull", name="api.learning.peer_pull")
++     */
++    public function peerPullAction($source)
++    {
++        if ($guard = $this->peerGuard($source)) return $guard;
++
++        $userId = trim((string)$this->request->getQuery('userId', 'string', ''));
++
++        if ($userId === '') {
++            return $this->fail('VALIDATION_ERROR', '缺少 userId', 400);
++        }
++
++        $afterId = (int)$this->request->getQuery('afterId', 'int', 0);
++
++        $limit = (int)$this->request->getQuery('limit', 'int', 0);
++
++        $since = 0;
++
++        $sinceRaw = trim((string)$this->request->getQuery('since', 'string', ''));
++
++        if ($sinceRaw !== '') {
++            $since = (int)strtotime($sinceRaw);
++            if ($since <= 0) {
++                return $this->fail('VALIDATION_ERROR', 'since 需为 ISO8601 时间，如 2026-11-05T00:00:00Z', 400);
++            }
++        }
++
++        $service = new PullService();
++
++        $result = $service->events((string)$source, $userId, $afterId, $since, $limit);
++
++        if (!$result['ok']) {
++
++            $map = ['PULL_NOT_OPEN' => 403];
++
++            $status = $map[$result['code']] ?? 400;
++
++            return $this->fail($result['code'], $result['message'], $status);
++        }
++
++        return $this->ok($result['data']);
++    }
++
++    /**
++     * 失败事件重放（对账后重推）
++     *
++     * @Post("/peers/{source}/replay", name="api.learning.peer_replay")
++     */
++    public function peerReplayAction($source)
++    {
++        if ($guard = $this->peerGuard($source)) return $guard;
++
++        $idempotencyKey = trim((string)$this->request->getHeader('Idempotency-Key'));
++
++        if ($idempotencyKey === '') {
++            return $this->fail('VALIDATION_ERROR', '缺少 Idempotency-Key', 400);
++        }
++
++        $body = $this->request->getJsonRawBody(true);
++
++        if (!is_array($body)) {
++            $body = [];
++        }
++
++        $service = new ReplayService();
++
++        $result = $service->apply((string)$source, $body);
++
++        if (!$result['ok']) {
++
++            $map = ['REPLAY_NOT_OPEN' => 403];
++
++            $status = $map[$result['code']] ?? 400;
++
++            return $this->fail($result['code'], $result['message'], $status);
++        }
++
++        $result['data']['idempotencyKey'] = $idempotencyKey;
++
++        return $this->ok($result['data']);
++    }
++
+     /**
+      * @Post("/progress/push", name="api.learning.progress_push")
+      */
+@@ -169,6 +699,10 @@ class LearningController extends Controller
+             'retryCount' => (int)$event->retry_count,
+             'responseCode' => (int)$event->response_code,
+             'lastError' => (string)$event->last_error,
++            'acked' => $event->isAcked(),
++            'ackStatus' => (string)$event->ack_status,
++            'remoteId' => (string)$event->remote_id,
++            'ackedAt' => $event->acked_at > 0 ? gmdate('Y-m-d\TH:i:s\Z', (int)$event->acked_at) : null,
+             'occurredAt' => gmdate('Y-m-d\TH:i:s\Z', (int)$event->occurred_at),
+             'sentAt' => $event->sent_at > 0 ? gmdate('Y-m-d\TH:i:s\Z', (int)$event->sent_at) : null,
+         ];
+@@ -193,12 +727,70 @@ class LearningController extends Controller
+     }
+ 
+     /**
+-     * 服务态可读任意用户；用户态只能读自己
++     * 对端通道守卫
++     *
++     * 1) 服务态身份只能访问自己的通道——否则拿到考试平台密钥的一方
++     *    就能读实训、论坛的数据；
++     * 2) 指定的能力未开通时直接拒绝，避免对端在通道未启用时误以为调用成功。
++     *
++     * @param string $source
++     * @param string $ability ack|pull|replay|query
++     * @return \Phalcon\Http\Response|null
++     */
++    protected function peerGuard($source, $ability = '')
++    {
++        $registry = new PeersService();
++
++        if (!$registry->exists($source)) {
++            return $this->fail('PEER_NOT_FOUND', '该对端未在平台登记', 404);
++        }
++
++        $mode = (string)($this->trusted['mode'] ?? '');
++
++        if ($mode === 'peer' && (string)($this->trusted['peer'] ?? '') !== (string)$source) {
++            return $this->fail('PEER_SCOPE_DENIED', '对端只能访问自己的通道', 403);
++        }
++
++        /**
++         * 网关服务态的对端归属收紧
++         *
++         * 当前网关版本不把 AppKey 转给上游，因此服务态调用只能靠路径认通道，
++         * 理论上一家对端可以读另一家的通道——前提是它知道路径且对方通道已开通。
++         *
++         * 一旦网关侧补上 proxy-rewrite 注入 X-App-Key（不改路径，仍满足
++         * 「路径不重写」约束），该分支会自动生效，把服务态调用钉回自己的通道，
++         * 本平台无需再改代码。
++         */
++        if ($mode === 'peer-service') {
++
++            $appKey = trim((string)$this->request->getHeader('X-App-Key'));
++
++            $expect = (string)$registry->get($source)['app_key'];
++
++            if ($appKey !== '' && $expect !== '' && !hash_equals($expect, $appKey)) {
++
++                return $this->fail('PEER_SCOPE_DENIED', '该应用凭据无权访问此对端通道', 403);
++            }
++        }
++
++        if ($ability !== '' && !$registry->hasAbility($source, $ability)) {
++            return $this->fail(strtoupper($ability) . '_NOT_OPEN', '该对端通道未开通此能力', 403);
++        }
++
++        return null;
++    }
++
++    /**
++     * 服务态可读任意用户；用户态只能读自己；对端服务态只能走 peers 通道
+      *
+      * @param string $userKey
+      */
+     protected function assertReadable($userKey)
+     {
++        if (($this->trusted['mode'] ?? '') === 'peer') {
++            throw new \App\Exceptions\Forbidden('sys.forbidden');
++        }
++
+         if (!$this->trusted['verified']) return;
+ 
+         if ($this->trusted['mode'] === 'service') return;
+diff --git a/repro/src/course-tencent-cloud-master/app/Services/Learning/Gateway.php b/repro/src/course-tencent-cloud-master/app/Services/Learning/Gateway.php
+index 7647f02..317f80a 100644
+--- a/repro/src/course-tencent-cloud-master/app/Services/Learning/Gateway.php
++++ b/repro/src/course-tencent-cloud-master/app/Services/Learning/Gateway.php
+@@ -22,45 +22,114 @@ class Gateway extends Service
+     /**
+      * 网关入口根地址，留空表示未接入（本地直连模式）
+      *
++     * @param string $peer 对端标识；传空取全局配置
+      * @return string
+      */
+-    public function getBaseUri()
++    public function getBaseUri($peer = '')
+     {
++        if ($peer !== '') {
++            return (new Peers())->baseUri($peer);
++        }
++
+         return rtrim((string)$this->getConfig()->path('gateway.base_uri', ''), '/');
+     }
+ 
+     /**
+      * 投递模式
+      *
++     * 按对端判断：统一网关若按平台分片，不同对端可能一个已接入、一个还在本地模式。
++     *
++     * @param string $peer
+      * @return string gateway|local
+      */
+-    public function getMode()
++    public function getMode($peer = '')
+     {
+-        return $this->getBaseUri() === '' ? 'local' : 'gateway';
++        return $this->getBaseUri($peer) === '' ? 'local' : 'gateway';
+     }
+ 
+     /**
+      * 是否已配置网关
+      *
++     * @param string $peer
+      * @return bool
+      */
+-    public function isConfigured()
++    public function isConfigured($peer = '')
+     {
+-        return $this->getMode() === 'gateway';
++        return $this->getMode($peer) === 'gateway';
+     }
+ 
+     /**
+      * 完整投递地址（便于页面展示）
+      *
++     * @param string $peer
+      * @return string
+      */
+-    public function getEndpoint()
++    public function getEndpoint($peer = 'exam')
++    {
++        return (new Peers())->endpoint($peer);
++    }
++
++    /**
++     * 取对端对应的 X-App-Code
++     *
++     * @param string $peer
++     * @return string
++     */
++    public function getAppCode($peer = '')
++    {
++        $fallback = (string)$this->getConfig()->path('gateway.app_code', 'learning');
++
++        if ($peer === '') return $fallback;
++
++        $config = (new Peers())->get($peer);
++
++        return $config['app_code'] !== '' ? $config['app_code'] : $fallback;
++    }
++
++    /**
++     * 按对端投递一条事件
++     *
++     * 路径、App-Code 全部来自对端注册表，新增实训/论坛平台时无需改这里。
++     *
++     * @param string $peer 对端标识（exam|training|forum）
++     * @param string $eventType 事件类型（决定走正式通道还是扩展通道）
++     * @param array $payload 事件封套
++     * @param string $idempotencyKey 幂等键
++     * @param string $requestId 请求编号
++     * @param string $actorKey 操作者对外主键
++     * @param string $error 出参：失败原因
++     * @param int $code 出参：HTTP 状态码（0 为网络层失败）
++     * @return bool
++     */
++    public function sendEvent($peer, $eventType, array $payload, $idempotencyKey, $requestId, $actorKey, &$error, &$code)
+     {
+-        $base = $this->getBaseUri();
++        $error = '';
++        $code = 0;
++
++        $registry = new Peers();
+ 
+-        if ($base === '') return '';
++        $channel = $registry->allows($peer, $eventType);
+ 
+-        return $base . (string)$this->getConfig()->path('exam.push_path', '/api/v1/exam/learning/progress');
++        if ($channel === '') {
++
++            /**
++             * 通道纪律：不在对端白名单内的事件一律不发，
++             * 避免下游收到未定义类型后按「未知主版本」隔离告警。
++             */
++            $error = sprintf('event_not_allowed:%s->%s', $eventType, $peer);
++
++            return false;
++        }
++
++        $path = $registry->path($peer, $channel);
++
++        if ($path === '') {
++            $error = sprintf('peer_path_missing:%s', $peer);
++
++            return false;
++        }
++
++        return $this->send($path, $payload, $idempotencyKey, $requestId, $actorKey, $error, $code, $peer);
+     }
+ 
+     /**
+@@ -73,14 +142,15 @@ class Gateway extends Service
+      * @param string $actorKey 操作者对外主键
+      * @param string $error 出参：失败原因
+      * @param int $code 出参：HTTP 状态码（0 表示网络层失败）
++     * @param string $peer 对端标识，用于取 App-Code 与专属网关地址；留空取全局配置
+      * @return bool
+      */
+-    public function send($path, array $payload, $idempotencyKey, $requestId, $actorKey, &$error, &$code)
++    public function send($path, array $payload, $idempotencyKey, $requestId, $actorKey, &$error, &$code, $peer = '')
+     {
+         $error = '';
+         $code = 0;
+ 
+-        $base = $this->getBaseUri();
++        $base = $this->getBaseUri($peer);
+ 
+         if ($base === '') {
+ 
+@@ -93,6 +163,37 @@ class Gateway extends Service
+ 
+         $timeout = (int)$this->getConfig()->path('gateway.timeout', 5);
+ 
++        /**
++         * 网关 L2 服务签名
++         *
++         * 统一网关对机器调用走 L2 档，要求 X-App-Key / X-Timestamp / X-Nonce /
++         * X-Sign-Alg / X-Signature 五头，与下面的 X-Internal-Sign 是两套规范。
++         * 少了这组头，请求会在网关入口被判 40105，根本到不了对端。
++         *
++         * 配了 app_key 却没配 app_secret 时直接失败，不发这个必然被拒的请求：
++         * 否则每条事件都要等一次 401 往返才进死信，排障时还会误以为是签名算法写错。
++         */
++        $signer = new GatewaySign();
++
++        if (!$signer->isEnabled($peer) && $signer->appKey($peer) !== '') {
++
++            $error = sprintf('gateway_app_secret_missing:%s', $peer !== '' ? $peer : 'default');
++
++            return false;
++        }
++
++        if ($signer->isEnabled($peer)
++            && trim((string)$this->getConfig()->path('gateway.internal_sign_secret', '')) === '') {
++
++            /**
++             * 经网关出站时，内部签名密钥同时是「网关重算给上游」的基准。
++             * 本地没配就等于用空串当密钥，签名永远对不上，属于启动期配置缺失。
++             */
++            $error = 'internal_sign_secret_missing';
++
++            return false;
++        }
++
+         $timestamp = (string)time();
+ 
+         $headers = $this->buildSignHeaders([
+@@ -108,10 +209,46 @@ class Gateway extends Service
+         $httpHeaders = [
+             'Content-Type: application/json',
+             'Accept: application/json',
+-            'X-App-Code: ' . (string)$this->getConfig()->path('gateway.app_code', 'learning'),
++            'X-App-Code: ' . $this->getAppCode($peer),
+             'Idempotency-Key: ' . $idempotencyKey,
+         ];
+ 
++        /**
++         * 网关若开启了统一鉴权（APISIX 的 jwt-auth / key-auth 会要求 Bearer），
++         * 服务态调用需要带上约定令牌。令牌按对端取：五平台各自网关的鉴权
++         * 相互独立，考试平台的 token 不能拿去调论坛平台的网关。
++         */
++        $registry = new Peers();
++
++        $token = $peer !== ''
++            ? $registry->accessTokenOf($peer)
++            : (string)$this->getConfig()->path('gateway.access_token', '');
++
++        if ($token !== '') {
++            $httpHeaders[] = 'Authorization: Bearer ' . $token;
++        }
++
++        /**
++         * 对端附加头：适配 APISIX 的 key-auth（X-API-Key）等插件。
++         * 头名在注册表里已做合法性校验，避免配置写错导致请求头注入。
++         */
++        if ($peer !== '') {
++
++            foreach ($registry->get($peer)['headers'] as $name => $value) {
++                $httpHeaders[] = sprintf('%s: %s', $name, $value);
++            }
++        }
++
++        /**
++         * L2 签名按「实际请求的方法 / 路径 / 请求体」计算，不能用配置里的
++         * push_path 近似——投递路径里若带 query，签名段必须与真实一致。
++         */
++        $body = kg_json_encode($payload);
++
++        foreach ($signer->headers('POST', $path, $body, $peer) as $name => $value) {
++            $httpHeaders[] = sprintf('%s: %s', $name, $value);
++        }
++
+         foreach ($headers as $name => $value) {
+             $httpHeaders[] = sprintf('%s: %s', $name, $value);
+         }
+@@ -120,7 +257,7 @@ class Gateway extends Service
+ 
+         curl_setopt_array($ch, [
+             CURLOPT_POST => true,
+-            CURLOPT_POSTFIELDS => kg_json_encode($payload),
++            CURLOPT_POSTFIELDS => $body,
+             CURLOPT_HTTPHEADER => $httpHeaders,
+             CURLOPT_RETURNTRANSFER => true,
+             CURLOPT_CONNECTTIMEOUT => 2,
+@@ -138,16 +275,69 @@ class Gateway extends Service
+         curl_close($ch);
+ 
+         if ($code >= 200 && $code < 300) {
++
++            /**
++             * 防假成功：状态码 2xx 不等于「对端真的收下了」。
++             *
++             * APISIX 这类网关常配一条 catch-all 路由兜底，未配置的路径会回
++             * 默认页——状态码 200、内容是 HTML。只看状态码就会把它判成功，
++             * 事件被标记「已推送」且不再重试，数据静默丢失，监控也看不出来。
++             * 这里按可重试处理（不改 response_code，保留原始 200 便于排障），
++             * 错误信息明确指向网关配置而不是业务契约。
++             */
++            if (!$this->isAcceptableResponse($response)) {
++
++                $plain = preg_replace('/\s+/', ' ', strip_tags((string)$response));
++
++                $error = 'gateway_returned_non_json:' . kg_substr(trim((string)$plain), 0, 120);
++
++                return false;
++            }
++
+             return true;
+         }
+ 
+         if ($error === '') {
+-            $error = sprintf('HTTP %d %s', $code, kg_substr((string)$response, 0, 300));
++
++            /**
++             * 网关自身生成的拒绝（L2 签名、nonce、时间戳、AppKey）都是数字码，
++             * 原样记录会让运维只看到「HTTP 401」而不知道是签名算法不一致还是
++             * 时钟没同步。这里把数字码翻成可读原因并保留原始响应，两边都能查。
++             */
++            $gwCode = $signer->errorCodeOf($code, (string)$response);
++
++            $reason = $gwCode > 0 ? $signer->errorText($gwCode) : '';
++
++            $error = $reason !== ''
++                ? sprintf('gateway_%d:%s', $gwCode, $reason)
++                : sprintf('HTTP %d %s', $code, kg_substr((string)$response, 0, 300));
+         }
+ 
+         return false;
+     }
+ 
++    /**
++     * 响应体是否可信
++     *
++     * 空响应（204 / 只回状态码）视为成功；约定为 JSON 的通道要求以 { 或 [ 开头。
++     * HTML 兜底页、网关错误页都会被判为不可信。
++     *
++     * @param string $body
++     * @return bool
++     */
++    protected function isAcceptableResponse($body)
++    {
++        $body = ltrim((string)$body);
++
++        if ($body === '') return true;
++
++        if (!$this->getConfig()->path('gateway.expect_json', true)) return true;
++
++        $first = substr($body, 0, 1);
++
++        return $first === '{' || $first === '[';
++    }
++
+     /**
+      * 生成带内部签名的一组头
+      *
+diff --git a/repro/src/course-tencent-cloud-master/config/routes.php b/repro/src/course-tencent-cloud-master/config/routes.php
+index c23dac3..f438e3f 100644
+--- a/repro/src/course-tencent-cloud-master/config/routes.php
++++ b/repro/src/course-tencent-cloud-master/config/routes.php
+@@ -19,6 +19,51 @@ $router->notFound([
+     'action' => 'show404',
+ ]);
+ 
++/**
++ * 统一网关 · 服务间调用别名
++ *
++ * 网关把「服务态（L2 机器调用）」和「用户态（L1 会话）」按路径前缀分开：
++ *   /api/v1/learning/internal/*   L2 签名 + 200 QPS/AppKey
++ *   /api/v1/learning/*            L1 会话，无令牌直接 40101
++ *
++ * 对端平台（考试、论坛）没有用户令牌，只能走 L2 那条。因此给 peers 这一整组
++ * 动作注册一份 /internal 前缀的等价入口，让它们落进网关已有的 L2 路由——
++ * 网关侧不需要新增或修改任何路由。
++ *
++ * 注解路由本身无法为一个动作声明多个 URI，所以在这里显式登记，并且必须放在
++ * addModuleResource 之前：Phalcon 按注册顺序匹配，先登记的先命中。
++ *
++ * 原路径 /api/v1/learning/peers/* 保留，用于内网直连与本地联调；
++ * 对外接入一律用 /internal 前缀，避免被 L1 拦掉。
++ */
++$peerAliases = [
++    ''                                                                         => ['peers', ['GET']],
++    '/{source}/handshake'                                                      => ['peerHandshake', ['GET']],
++    '/{source}/students/{userId:[A-Za-z0-9_\-]+}/progress'                     => ['peerStudentProgress', ['GET']],
++    '/{source}/students/{userId:[A-Za-z0-9_\-]+}/completion/{courseId:[0-9]+}'  => ['peerStudentCompletion', ['GET']],
++    '/{source}/events'                                                         => ['peerEvent', ['POST']],
++    '/{source}/events/{eventId}'                                               => ['peerEventStatus', ['GET']],
++    '/{source}/receipts'                                                       => ['peerReceipt', ['POST']],
++    '/{source}/pull'                                                           => ['peerPull', ['GET']],
++    '/{source}/replay'                                                         => ['peerReplay', ['POST']],
++];
++
++foreach ($peerAliases as $suffix => $spec) {
++
++    list($action, $methods) = $spec;
++
++    $route = $router->add('/api/v1/learning/internal/peers' . $suffix, [
++        'module' => 'api',
++        'namespace' => 'App\Http\Api\Controllers',
++        'controller' => 'learning',
++        'action' => $action,
++    ]);
++
++    $route->setMethods($methods);
++
++    $route->setName('api.learning.internal_' . $action);
++}
++
+ $modules = ['api', 'home', 'admin'];
+ 
+ foreach ($modules as $module) {

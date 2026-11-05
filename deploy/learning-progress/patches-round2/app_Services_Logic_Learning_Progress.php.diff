@@ -1,0 +1,16 @@
+--- .workbuddy/tmp/srv2/app/Services/Logic/Learning/Progress.php	2026-11-05 22:40:45.712791300 +0800
++++ .workbuddy/tmp/work2/app/Services/Logic/Learning/Progress.php	2026-11-05 22:43:46.499555000 +0800
+@@ -59,10 +59,13 @@
+ 
+         $identity = new IdentityKey();
+ 
++        $sync = new Sync();
++
+         return [
+             'userId' => $identity->forUserId($user->id),
+             'overview' => $data['overview'],
+             'courses' => $data['courses'],
++            'peers' => $sync->peerStats($user->id),
+             'ruleVersion' => self::RULE_VERSION,
+             'generatedAt' => gmdate('Y-m-d\TH:i:s\Z'),
+         ];

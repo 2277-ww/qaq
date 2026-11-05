@@ -1,0 +1,110 @@
+--- .workbuddy/tmp/srv2/app/Http/Api/Controllers/LearningController.php	2026-11-05 22:40:45.851156100 +0800
++++ .workbuddy/tmp/work2/app/Http/Api/Controllers/LearningController.php	2026-11-05 22:43:40.806989000 +0800
+@@ -12,6 +12,11 @@
+  *   POST /api/v1/learning/progress/push                  触发进度推送（服务态）
+  *   GET  /api/v1/learning/sync/{eventId}                 查询单条推送状态
+  *
++ * 预留（实训平台 / 论坛平台对接）：
++ *   GET  /api/v1/learning/peers                          能力发现：对端、事件类型、路径
++ *   POST /api/v1/learning/peers/{source}/events          接收对端回传事件（服务态）
++ *   GET  /api/v1/learning/peers/{source}/events/{eventId} 查询回传事件受理状态
++ *
+  * 约定：
+  * 1) 只信任网关注入的可信头，且按 gateway.verify_sign 校验 X-Internal-Sign；
+  * 2) 响应体统一 {code, message, data, requestId}，code 为字符串业务码；
+@@ -22,6 +27,8 @@
+ 
+ use App\Exceptions\BadRequest as BadRequestException;
+ use App\Services\Learning\IdentityKey;
++use App\Services\Learning\Inbox as InboxService;
++use App\Services\Learning\Peers as PeersService;
+ use App\Services\Learning\TrustedHeader;
+ use App\Services\Logic\Learning\Progress as ProgressService;
+ use App\Services\Logic\Learning\Sync as SyncService;
+@@ -104,6 +111,86 @@
+     }
+ 
+     /**
++     * 能力发现：对端接入前自检用
++     *
++     * @Get("/peers", name="api.learning.peers")
++     */
++    public function peersAction()
++    {
++        $registry = new PeersService();
++
++        return $this->ok([
++            'peers' => $registry->describe(),
++            'catalog' => PeersService::CATALOG,
++            'generatedAt' => gmdate('Y-m-d\TH:i:s\Z'),
++        ]);
++    }
++
++    /**
++     * 接收对端回传的事件（实训平台 / 论坛平台）
++     *
++     * @Post("/peers/{source}/events", name="api.learning.peer_event")
++     */
++    public function peerEventAction($source)
++    {
++        if ($this->trusted['verified'] && $this->trusted['mode'] !== 'service') {
++            return $this->fail('FORBIDDEN', '该操作仅允许服务态调用（X-Auth-Mode: service）', 403);
++        }
++
++        $body = $this->request->getJsonRawBody(true);
++
++        if (!is_array($body) || count($body) == 0) {
++            return $this->fail('VALIDATION_ERROR', '请求体必须是事件封套 JSON', 400);
++        }
++
++        $service = new InboxService();
++
++        $result = $service->accept((string)$source, $body, $this->trusted['requestId']);
++
++        if (!$result['ok']) {
++
++            $map = ['PEER_NOT_OPEN' => 403, 'EVENT_NOT_ALLOWED' => 422];
++
++            $status = $map[$result['code']] ?? 400;
++
++            return $this->fail($result['code'], $result['message'], $status);
++        }
++
++        return $this->sendEnvelope('OK', $result['message'], $this->trusted['requestId'], 202, [
++            'status' => $result['status'],
++            'inboxId' => $result['inboxId'],
++            'eventId' => $result['eventId'],
++        ]);
++    }
++
++    /**
++     * 查询回传事件受理状态
++     *
++     * @Get("/peers/{source}/events/{eventId}", name="api.learning.peer_event_status")
++     */
++    public function peerEventStatusAction($source, $eventId)
++    {
++        $service = new InboxService();
++
++        $row = $service->status((string)$source, (string)$eventId);
++
++        if (!$row) {
++            return $this->fail('NOT_FOUND', '该事件未受理', 404);
++        }
++
++        return $this->ok([
++            'source' => $row->source,
++            'eventId' => $row->event_id,
++            'eventType' => $row->event_type,
++            'eventVersion' => $row->event_version,
++            'status' => (int)$row->status,
++            'statusText' => $row->getStatusText(),
++            'receivedAt' => gmdate('Y-m-d\TH:i:s\Z', (int)$row->received_at),
++            'processedAt' => $row->processed_at > 0 ? gmdate('Y-m-d\TH:i:s\Z', (int)$row->processed_at) : null,
++        ]);
++    }
++
++    /**
+      * @Post("/progress/push", name="api.learning.progress_push")
+      */
+     public function progressPushAction()

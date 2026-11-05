@@ -1,0 +1,5 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# 酷瓜云课堂：常驻调度器（GO\Scheduler 每次调用只执行到期任务后退出，需每分钟拉起）
+# flock 防止上一轮未结束时重入；timeout 兜底，避免个别任务卡死拖住整轮
+* * * * * root cd /www/ctc && flock -n /var/lock/ctc-scheduler.lock timeout 300 /usr/bin/php scheduler.php >> /var/log/ctc-scheduler.log 2>&1

@@ -1,0 +1,8 @@
+/var/log/ctc-scheduler.log {
+    daily
+    rotate 7
+    missingok
+    notifempty
+    compress
+    copytruncate
+}

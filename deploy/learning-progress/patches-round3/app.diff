@@ -1,0 +1,1099 @@
+diff -urN --strip-trailing-cr app/Http/Api/Controllers/LearningController.php /www/ctc/app/Http/Api/Controllers/LearningController.php
+--- a/app/Http/Api/Controllers/LearningController.php	2026-11-05 22:45:19.452286483 +0800
++++ b/app/Http/Api/Controllers/LearningController.php	2026-11-05 22:57:11.461982120 +0800
+@@ -17,6 +17,11 @@
+  *   POST /api/v1/learning/peers/{source}/events          接收对端回传事件（服务态）
+  *   GET  /api/v1/learning/peers/{source}/events/{eventId} 查询回传事件受理状态
+  *
++ * 预留（考试平台对接，双向）：
++ *   POST /api/v1/learning/peers/exam/receipts            接收投递回执 exam.progress.ack（服务态）
++ *   GET  /api/v1/learning/peers/exam/pull                按游标增量拉取（服务态）
++ *   POST /api/v1/learning/peers/exam/replay              失败事件重放（服务态，需 Idempotency-Key）
++ *
+  * 约定：
+  * 1) 只信任网关注入的可信头，且按 gateway.verify_sign 校验 X-Internal-Sign；
+  * 2) 响应体统一 {code, message, data, requestId}，code 为字符串业务码；
+@@ -29,6 +34,9 @@
+ use App\Services\Learning\IdentityKey;
+ use App\Services\Learning\Inbox as InboxService;
+ use App\Services\Learning\Peers as PeersService;
++use App\Services\Learning\Pull as PullService;
++use App\Services\Learning\Receipt as ReceiptService;
++use App\Services\Learning\Replay as ReplayService;
+ use App\Services\Learning\TrustedHeader;
+ use App\Services\Logic\Learning\Progress as ProgressService;
+ use App\Services\Logic\Learning\Sync as SyncService;
+@@ -191,6 +199,132 @@
+     }
+ 
+     /**
++     * 接收对端投递回执（考试平台确认已入库）
++     *
++     * @Post("/peers/{source}/receipts", name="api.learning.peer_receipt")
++     */
++    public function peerReceiptAction($source)
++    {
++        if ($this->trusted['verified'] && $this->trusted['mode'] !== 'service') {
++            return $this->fail('FORBIDDEN', '该操作仅允许服务态调用（X-Auth-Mode: service）', 403);
++        }
++
++        $body = $this->request->getJsonRawBody(true);
++
++        if (!is_array($body) || count($body) == 0) {
++            return $this->fail('VALIDATION_ERROR', '请求体必须是事件封套 JSON', 400);
++        }
++
++        $service = new ReceiptService();
++
++        $result = $service->apply((string)$source, $body, $this->trusted['requestId']);
++
++        if (!$result['ok']) {
++
++            $map = [
++                'RECEIPT_NOT_OPEN' => 403,
++                'EVENT_NOT_ALLOWED' => 422,
++                'TARGET_EVENT_NOT_FOUND' => 422,
++            ];
++
++            $status = $map[$result['code']] ?? 400;
++
++            return $this->fail($result['code'], $result['message'], $status);
++        }
++
++        return $this->sendEnvelope('OK', $result['message'], $this->trusted['requestId'], 202, $result['data']);
++    }
++
++    /**
++     * 对端增量拉取（考试平台补漏推）
++     *
++     * @Get("/peers/{source}/pull", name="api.learning.peer_pull")
++     */
++    public function peerPullAction($source)
++    {
++        if ($this->trusted['verified'] && $this->trusted['mode'] !== 'service') {
++            return $this->fail('FORBIDDEN', '该操作仅允许服务态调用（X-Auth-Mode: service）', 403);
++        }
++
++        $userId = trim((string)$this->request->getQuery('userId', 'string', ''));
++
++        if ($userId === '') {
++            return $this->fail('VALIDATION_ERROR', '缺少 userId', 400);
++        }
++
++        $afterId = (int)$this->request->getQuery('afterId', 'int', 0);
++
++        $limit = (int)$this->request->getQuery('limit', 'int', 0);
++
++        $since = 0;
++
++        $sinceRaw = trim((string)$this->request->getQuery('since', 'string', ''));
++
++        if ($sinceRaw !== '') {
++            $since = (int)strtotime($sinceRaw);
++            if ($since <= 0) {
++                return $this->fail('VALIDATION_ERROR', 'since 需为 ISO8601 时间，如 2026-11-05T00:00:00Z', 400);
++            }
++        }
++
++        $service = new PullService();
++
++        $result = $service->events((string)$source, $userId, $afterId, $since, $limit);
++
++        if (!$result['ok']) {
++
++            $map = ['PULL_NOT_OPEN' => 403];
++
++            $status = $map[$result['code']] ?? 400;
++
++            return $this->fail($result['code'], $result['message'], $status);
++        }
++
++        return $this->ok($result['data']);
++    }
++
++    /**
++     * 失败事件重放（对账后重推）
++     *
++     * @Post("/peers/{source}/replay", name="api.learning.peer_replay")
++     */
++    public function peerReplayAction($source)
++    {
++        if ($this->trusted['verified'] && $this->trusted['mode'] !== 'service') {
++            return $this->fail('FORBIDDEN', '该操作仅允许服务态调用（X-Auth-Mode: service）', 403);
++        }
++
++        $idempotencyKey = trim((string)$this->request->getHeader('Idempotency-Key'));
++
++        if ($idempotencyKey === '') {
++            return $this->fail('VALIDATION_ERROR', '缺少 Idempotency-Key', 400);
++        }
++
++        $body = $this->request->getJsonRawBody(true);
++
++        if (!is_array($body)) {
++            $body = [];
++        }
++
++        $service = new ReplayService();
++
++        $result = $service->apply((string)$source, $body);
++
++        if (!$result['ok']) {
++
++            $map = ['REPLAY_NOT_OPEN' => 403];
++
++            $status = $map[$result['code']] ?? 400;
++
++            return $this->fail($result['code'], $result['message'], $status);
++        }
++
++        $result['data']['idempotencyKey'] = $idempotencyKey;
++
++        return $this->ok($result['data']);
++    }
++
++    /**
+      * @Post("/progress/push", name="api.learning.progress_push")
+      */
+     public function progressPushAction()
+@@ -256,6 +390,10 @@
+             'retryCount' => (int)$event->retry_count,
+             'responseCode' => (int)$event->response_code,
+             'lastError' => (string)$event->last_error,
++            'acked' => $event->isAcked(),
++            'ackStatus' => (string)$event->ack_status,
++            'remoteId' => (string)$event->remote_id,
++            'ackedAt' => $event->acked_at > 0 ? gmdate('Y-m-d\TH:i:s\Z', (int)$event->acked_at) : null,
+             'occurredAt' => gmdate('Y-m-d\TH:i:s\Z', (int)$event->occurred_at),
+             'sentAt' => $event->sent_at > 0 ? gmdate('Y-m-d\TH:i:s\Z', (int)$event->sent_at) : null,
+         ];
+diff -urN --strip-trailing-cr app/Http/Home/Views/user/console/progress.volt /www/ctc/app/Http/Home/Views/user/console/progress.volt
+--- a/app/Http/Home/Views/user/console/progress.volt	2026-11-05 22:45:20.074354397 +0800
++++ b/app/Http/Home/Views/user/console/progress.volt	2026-11-05 23:01:14.701505234 +0800
+@@ -152,10 +152,11 @@
+                             <colgroup>
+                                 <col width="12%">
+                                 <col>
+-                                <col width="10%">
+-                                <col width="10%">
+-                                <col width="17%">
++                                <col width="9%">
++                                <col width="9%">
+                                 <col width="16%">
++                                <col width="14%">
++                                <col width="14%">
+                             </colgroup>
+                             <thead>
+                             <tr>
+@@ -165,6 +166,7 @@
+                                 <th>状态</th>
+                                 <th>发生时间</th>
+                                 <th>事件编号</th>
++                                <th>对端单号</th>
+                             </tr>
+                             </thead>
+                             <tbody>
+@@ -181,6 +183,7 @@
+                                     </td>
+                                     <td class="kg-lp-muted">{{ item.time_text }}</td>
+                                     <td class="kg-lp-mono">{{ item.event_id }}</td>
++                                    <td class="kg-lp-mono">{% if item.remote_id %}{{ item.remote_id }}{% else %}<span class="kg-lp-muted">待回执</span>{% endif %}</td>
+                                 </tr>
+                             {% endfor %}
+                             </tbody>
+@@ -194,6 +197,7 @@
+                     <p><b>上报口径</b>：课程进度 = 已完成课时 / 课程总课时；课时观看达到 30% 视为完成。进度按增量上报，距上次上报不足 5 个百分点时合并，避免高频请求打满网关。</p>
+                     <p><b>传输方式</b>：事件先写入发件箱（kg_exam_outbox），再由投递器经统一网关发送，带 X-Internal-Sign 内部签名与 Idempotency-Key；失败按 1s/5s/30s/2min/10min/1h 退避重试，第 6 次仍失败转死信。</p>
+                     <p><b>考试平台</b>：可调用 GET /api/v1/learning/completion/{userId}/{courseId} 回源课程完成状态，作为开放随堂测试的依据；本平台不反向读取考试数据。</p>
++                    <p><b>回执与补拉</b>：考试平台入库后回传 exam.progress.ack（POST /peers/exam/receipts），同步记录才会显示「已确认」并回填对端单号；漏推可用 GET /peers/exam/pull 按游标补拉，对账后可 POST /peers/exam/replay 重放失败事件。</p>
+                 </div>
+ 
+             </div>
+diff -urN --strip-trailing-cr app/Models/ExamOutbox.php /www/ctc/app/Models/ExamOutbox.php
+--- a/app/Models/ExamOutbox.php	2026-11-05 22:45:18.224152403 +0800
++++ b/app/Models/ExamOutbox.php	2026-11-05 22:57:07.751577535 +0800
+@@ -90,6 +90,21 @@
+ 
+     public $sent_at = 0;
+ 
++    /**
++     * 对端回执时间（0 表示对端尚未确认）
++     */
++    public $acked_at = 0;
++
++    /**
++     * 对端侧记录号（如考试平台的成绩单编号），对账用
++     */
++    public $remote_id = '';
++
++    /**
++     * 回执结论：accepted / rejected
++     */
++    public $ack_status = '';
++
+     public $dead_at = 0;
+ 
+     public $create_time = 0;
+@@ -130,10 +145,17 @@
+     /**
+      * 状态文案
+      *
++     * 已投递且对端已回执确认时，对外显示「已确认」，便于区分「发出去了」
++     * 与「对方确实入库了」。回执被拒时回到「待重试」。
++     *
+      * @return string
+      */
+     public function getStatusText()
+     {
++        if ((int)$this->status === self::STATUS_SENT && (int)$this->acked_at > 0) {
++            return '已确认';
++        }
++
+         $map = [
+             self::STATUS_PENDING => '待推送',
+             self::STATUS_SENT => '已推送',
+@@ -144,4 +166,14 @@
+         return $map[(int)$this->status] ?? '未知';
+     }
+ 
++    /**
++     * 是否已被对端确认
++     *
++     * @return bool
++     */
++    public function isAcked()
++    {
++        return (int)$this->acked_at > 0;
++    }
++
+ }
+diff -urN --strip-trailing-cr app/Repos/ExamOutbox.php /www/ctc/app/Repos/ExamOutbox.php
+--- a/app/Repos/ExamOutbox.php	2026-11-05 22:45:18.839219552 +0800
++++ b/app/Repos/ExamOutbox.php	2026-11-05 22:59:28.270899924 +0800
+@@ -248,4 +248,198 @@
+         return $row ? (int)$row->sent_at : 0;
+     }
+ 
++    /**
++     * 供对端增量拉取的事件（按自增 id 做游标，避免时间戳重复导致的漏读）
++     *
++     * 双重过滤，缺一不可：
++     * 1) channel = official —— 扩展事件走对端独立路径；
++     * 2) event_type 命中事件目录 —— 改造前入箱的存量事件 channel 字段
++     *    被统一补成 official，只看 channel 会把不在目录内的中间态事件
++     *    漏给对端，触发下游「未知事件类型」告警（接入说明 8.1）。
++     *
++     * @param int $userId
++     * @param string $target
++     * @param int $afterId 游标，取 id 大于该值的记录
++     * @param int $since 起始时间戳，0 表示不限
++     * @param int $limit
++     * @param array $eventTypes 事件目录白名单，空数组表示不限（仅供内部排障）
++     * @return ExamOutboxModel[]
++     */
++    public function findPullable($userId, $target, $afterId = 0, $since = 0, $limit = 200, array $eventTypes = [])
++    {
++        $conditions = 'user_id = :user_id: AND target = :target: AND channel = :channel: AND id > :after_id:';
++
++        $bind = [
++            'user_id' => $userId,
++            'target' => $target,
++            'channel' => 'official',
++            'after_id' => $afterId,
++        ];
++
++        if ($since > 0) {
++            $conditions .= ' AND occurred_at >= :since:';
++            $bind['since'] = $since;
++        }
++
++        if (count($eventTypes) > 0) {
++            $conditions .= ' AND event_type IN ({event_types:array})';
++            $bind['event_types'] = array_values(array_map('strval', $eventTypes));
++        }
++
++        return ExamOutboxModel::find([
++            'conditions' => $conditions,
++            'bind' => $bind,
++            'order' => 'id ASC',
++            'limit' => $limit,
++        ]);
++    }
++
++    /**
++     * 记录对端回执
++     *
++     * accepted：保持已投递状态，只补充回执时间与对端记录号；
++     * rejected：对端入库失败，退回待重试，由投递器按退避重发。
++     *
++     * @param ExamOutboxModel $event
++     * @param string $ackStatus accepted|rejected
++     * @param string $remoteId 对端记录号
++     * @param string $reason 拒绝原因
++     * @return bool
++     */
++    public function acknowledge(ExamOutboxModel $event, $ackStatus, $remoteId = '', $reason = '')
++    {
++        $event->ack_status = (string)$ackStatus;
++
++        $event->remote_id = mb_substr((string)$remoteId, 0, 64);
++
++        $event->acked_at = time();
++
++        if ($ackStatus === 'rejected') {
++            $event->status = ExamOutboxModel::STATUS_FAILED;
++            $event->last_error = mb_substr('回执拒绝：' . (string)$reason, 0, 255);
++            $event->next_retry_at = time() + 60;
++        }
++
++        return (bool)$event->update();
++    }
++
++    /**
++     * 待重放事件（投递失败或已进死信）
++     *
++     * 同样按 channel + 事件目录双重过滤：重放的意义是补投该发而未发出的事件，
++     * 把不再允许上正式通道的历史事件重放出去，等于主动制造一次 8.1 违规。
++     *
++     * @param int $userId 0 表示全部用户
++     * @param int $courseId 0 表示全部课程
++     * @param string $target
++     * @param int $limit
++     * @param array $eventTypes 事件目录白名单，空数组表示不限
++     * @return ExamOutboxModel[]
++     */
++    public function findReplayable($userId = 0, $courseId = 0, $target = 'exam', $limit = 100, array $eventTypes = [])
++    {
++        $conditions = 'status IN (:failed:, :dead:) AND target = :target: AND channel = :channel:';
++
++        $bind = [
++            'failed' => ExamOutboxModel::STATUS_FAILED,
++            'dead' => ExamOutboxModel::STATUS_DEAD,
++            'target' => $target,
++            'channel' => 'official',
++        ];
++
++        if ($userId > 0) {
++            $conditions .= ' AND user_id = :user_id:';
++            $bind['user_id'] = $userId;
++        }
++
++        if ($courseId > 0) {
++            $conditions .= ' AND course_id = :course_id:';
++            $bind['course_id'] = $courseId;
++        }
++
++        if (count($eventTypes) > 0) {
++            $conditions .= ' AND event_type IN ({event_types:array})';
++            $bind['event_types'] = array_values(array_map('strval', $eventTypes));
++        }
++
++        return ExamOutboxModel::find([
++            'conditions' => $conditions,
++            'bind' => $bind,
++            'order' => 'id ASC',
++            'limit' => $limit,
++        ]);
++    }
++
++    /**
++     * 把事件重置回待投递（重放）
++     *
++     * @param ExamOutboxModel $event
++     * @return bool
++     */
++    public function resetForReplay(ExamOutboxModel $event)
++    {
++        $event->status = ExamOutboxModel::STATUS_PENDING;
++        $event->retry_count = 0;
++        $event->next_retry_at = 0;
++        $event->last_error = '';
++        $event->dead_at = 0;
++        $event->ack_status = '';
++        $event->acked_at = 0;
++
++        return (bool)$event->update();
++    }
++
++    /**
++     * 按 eventId 批量取事件
++     *
++     * @param array $eventIds
++     * @param string $target
++     * @return ExamOutboxModel[]
++     */
++    public function findByEventIds(array $eventIds, $target = 'exam')
++    {
++        $eventIds = array_values(array_filter(array_map('strval', $eventIds)));
++
++        if (count($eventIds) == 0) return [];
++
++        $rows = ExamOutboxModel::find([
++            'conditions' => 'event_id IN ({event_ids:array}) AND target = :target:',
++            'bind' => ['event_ids' => $eventIds, 'target' => $target],
++        ]);
++
++        $map = [];
++
++        foreach ($rows as $row) {
++            $map[(string)$row->event_id] = $row;
++        }
++
++        return $map;
++    }
++
++    /**
++     * 已确认 / 未确认数量
++     *
++     * @param string $target
++     * @param bool $acked
++     * @param int $userId 0 表示全部用户
++     * @return int
++     */
++    public function countAcked($target, $acked = true, $userId = 0)
++    {
++        $conditions = 'target = :target: AND status = :status:';
++        $bind = ['target' => $target, 'status' => ExamOutboxModel::STATUS_SENT];
++
++        $conditions .= $acked ? ' AND acked_at > 0' : ' AND acked_at = 0';
++
++        if ($userId > 0) {
++            $conditions .= ' AND user_id = :user_id:';
++            $bind['user_id'] = $userId;
++        }
++
++        return (int)ExamOutboxModel::count([
++            'conditions' => $conditions,
++            'bind' => $bind,
++        ]);
++    }
++
+ }
+diff -urN --strip-trailing-cr app/Services/Learning/Peers.php /www/ctc/app/Services/Learning/Peers.php
+--- a/app/Services/Learning/Peers.php	2026-11-05 22:45:16.024912303 +0800
++++ b/app/Services/Learning/Peers.php	2026-11-05 22:57:00.407776759 +0800
+@@ -6,7 +6,8 @@
+  * 三者共用同一条出口链路（发件箱 → 统一网关），差异只在：
+  *   1) 网关上的投递路径（push_path）；
+  *   2) 允许发送的事件类型（事件目录白名单）；
+- *   3) 是否允许发送本地扩展事件（extensions，对应接入说明 8.1 的通道隔离纪律）。
++ *   3) 是否允许发送本地扩展事件（extensions，对应接入说明 8.1 的通道隔离纪律）；
++ *   4) 反向能力：回执（ack）、增量拉取（pull）、失败重放（replay）。
+  *
+  * 因此把"对端"抽成一份配置，新增对端只改 config/peers，不改投递代码。
+  *
+@@ -39,6 +40,11 @@
+ 
+     /**
+      * 对端默认值
++     *
++     * ack     —— 是否接收该对端的投递回执（对端确认已入库）；
++     * pull    —— 是否允许该对端主动拉取增量事件（补漏推）；
++     * replay  —— 是否允许该对端请求重放失败事件；
++     * pull_limit —— 单次拉取的最大条数上限。
+      */
+     const DEFAULTS = [
+         'enabled' => false,
+@@ -50,6 +56,10 @@
+         'extension_path' => '',
+         'inbound' => false,
+         'inbound_events' => [],
++        'ack' => false,
++        'pull' => false,
++        'pull_limit' => 200,
++        'replay' => false,
+     ];
+ 
+     /**
+@@ -177,7 +187,7 @@
+     }
+ 
+     /**
+-     * 入站事件白名单（实训/论坛回传）
++     * 入站事件白名单（实训/论坛回传、考试平台回执）
+      *
+      * @param string $key
+      * @return array
+@@ -190,6 +200,22 @@
+     }
+ 
+     /**
++     * 该对端是否已开通某项对接能力
++     *
++     * @param string $key
++     * @param string $ability ack|pull|replay
++     * @return bool
++     */
++    public function hasAbility($key, $ability)
++    {
++        $peer = $this->get($key);
++
++        if (!$peer['enabled']) return false;
++
++        return (bool)($peer[$ability] ?? false);
++    }
++
++    /**
+      * 能力发现：对端对接前用它自检，不用猜路径与事件类型
+      *
+      * @return array
+@@ -220,6 +246,21 @@
+                     'path' => $peer['inbound'] ? '/api/v1/learning/peers/' . $key . '/events' : '',
+                     'events' => $peer['inbound'] ? $peer['inbound_events'] : [],
+                 ],
++                'receipts' => [
++                    'enabled' => $peer['ack'],
++                    'path' => $peer['ack'] ? '/api/v1/learning/peers/' . $key . '/receipts' : '',
++                    'events' => $peer['ack'] ? ['exam.progress.ack'] : [],
++                ],
++                'pull' => [
++                    'enabled' => $peer['pull'],
++                    'path' => $peer['pull'] ? '/api/v1/learning/peers/' . $key . '/pull' : '',
++                    'limit' => $peer['pull'] ? (int)$peer['pull_limit'] : 0,
++                    'cursor' => 'afterId',
++                ],
++                'replay' => [
++                    'enabled' => $peer['replay'],
++                    'path' => $peer['replay'] ? '/api/v1/learning/peers/' . $key . '/replay' : '',
++                ],
+             ];
+         }
+ 
+@@ -243,6 +284,18 @@
+ 
+         $item['inbound'] = (bool)$item['inbound'];
+ 
++        $item['ack'] = (bool)$item['ack'];
++
++        $item['pull'] = (bool)$item['pull'];
++
++        $item['replay'] = (bool)$item['replay'];
++
++        $item['pull_limit'] = (int)$item['pull_limit'];
++
++        if ($item['pull_limit'] <= 0) $item['pull_limit'] = 200;
++
++        if ($item['pull_limit'] > 500) $item['pull_limit'] = 500;
++
+         $item['events'] = array_values(array_filter(array_map('strval', (array)$item['events'])));
+ 
+         $item['inbound_events'] = array_values(array_filter(array_map('strval', (array)$item['inbound_events'])));
+diff -urN --strip-trailing-cr app/Services/Learning/Pull.php /www/ctc/app/Services/Learning/Pull.php
+--- a/app/Services/Learning/Pull.php	1970-01-01 08:00:00.000000000 +0800
++++ b/app/Services/Learning/Pull.php	2026-11-05 22:58:53.605119928 +0800
+@@ -0,0 +1,151 @@
++<?php
++/**
++ * 对端增量拉取（考试平台补漏推）
++ *
++ * 推送是「本平台推、对端收」，一旦网关抖动或对端短暂不可用，
++ * 光靠重试可能仍会漏；拉取给对端一个主动对齐的入口：
++ * 对端按游标（afterId）从本平台取增量事件，自己按 eventId 幂等入库。
++ *
++ * 为什么用自增 id 而不是时间戳做游标：
++ * 同一秒内可能有多条事件入箱，时间戳做游标会漏读（>= 会重复、> 会漏）。
++ * 自增 id 单调递增，天然适合做游标。
++ *
++ * 只输出正式通道（official）事件：扩展事件不在事件目录内，
++ * 混进正式通道会让下游按「未知事件类型」告警（接入说明 8.1）。
++ */
++
++namespace App\Services\Learning;
++
++use App\Models\ExamOutbox as ExamOutboxModel;
++use App\Repos\ExamOutbox as ExamOutboxRepo;
++use App\Services\Service;
++
++class Pull extends Service
++{
++
++    /**
++     * 拉取增量事件
++     *
++     * @param string $source 对端标识
++     * @param string $userKey 对外 userId（OIDC sub 或 usr_ 占位）
++     * @param int $afterId 游标，取 id 大于该值的事件
++     * @param int $since 起始时间戳，0 表示不限
++     * @param int $limit 期望条数，0 表示取对端配置上限
++     * @return array
++     */
++    public function events($source, $userKey, $afterId = 0, $since = 0, $limit = 0)
++    {
++        $registry = new Peers();
++
++        if (!$registry->hasAbility($source, 'pull')) {
++            return $this->reject('PULL_NOT_OPEN', sprintf('对端 %s 未开通拉取通道', $source));
++        }
++
++        $peer = $registry->get($source);
++
++        $max = (int)$peer['pull_limit'];
++
++        $limit = (int)$limit;
++
++        if ($limit <= 0) $limit = $max;
++
++        if ($limit > $max) $limit = $max;
++
++        $identity = new IdentityKey();
++
++        $userId = (int)$identity->resolveUserId((string)$userKey);
++
++        if ($userId <= 0) {
++            return $this->reject('USER_NOT_FOUND', '该用户不存在');
++        }
++
++        $repo = new ExamOutboxRepo();
++
++        $rows = $repo->findPullable($userId, $source, (int)$afterId, (int)$since, $limit + 1, $peer['events']);
++
++        $items = [];
++
++        $cursor = (int)$afterId;
++
++        $hasMore = false;
++
++        foreach ($rows as $row) {
++
++            if (count($items) >= $limit) {
++                $hasMore = true;
++                break;
++            }
++
++            $items[] = $this->format($row);
++
++            $cursor = (int)$row->id;
++        }
++
++        return [
++            'ok' => true,
++            'code' => 'OK',
++            'message' => 'success',
++            'data' => [
++                'peer' => $source,
++                'userId' => (string)$userKey,
++                'channel' => Peers::CHANNEL_OFFICIAL,
++                'afterId' => (int)$afterId,
++                'nextCursor' => $cursor,
++                'hasMore' => $hasMore,
++                'limit' => $limit,
++                'count' => count($items),
++                'events' => $items,
++            ],
++        ];
++    }
++
++    /**
++     * 单条事件转对外结构
++     *
++     * course_key 形如 course_12，直接转 int 会得到 0，
++     * 这里取末尾数字，兼容纯数字与带前缀两种写法。
++     *
++     * @param ExamOutboxModel $row
++     * @return array
++     */
++    protected function format(ExamOutboxModel $row)
++    {
++        $courseId = 0;
++
++        if (preg_match('/(\d+)$/', (string)$row->course_key, $match)) {
++            $courseId = (int)$match[1];
++        }
++
++        return [
++            'eventId' => (string)$row->event_id,
++            'eventType' => (string)$row->event_type,
++            'eventVersion' => (string)$row->event_version,
++            'occurredAt' => gmdate('Y-m-d\TH:i:s\Z', (int)$row->occurred_at),
++            'userId' => (string)$row->user_key,
++            'courseId' => $courseId,
++            'progress' => (int)$row->progress,
++            'deliveryStatus' => (int)$row->status,
++            'deliveryText' => $row->getStatusText(),
++            'acked' => $row->isAcked(),
++            'remoteId' => (string)$row->remote_id,
++            'sentAt' => $row->sent_at > 0 ? gmdate('Y-m-d\TH:i:s\Z', (int)$row->sent_at) : null,
++            'payload' => $row->getPayloadArray(),
++        ];
++    }
++
++    /**
++     * @param string $code
++     * @param string $message
++     * @return array
++     */
++    protected function reject($code, $message)
++    {
++        return [
++            'ok' => false,
++            'code' => $code,
++            'message' => $message,
++            'data' => [],
++        ];
++    }
++
++}
+diff -urN --strip-trailing-cr app/Services/Learning/Receipt.php /www/ctc/app/Services/Learning/Receipt.php
+--- a/app/Services/Learning/Receipt.php	1970-01-01 08:00:00.000000000 +0800
++++ b/app/Services/Learning/Receipt.php	2026-11-05 22:57:02.296982761 +0800
+@@ -0,0 +1,178 @@
++<?php
++/**
++ * 考试平台投递回执处理
++ *
++ * 本平台把 course.completed 推给考试平台后，只知道「网关收下了」，
++ * 并不知道「考试平台是否真的入库」。回执接口补上这一段：
++ * 考试平台入库成功后回传 exam.progress.ack，本平台把发件箱记录标记为已确认。
++ *
++ * 回执与推送的关系是 1:1，靠 correlationId（被回执进度事件的 eventId）关联。
++ * 回执本身也走幂等：对端可能因为网络抖动重发，按 (source, receiptId) 去重。
++ *
++ * 注意方向：本类处理的是「对端 → 本平台」，属于反向通道，
++ * 不受接入说明 8.1 事件目录约束（该约束只针对本平台向外发的事件）。
++ */
++
++namespace App\Services\Learning;
++
++use App\Models\PeerInbox as PeerInboxModel;
++use App\Repos\ExamOutbox as ExamOutboxRepo;
++use App\Repos\PeerInbox as PeerInboxRepo;
++use App\Services\Service;
++
++class Receipt extends Service
++{
++
++    /**
++     * 回执事件类型（唯一允许的类型，避免对端用回执通道传别的东西）
++     */
++    const EVENT_ACK = 'exam.progress.ack';
++
++    const ACCEPTED = 'accepted';
++
++    const REJECTED = 'rejected';
++
++    /**
++     * 应用一条回执
++     *
++     * @param string $source 对端标识
++     * @param array $body 事件封套
++     * @param string $requestId 网关请求编号
++     * @return array{ok:bool,code:string,message:string,status:string,data:array}
++     */
++    public function apply($source, array $body, $requestId = '')
++    {
++        $registry = new Peers();
++
++        if (!$registry->hasAbility($source, 'ack')) {
++            return $this->reject('RECEIPT_NOT_OPEN', sprintf('对端 %s 未开通回执通道', $source));
++        }
++
++        $receiptId = trim((string)($body['eventId'] ?? ''));
++
++        $eventType = trim((string)($body['eventType'] ?? self::EVENT_ACK));
++
++        if ($receiptId === '' || $eventType === '') {
++            return $this->reject('VALIDATION_ERROR', '缺少 eventId 或 eventType');
++        }
++
++        if (strlen($receiptId) > 64) {
++            return $this->reject('VALIDATION_ERROR', 'eventId 超长');
++        }
++
++        if ($eventType !== self::EVENT_ACK) {
++            return $this->reject('EVENT_NOT_ALLOWED', sprintf('回执通道只接受 %s', self::EVENT_ACK));
++        }
++
++        $payload = isset($body['payload']) && is_array($body['payload']) ? $body['payload'] : [];
++
++        $targetEventId = trim((string)($body['correlationId'] ?? ($payload['eventId'] ?? '')));
++
++        if ($targetEventId === '') {
++            return $this->reject('VALIDATION_ERROR', '缺少 correlationId（被回执的进度事件 eventId）');
++        }
++
++        $ackStatus = strtolower(trim((string)($payload['status'] ?? self::ACCEPTED)));
++
++        if (!in_array($ackStatus, [self::ACCEPTED, self::REJECTED], true)) {
++            return $this->reject('VALIDATION_ERROR', 'payload.status 只能是 accepted 或 rejected');
++        }
++
++        $remoteId = trim((string)($payload['remoteId'] ?? ''));
++
++        $reason = trim((string)($payload['reason'] ?? ''));
++
++        $inboxRepo = new PeerInboxRepo();
++
++        $exists = $inboxRepo->findByEventId($source, $receiptId);
++
++        if ($exists) {
++            return [
++                'ok' => true,
++                'code' => 'OK',
++                'message' => '该回执已受理，幂等返回',
++                'status' => 'duplicate',
++                'data' => [
++                    'receiptId' => $receiptId,
++                    'targetEventId' => $targetEventId,
++                    'ackStatus' => (string)$exists->note,
++                ],
++            ];
++        }
++
++        $repo = new ExamOutboxRepo();
++
++        $event = $repo->findByEventId($targetEventId);
++
++        if (!$event || (string)$event->target !== (string)$source) {
++            return $this->reject('TARGET_EVENT_NOT_FOUND', '被回执的进度事件不存在或不属于该对端');
++        }
++
++        $repo->acknowledge($event, $ackStatus, $remoteId, $reason);
++
++        $inbox = new PeerInboxModel();
++
++        $inbox->source = (string)$source;
++        $inbox->event_id = $receiptId;
++        $inbox->event_type = $eventType;
++        $inbox->event_version = (string)($body['eventVersion'] ?? '1.0');
++        $inbox->actor_key = (string)($body['actorId'] ?? '');
++        $inbox->payload = kg_json_encode($body);
++        $inbox->status = $ackStatus === self::ACCEPTED
++            ? PeerInboxModel::STATUS_PROCESSED : PeerInboxModel::STATUS_IGNORED;
++        $inbox->note = $ackStatus;
++        $inbox->request_id = (string)$requestId;
++        $inbox->received_at = time();
++        $inbox->processed_at = time();
++
++        $inbox->create();
++
++        return [
++            'ok' => true,
++            'code' => 'OK',
++            'message' => $ackStatus === self::ACCEPTED ? '回执已确认' : '回执已记录，事件转为待重试',
++            'status' => 'accepted',
++            'data' => [
++                'receiptId' => $receiptId,
++                'targetEventId' => $targetEventId,
++                'ackStatus' => $ackStatus,
++                'remoteId' => (string)$event->remote_id,
++                'ackedAt' => gmdate('Y-m-d\TH:i:s\Z', (int)$event->acked_at),
++                'eventStatus' => (int)$event->status,
++            ],
++        ];
++    }
++
++    /**
++     * 已确认分布（页面与对账用）
++     *
++     * @param string $source
++     * @return array
++     */
++    public function summary($source)
++    {
++        $repo = new ExamOutboxRepo();
++
++        return [
++            'acked' => $repo->countAcked($source, true),
++            'unacked' => $repo->countAcked($source, false),
++        ];
++    }
++
++    /**
++     * @param string $code
++     * @param string $message
++     * @return array
++     */
++    protected function reject($code, $message)
++    {
++        return [
++            'ok' => false,
++            'code' => $code,
++            'message' => $message,
++            'status' => 'rejected',
++            'data' => [],
++        ];
++    }
++
++}
+diff -urN --strip-trailing-cr app/Services/Learning/Replay.php /www/ctc/app/Services/Learning/Replay.php
+--- a/app/Services/Learning/Replay.php	1970-01-01 08:00:00.000000000 +0800
++++ b/app/Services/Learning/Replay.php	2026-11-05 22:59:30.127102327 +0800
+@@ -0,0 +1,166 @@
++<?php
++/**
++ * 失败事件重放（对账后重推）
++ *
++ * 死信不会自动重试，这是有意为之：连续失败通常意味着契约变更或对端故障，
++ * 盲目重试只会放大故障。但对账修好之后需要一个明确的重推入口，本类就是它。
++ *
++ * 只做「重置为待投递」，不在 HTTP 请求里直接投递：
++ * 1) 投递要走网关，耗时不可控，不能占着请求线程；
++ * 2) 重置后由 exam_sync 定时任务（3 分钟一轮）按退避策略自然接走，
++ *    也能被下一次一键同步立即带走，两条路径都通。
++ */
++
++namespace App\Services\Learning;
++
++use App\Models\ExamOutbox as ExamOutboxModel;
++use App\Repos\ExamOutbox as ExamOutboxRepo;
++use App\Services\Service;
++
++class Replay extends Service
++{
++
++    /**
++     * 单次重放上限，防止对端一次把整表翻起来
++     */
++    const MAX_BATCH = 100;
++
++    /**
++     * 重置事件为待投递
++     *
++     * @param string $source 对端标识
++     * @param array $body {eventIds?: array, userId?: string, courseId?: int}
++     * @return array
++     */
++    public function apply($source, array $body)
++    {
++        $registry = new Peers();
++
++        if (!$registry->hasAbility($source, 'replay')) {
++            return $this->reject('REPLAY_NOT_OPEN', sprintf('对端 %s 未开通重放通道', $source));
++        }
++
++        $eventIds = isset($body['eventIds']) && is_array($body['eventIds']) ? $body['eventIds'] : [];
++
++        $userKey = trim((string)($body['userId'] ?? ''));
++
++        $courseId = isset($body['courseId']) ? (int)$body['courseId'] : 0;
++
++        if (count($eventIds) == 0 && $userKey === '') {
++            return $this->reject('VALIDATION_ERROR', '需提供 eventIds，或提供 userId（可带 courseId）按条件重放');
++        }
++
++        if (count($eventIds) > self::MAX_BATCH) {
++            return $this->reject('VALIDATION_ERROR', sprintf('单次最多重放 %d 条', self::MAX_BATCH));
++        }
++
++        $repo = new ExamOutboxRepo();
++
++        $replayed = [];
++
++        $skipped = [];
++
++        if (count($eventIds) > 0) {
++
++            $map = $repo->findByEventIds($eventIds, $source);
++
++            foreach ($eventIds as $eventId) {
++
++                $eventId = trim((string)$eventId);
++
++                if ($eventId === '') continue;
++
++                if (!isset($map[$eventId])) {
++                    $skipped[] = ['eventId' => $eventId, 'reason' => 'NOT_FOUND'];
++                    continue;
++                }
++
++                $row = $map[$eventId];
++
++                $reason = $this->skipReason($row, $registry, $source);
++
++                if ($reason !== '') {
++                    $skipped[] = ['eventId' => $eventId, 'reason' => $reason];
++                    continue;
++                }
++
++                $repo->resetForReplay($row);
++
++                $replayed[] = $eventId;
++            }
++        } else {
++
++            $identity = new IdentityKey();
++
++            $userId = (int)$identity->resolveUserId($userKey);
++
++            if ($userId <= 0) {
++                return $this->reject('USER_NOT_FOUND', '该用户不存在');
++            }
++
++            $rows = $repo->findReplayable($userId, $courseId, $source, self::MAX_BATCH, $registry->get($source)['events']);
++
++            foreach ($rows as $row) {
++                $repo->resetForReplay($row);
++                $replayed[] = (string)$row->event_id;
++            }
++        }
++
++        return [
++            'ok' => true,
++            'code' => 'OK',
++            'message' => count($replayed) > 0 ? '已重置为待投递' : '没有需要重放的事件',
++            'data' => [
++                'peer' => $source,
++                'requested' => count($eventIds),
++                'replayed' => count($replayed),
++                'eventIds' => $replayed,
++                'skipped' => $skipped,
++                'deliveredBy' => 'exam_sync（3 分钟一轮）或下一次一键同步',
++            ],
++        ];
++    }
++
++    /**
++     * 该事件是否可重放；返回空串表示可以
++     *
++     * @param ExamOutboxModel $row
++     * @param Peers $registry
++     * @param string $source
++     * @return string
++     */
++    protected function skipReason(ExamOutboxModel $row, Peers $registry, $source)
++    {
++        if ($registry->allows($source, (string)$row->event_type) === '') {
++            return 'EVENT_NOT_ALLOWED';
++        }
++
++        $status = (int)$row->status;
++
++        if ($status === ExamOutboxModel::STATUS_PENDING) {
++            return 'ALREADY_PENDING';
++        }
++
++        if ($status === ExamOutboxModel::STATUS_SENT) {
++            return $row->isAcked() ? 'ALREADY_ACKED' : 'ALREADY_SENT';
++        }
++
++        return '';
++    }
++
++    /**
++     * @param string $code
++     * @param string $message
++     * @return array
++     */
++    protected function reject($code, $message)
++    {
++        return [
++            'ok' => false,
++            'code' => $code,
++            'message' => $message,
++            'data' => [],
++        ];
++    }
++
++}
+diff -urN --strip-trailing-cr app/Services/Logic/Learning/Progress.php /www/ctc/app/Services/Logic/Learning/Progress.php
+--- a/app/Services/Logic/Learning/Progress.php	2026-11-05 22:45:17.577081760 +0800
++++ b/app/Services/Logic/Learning/Progress.php	2026-11-05 23:00:20.223564900 +0800
+@@ -305,6 +305,8 @@
+                 'progress' => (int)$row->progress,
+                 'status' => (int)$row->status,
+                 'status_text' => $row->getStatusText(),
++                'acked' => $row->isAcked(),
++                'remote_id' => (string)$row->remote_id,
+                 'response_code' => (int)$row->response_code,
+                 'retry_count' => (int)$row->retry_count,
+                 'time_text' => date('Y-m-d H:i:s', (int)$row->occurred_at),

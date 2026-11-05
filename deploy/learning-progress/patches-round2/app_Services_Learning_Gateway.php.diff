@@ -1,0 +1,103 @@
+--- .workbuddy/tmp/srv2/app/Services/Learning/Gateway.php	2026-11-05 22:40:45.115467200 +0800
++++ .workbuddy/tmp/work2/app/Services/Learning/Gateway.php	2026-11-05 22:42:16.681655800 +0800
+@@ -52,15 +52,75 @@
+     /**
+      * 完整投递地址（便于页面展示）
+      *
++     * @param string $peer
+      * @return string
+      */
+-    public function getEndpoint()
++    public function getEndpoint($peer = 'exam')
+     {
+-        $base = $this->getBaseUri();
++        return (new Peers())->endpoint($peer);
++    }
++
++    /**
++     * 取对端对应的 X-App-Code
++     *
++     * @param string $peer
++     * @return string
++     */
++    public function getAppCode($peer = '')
++    {
++        $fallback = (string)$this->getConfig()->path('gateway.app_code', 'learning');
++
++        if ($peer === '') return $fallback;
+ 
+-        if ($base === '') return '';
++        $config = (new Peers())->get($peer);
++
++        return $config['app_code'] !== '' ? $config['app_code'] : $fallback;
++    }
++
++    /**
++     * 按对端投递一条事件
++     *
++     * 路径、App-Code 全部来自对端注册表，新增实训/论坛平台时无需改这里。
++     *
++     * @param string $peer 对端标识（exam|training|forum）
++     * @param string $eventType 事件类型（决定走正式通道还是扩展通道）
++     * @param array $payload 事件封套
++     * @param string $idempotencyKey 幂等键
++     * @param string $requestId 请求编号
++     * @param string $actorKey 操作者对外主键
++     * @param string $error 出参：失败原因
++     * @param int $code 出参：HTTP 状态码（0 为网络层失败）
++     * @return bool
++     */
++    public function sendEvent($peer, $eventType, array $payload, $idempotencyKey, $requestId, $actorKey, &$error, &$code)
++    {
++        $error = '';
++        $code = 0;
++
++        $registry = new Peers();
++
++        $channel = $registry->allows($peer, $eventType);
++
++        if ($channel === '') {
++
++            /**
++             * 通道纪律：不在对端白名单内的事件一律不发，
++             * 避免下游收到未定义类型后按「未知主版本」隔离告警。
++             */
++            $error = sprintf('event_not_allowed:%s->%s', $eventType, $peer);
++
++            return false;
++        }
++
++        $path = $registry->path($peer, $channel);
++
++        if ($path === '') {
++            $error = sprintf('peer_path_missing:%s', $peer);
++
++            return false;
++        }
+ 
+-        return $base . (string)$this->getConfig()->path('exam.push_path', '/api/v1/exam/learning/progress');
++        return $this->send($path, $payload, $idempotencyKey, $requestId, $actorKey, $error, $code, $peer);
+     }
+ 
+     /**
+@@ -73,9 +133,10 @@
+      * @param string $actorKey 操作者对外主键
+      * @param string $error 出参：失败原因
+      * @param int $code 出参：HTTP 状态码（0 表示网络层失败）
++     * @param string $peer 对端标识，用于取 App-Code；留空取全局配置
+      * @return bool
+      */
+-    public function send($path, array $payload, $idempotencyKey, $requestId, $actorKey, &$error, &$code)
++    public function send($path, array $payload, $idempotencyKey, $requestId, $actorKey, &$error, &$code, $peer = '')
+     {
+         $error = '';
+         $code = 0;
+@@ -108,7 +169,7 @@
+         $httpHeaders = [
+             'Content-Type: application/json',
+             'Accept: application/json',
+-            'X-App-Code: ' . (string)$this->getConfig()->path('gateway.app_code', 'learning'),
++            'X-App-Code: ' . $this->getAppCode($peer),
+             'Idempotency-Key: ' . $idempotencyKey,
+         ];
+ 

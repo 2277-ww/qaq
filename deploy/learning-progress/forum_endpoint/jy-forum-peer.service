@@ -1,0 +1,28 @@
+[Unit]
+Description=Forum platform - learning progress event endpoint
+Documentation=file:///root/gw-deploy/configs/forum_endpoint/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+
+EnvironmentFile=/etc/jingyuan-forum/peer.env
+
+ExecStart=/usr/bin/python3 /root/gw-deploy/configs/forum_endpoint/forum_peer_endpoint.py
+Restart=always
+RestartSec=3
+
+# 只监听回环，不对外开端口；外部流量必须经网关
+PrivateTmp=yes
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=yes
+
+StandardOutput=append:/var/log/jy-forum-peer.log
+StandardError=append:/var/log/jy-forum-peer.log
+
+[Install]
+WantedBy=multi-user.target

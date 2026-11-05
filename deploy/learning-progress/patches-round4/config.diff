@@ -1,0 +1,35 @@
+--- a/config/config.php	2026-11-05 23:25:40.828461319 +0800
++++ b/config/config.php	2026-11-05 23:41:11.688085045 +0800
+@@ -267,6 +267,18 @@
+  *   pull  考试平台按游标补拉增量事件，用于漏推补偿；
+  *   replay 允许对端请求重放失败/死信事件，便于对账后重推。
+  * pull_limit: 单次拉取最大条数（1~500）。
++ *
++ * 入站鉴权（对端调我们）：
++ * inbound_app_code: 对端自己的应用编码，入站靠它识别调用方。三个平台必须各不相同
++ *   （出站 app_code 是「我们是谁」，都是 learning，方向相反不能混用）。
++ * secret: 该对端的签名密钥，填上即自动升级为 HMAC 签名校验（auth_mode=auto）。
++ * auth_mode: auto|signature|token|none。none 仅用于联调，上线须落到 signature 或 token。
++ * token: token 模式的比对值（Authorization: Bearer 或 X-Api-Key）。
++ * query: 是否允许该对端按学生查进度与准入判定（考试平台开考前回源）。
++ *
++ * 出站鉴权（我们调对端）：
++ * access_token: 该对端网关要求的 Bearer 令牌，覆盖全局 gateway.access_token。
++ * headers: 附加请求头，用于携带网关插件凭据（如 APISIX key-auth 的 X-API-Key）。
+  */
+ $config['peers']['exam'] = [
+     'enabled' => true,
+@@ -279,6 +291,13 @@
+     'extension_path' => '',
+     'inbound' => true,
+     'inbound_events' => ['exam.progress.ack'],
++    'inbound_app_code' => 'exam',
++    'secret' => '',
++    'auth_mode' => 'auto',
++    'token' => '',
++    'query' => true,
++    'access_token' => '',
++    'headers' => [],
+     'ack' => true,
+     'pull' => true,
+     'pull_limit' => 200,

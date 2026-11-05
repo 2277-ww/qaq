@@ -1,0 +1,14 @@
+{
+  "eventId": "rcpt_test_0001",
+  "eventType": "exam.progress.ack",
+  "eventVersion": "1.0",
+  "occurredAt": "2026-11-05T14:40:00Z",
+  "correlationId": "evt_CE26FAD850750B24BF18",
+  "actorId": "usr_10000",
+  "payload": {
+    "eventId": "evt_CE26FAD850750B24BF18",
+    "status": "accepted",
+    "remoteId": "EXAM-2026-000123",
+    "reason": ""
+  }
+}

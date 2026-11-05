@@ -1,0 +1,20 @@
+# 自学平台部署清单
+时间: 2026-11-05 22:16:30 CST
+主机: iZ7xv5w7e47adk5ly4oh3zZ  站点: /www/ctc
+PHP: 
+PHP: PHP 7.3.33 (cli) (built: Oct 27 2026 09:45:49) ( NTS )
+Phalcon: 3.4.5
+库表数: 74
+--- 关键文件 md5 ---
+64be333418b7d642076fc9557cbc6c6f  scheduler.php
+e1a01d6f36eb34bdd9f9457a710ba64d  app/Http/Api/Controllers/LearningController.php
+060c6eb25b1b278040e6a69918b2437d  app/Services/Logic/Learning/Progress.php
+492755e3f374e3588f89036f91b581a5  app/Services/Logic/Learning/Sync.php
+403ca77f292a796a6e764966b0a8d1e1  app/Console/Tasks/ExamSyncTask.php
+1c6c9747e32d1bb69e803b3f35fc14b6  app/Models/ExamOutbox.php
+fee468aea627e28740d5c98fcd349540  app/Repos/ExamOutbox.php
+a13250d646ca28a85a25e3afd6d53e96  app/Http/Home/Views/user/console/progress.volt
+7fce7f5eda207090c424ae0f4090ca62  public/static/home/css/theme-police.css
+618c107d24e05cf92be55ba851f03813  app/Http/Home/Views/templates/main.volt
+db5a36ebe3d068518f05d8939f0c1193  app/Http/Home/Views/partials/header.volt
+4e785e7ef91f9591411d3d99a2e465d8  app/Http/Home/Views/partials/footer.volt

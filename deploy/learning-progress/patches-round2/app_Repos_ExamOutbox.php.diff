@@ -1,0 +1,162 @@
+--- .workbuddy/tmp/srv2/app/Repos/ExamOutbox.php	2026-11-05 22:40:44.985893800 +0800
++++ .workbuddy/tmp/work2/app/Repos/ExamOutbox.php	2026-11-05 22:42:37.718882300 +0800
+@@ -17,9 +17,10 @@
+      *
+      * @param int $limit
+      * @param int $userId 0 表示全部用户
++     * @param string $target 对端，留空表示全部对端
+      * @return ExamOutboxModel[]
+      */
+-    public function findDue($limit = 200, $userId = 0)
++    public function findDue($limit = 200, $userId = 0, $target = '')
+     {
+         $now = time();
+ 
+@@ -31,6 +32,11 @@
+             $bind['user_id'] = $userId;
+         }
+ 
++        if ($target !== '') {
++            $conditions .= ' AND target = :target:';
++            $bind['target'] = $target;
++        }
++
+         return ExamOutboxModel::find([
+             'conditions' => $conditions,
+             'bind' => $bind,
+@@ -58,13 +64,14 @@
+      * @param int $userId
+      * @param int $courseId
+      * @param string $eventVersion
++     * @param string $target 对端
+      * @return bool
+      */
+-    public function existsFact($eventType, $userId, $courseId, $eventVersion = '1.0')
++    public function existsFact($eventType, $userId, $courseId, $eventVersion = '1.0', $target = 'exam')
+     {
+         $row = ExamOutboxModel::findFirst([
+-            'conditions' => 'event_type = ?1 AND user_id = ?2 AND course_id = ?3 AND event_version = ?4',
+-            'bind' => [1 => $eventType, 2 => $userId, 3 => $courseId, 4 => $eventVersion],
++            'conditions' => 'event_type = ?1 AND user_id = ?2 AND course_id = ?3 AND event_version = ?4 AND target = ?5',
++            'bind' => [1 => $eventType, 2 => $userId, 3 => $courseId, 4 => $eventVersion, 5 => $target],
+         ]);
+ 
+         return (bool)$row;
+@@ -75,13 +82,14 @@
+      *
+      * @param int $userId
+      * @param int $courseId
++     * @param string $target 对端
+      * @return int
+      */
+-    public function findLastProgress($userId, $courseId)
++    public function findLastProgress($userId, $courseId, $target = 'exam')
+     {
+         $row = ExamOutboxModel::findFirst([
+-            'conditions' => 'user_id = :user_id: AND course_id = :course_id:',
+-            'bind' => ['user_id' => $userId, 'course_id' => $courseId],
++            'conditions' => 'user_id = :user_id: AND course_id = :course_id: AND target = :target:',
++            'bind' => ['user_id' => $userId, 'course_id' => $courseId, 'target' => $target],
+             'order' => 'id DESC',
+         ]);
+ 
+@@ -116,13 +124,22 @@
+      * 每个课程最近一条推送记录
+      *
+      * @param int $userId
++     * @param string $target 对端，留空表示全部
+      * @return array
+      */
+-    public function findLatestPerCourse($userId)
++    public function findLatestPerCourse($userId, $target = '')
+     {
++        $conditions = 'user_id = :user_id:';
++        $bind = ['user_id' => $userId];
++
++        if ($target !== '') {
++            $conditions .= ' AND target = :target:';
++            $bind['target'] = $target;
++        }
++
+         $rows = ExamOutboxModel::find([
+-            'conditions' => 'user_id = :user_id:',
+-            'bind' => ['user_id' => $userId],
++            'conditions' => $conditions,
++            'bind' => $bind,
+             'order' => 'id DESC',
+             'limit' => 500,
+         ]);
+@@ -145,13 +162,22 @@
+      *
+      * @param int $userId
+      * @param int $limit
++     * @param string $target 对端，留空表示全部
+      * @return ExamOutboxModel[]
+      */
+-    public function findTimeline($userId, $limit = 15)
++    public function findTimeline($userId, $limit = 15, $target = '')
+     {
++        $conditions = 'user_id = :user_id:';
++        $bind = ['user_id' => $userId];
++
++        if ($target !== '') {
++            $conditions .= ' AND target = :target:';
++            $bind['target'] = $target;
++        }
++
+         return ExamOutboxModel::find([
+-            'conditions' => 'user_id = :user_id:',
+-            'bind' => ['user_id' => $userId],
++            'conditions' => $conditions,
++            'bind' => $bind,
+             'order' => 'id DESC',
+             'limit' => $limit,
+         ]);
+@@ -162,9 +188,10 @@
+      *
+      * @param int $userId 0 表示全部用户
+      * @param int|null $status
++     * @param string $target 对端，留空表示全部
+      * @return int
+      */
+-    public function countByStatus($userId = 0, $status = null)
++    public function countByStatus($userId = 0, $status = null, $target = '')
+     {
+         $conditions = '1 = 1';
+         $bind = [];
+@@ -174,6 +201,11 @@
+             $bind['user_id'] = $userId;
+         }
+ 
++        if ($target !== '') {
++            $conditions .= ' AND target = :target:';
++            $bind['target'] = $target;
++        }
++
+         if ($status !== null) {
+             $conditions .= ' AND status = :status:';
+             $bind['status'] = $status;
+@@ -189,9 +221,10 @@
+      * 最近一次成功投递时间
+      *
+      * @param int $userId
++     * @param string $target 对端，留空表示全部
+      * @return int
+      */
+-    public function findLastSentTime($userId = 0)
++    public function findLastSentTime($userId = 0, $target = '')
+     {
+         $conditions = 'status = :status:';
+         $bind = ['status' => ExamOutboxModel::STATUS_SENT];
+@@ -201,6 +234,11 @@
+             $bind['user_id'] = $userId;
+         }
+ 
++        if ($target !== '') {
++            $conditions .= ' AND target = :target:';
++            $bind['target'] = $target;
++        }
++
+         $row = ExamOutboxModel::findFirst([
+             'conditions' => $conditions,
+             'bind' => $bind,

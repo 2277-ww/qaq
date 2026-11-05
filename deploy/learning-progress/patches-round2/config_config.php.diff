@@ -1,0 +1,57 @@
+--- .workbuddy/tmp/srv2/config/config.php	2026-11-05 22:40:46.295610800 +0800
++++ .workbuddy/tmp/work2/config/config.php	2026-11-05 22:43:56.984169800 +0800
+@@ -235,6 +235,54 @@
+ $config['exam']['retry_max'] = 6;
+ 
+ /**
++ * 跨平台对端（学习进度出口）
++ *
++ * 同一套发件箱与网关出口，按对端配置路由。新增对端只需在此登记，不改投递代码。
++ *
++ * enabled: 是否启用该对端（关闭时事件保留待发，启用后自动补发）。
++ * push_path: 正式通道路径，只有 events 白名单内的事件才会发到这里。
++ * events: 事件目录白名单（接入说明 8.1 只允许 course.completed 上跨平台通道）。
++ * extensions / extension_path: 本地扩展事件（如 learning.progress.updated）专用通道，
++ *   默认关闭。开启时必须是与正式通道不同的路径，避免下游按「未知主版本」隔离告警。
++ * inbound / inbound_events: 是否接收对端回传事件及其白名单（实训、论坛用）。
++ */
++$config['peers']['exam'] = [
++    'enabled' => true,
++    'name' => '考试平台',
++    'app_code' => 'learning',
++    'push_path' => '/api/v1/exam/learning/progress',
++    'events' => ['course.completed'],
++    'extensions' => false,
++    'extension_path' => '',
++    'inbound' => false,
++    'inbound_events' => [],
++];
++
++$config['peers']['training'] = [
++    'enabled' => false,
++    'name' => '实训平台',
++    'app_code' => 'learning',
++    'push_path' => '/api/v1/training/learning/progress',
++    'events' => ['course.completed'],
++    'extensions' => false,
++    'extension_path' => '',
++    'inbound' => false,
++    'inbound_events' => ['practice.submitted', 'practice.completed'],
++];
++
++$config['peers']['forum'] = [
++    'enabled' => false,
++    'name' => '论坛平台',
++    'app_code' => 'learning',
++    'push_path' => '/api/v1/forum/learning/progress',
++    'events' => ['course.completed'],
++    'extensions' => false,
++    'extension_path' => '',
++    'inbound' => false,
++    'inbound_events' => ['forum.post.created', 'forum.reply.created'],
++];
++
++/**
+  * 内置身份（无登录模式）
+  *
+  * 本复现环境不提供注册与登录入口，所有前台/后台请求统一以内置账号的身份执行。
