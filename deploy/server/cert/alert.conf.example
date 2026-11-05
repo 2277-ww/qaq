@@ -13,6 +13,12 @@
 #   ALERT_WEBHOOK_URL=https://hooks.slack.com/services/xxx
 #
 # 留空则只写 /var/log/ctc/cert-watch.log，不影响续期本身。
+#
+# 配置完成后用下面这条命令验证通道是否真的通（会往群里发一条测试消息）：
+#   /usr/local/bin/ctc-cert-watch.sh --test
+#
+# 注意：企业微信/钉钉在 key 失效时仍返回 HTTP 200，错误码在响应体的 errcode 里。
+# 本脚本会解析 errcode，非 0 视为发送失败并记录到日志。
 
 ALERT_WEBHOOK_TYPE=wecom
 ALERT_WEBHOOK_URL=

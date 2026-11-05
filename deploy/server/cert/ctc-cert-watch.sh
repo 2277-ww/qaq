@@ -33,8 +33,9 @@ log() {
 }
 
 # 发送告警：日志必写，webhook 有配置才发
+# 返回 0 = 已发出或无需发送；1 = 发送失败（企业微信 key 失效等）
 notify() {
-    local msg="$1" payload code
+    local msg="$1" payload resp code errcode
     log "ALERT $msg"
     if [ ! -f "$ALERT_CONF" ]; then
         log "未配置告警通道（$ALERT_CONF 不存在），仅记录日志"
@@ -54,9 +55,17 @@ notify() {
             payload=$(printf '{"text":"%s"}' "$msg")
             ;;
     esac
-    code=$(curl -s -o /dev/null -w '%{http_code}' -m 10 \
+    # 企业微信/钉钉 key 无效时仍返回 HTTP 200，错误在响应体 errcode 里，必须解析出来
+    resp=$(curl -s -m 10 -w '\n%{http_code}' \
         -H 'Content-Type: application/json' -d "$payload" "${ALERT_WEBHOOK_URL}" 2>/dev/null)
-    log "webhook type=${ALERT_WEBHOOK_TYPE:-wecom} http=${code:-000}"
+    code=$(printf '%s' "$resp" | tail -n1)
+    errcode=$(printf '%s' "$resp" | tr -d '\n' | sed -n 's/.*"errcode":\(-\{0,1\}[0-9]\{1,\}\).*/\1/p')
+    if [ -n "$errcode" ] && [ "$errcode" != "0" ]; then
+        log "webhook 发送失败 type=${ALERT_WEBHOOK_TYPE:-wecom} http=${code:-000} errcode=${errcode} | $(printf '%s' "$resp" | head -n1 | cut -c1-200)"
+        return 1
+    fi
+    log "webhook 已发送 type=${ALERT_WEBHOOK_TYPE:-wecom} http=${code:-000} errcode=${errcode:-n/a}"
+    return 0
 }
 
 # 剩余秒数（取不到返回空）
@@ -85,6 +94,16 @@ write_status() {
     mv -f "$STATUS_FILE.tmp" "$STATUS_FILE"
     chmod 0644 "$STATUS_FILE" 2>/dev/null
 }
+
+# --test：只发一条测试消息，验证告警通道（不检查证书、不续期）
+if [ "${1:-}" = "--test" ]; then
+    if notify "【证书告警·测试】$DOMAIN 巡检通道连通性测试（$(date '+%F %T %Z')）。收到此消息说明告警链路正常，无需处理。"; then
+        echo "测试消息已发送，请查看群消息"
+        exit 0
+    fi
+    echo "发送失败，详见 $LOG_FILE"
+    exit 1
+fi
 
 if [ ! -f "$CERT_FILE" ]; then
     notify "【证书告警】$DOMAIN 证书文件不存在：$CERT_FILE"
@@ -140,6 +159,12 @@ if [ "$left" -le "$ALERT_AT" ]; then
     write_status fail "$left" "$not_after" "$renew_state" "${hint:-证书即将过期}"
     log "告警已发出：剩余 ${left} 天"
     exit 2
+fi
+
+# 续期失败但证书还没临期（剩余 > ALERT_AT）时也必须告警：
+# 否则会连续多天静默失败，直到撞上到期那一刻才暴露——2026-11-04 19:33 那次就是这样差点漏掉
+if [ "$renew_state" = "failed" ] && [ "$left" -gt "$ALERT_AT" ]; then
+    notify "【证书告警】$DOMAIN 证书续期失败，当前剩余 ${left} 天（到期 $not_after）。${hint} 若持续失败，到期后 HTTPS 将无法访问。"
 fi
 
 if [ "$left" -le "$RENEW_AT" ]; then
