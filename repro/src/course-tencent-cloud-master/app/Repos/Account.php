@@ -52,6 +52,27 @@ class Account extends Repository
     }
 
     /**
+     * 按论坛用户主键查本地账号
+     *
+     * 论坛账号登录的映射入口。forum_uid 上有唯一索引，因此最多一条；
+     * 未绑定的账号存 NULL，不会被任何查询命中。
+     *
+     * @param int $forumUid
+     * @return AccountModel|Model|bool
+     */
+    public function findByForumUid($forumUid)
+    {
+        $forumUid = (int)$forumUid;
+
+        if ($forumUid <= 0) return false;
+
+        return AccountModel::findFirst([
+            'conditions' => 'forum_uid = :forum_uid:',
+            'bind' => ['forum_uid' => $forumUid],
+        ]);
+    }
+
+    /**
      * @param array $ids
      * @param array|string $columns
      * @return ResultsetInterface|Resultset|AccountModel[]

@@ -218,6 +218,24 @@ $config['gateway']['access_token'] = '';
 $config['gateway']['expect_json'] = true;
 
 /**
+ * 论坛账号确认（用论坛账号登录本平台）
+ *
+ * 独立于 peers 里的投递配置：gateway.base_uri 为空表示「投递不外发」，
+ * 而账号确认必须真实走网关，借用同一个空值会让两种情况无法区分。
+ *
+ * account_base 留空则登录页不展示论坛登录入口。
+ */
+$config['gateway']['account_base'] = 'http://8.138.246.181';
+
+$config['gateway']['account_path'] = '/answer/api/v1/account/verify';
+
+$config['gateway']['account_timeout'] = 5;
+
+$config['gateway']['account_login_limit'] = 10;
+
+$config['gateway']['account_login_window'] = 60;
+
+/**
  * 网关 L2 应用凭据（服务态调用）
  *
  * app_key / app_secret 是网关入口鉴权，与 internal_sign_secret 那套七头内部

@@ -12,6 +12,7 @@
             <ul class="layui-tabs-header">
                 <li class="layui-this">密码登录</li>
                 <li>验证登录</li>
+                {% if forum_login_enabled %}<li>论坛账号登录</li>{% endif %}
             </ul>
             <div class="layui-tabs-body">
                 <div class="layui-tabs-item layui-show">
@@ -20,6 +21,11 @@
                 <div class="layui-tabs-item">
                     {{ partial('account/login_by_verify') }}
                 </div>
+                {% if forum_login_enabled %}
+                <div class="layui-tabs-item">
+                    {{ partial('account/login_by_forum') }}
+                </div>
+                {% endif %}
             </div>
         </div>
         <div class="link">

@@ -8,6 +8,7 @@
 namespace App\Http\Home\Controllers;
 
 use App\Http\Home\Services\Account as AccountService;
+use App\Services\Gateway\AccountVerify;
 use App\Services\Logic\Account\EmailUpdate as EmailUpdateService;
 use App\Services\Logic\Account\OAuthProvider as OAuthProviderService;
 use App\Services\Logic\Account\PasswordReset as PasswordResetService;
@@ -75,6 +76,12 @@ class AccountController extends Controller
 
         $this->view->setVar('oauth_provider', $oauthProvider);
         $this->view->setVar('return_url', $returnUrl);
+
+        /**
+         * 未配置网关地址或应用密钥时不展示论坛登录入口：
+         * 留一个必然失败的入口，比不展示更让人困惑。
+         */
+        $this->view->setVar('forum_login_enabled', (new AccountVerify())->isEnabled());
     }
 
     /**
@@ -137,6 +144,27 @@ class AccountController extends Controller
         $service = new AccountService();
 
         $service->loginByPassword();
+
+        $returnUrl = $this->request->getPost('return_url', 'string');
+
+        $location = $returnUrl ?: $this->url->get(['for' => 'home.index']);
+
+        $content = [
+            'location' => $location,
+            'msg' => '登录账号成功',
+        ];
+
+        return $this->jsonSuccess($content);
+    }
+
+    /**
+     * @Post("/forum/login", name="home.account.forum_login")
+     */
+    public function loginByForumAction()
+    {
+        $service = new AccountService();
+
+        $service->loginByForum();
 
         $returnUrl = $this->request->getPost('return_url', 'string');
 

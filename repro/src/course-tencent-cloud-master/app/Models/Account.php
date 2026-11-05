@@ -34,6 +34,24 @@ class Account extends Model
     public $phone = '';
 
     /**
+     * 论坛用户主键
+     *
+     * 跨平台身份：由论坛账号确认接口返回的 user_id，NULL 表示未绑定。
+     * 用独立字段而不是复用 email/phone，因为论坛登录名可能是 admin
+     * 这类非邮箱值，塞进 email 会把字段语义搞乱且不可逆。
+     *
+     * @var int|null
+     */
+    public $forum_uid = null;
+
+    /**
+     * 论坛用户名
+     *
+     * @var string
+     */
+    public $forum_name = '';
+
+    /**
      * 密码
      *
      * @var string
