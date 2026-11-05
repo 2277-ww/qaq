@@ -1,0 +1,70 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            三个硬问题，与当时的处理
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            04 · 问题、结论与展望
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 110, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ width: 340, fontSize: 14, fontWeight: 'bold', color: '#1E4FA8', letterSpacing: 1 }}>问题</Text>
+        <Text style={{ width: 480, fontSize: 14, fontWeight: 'bold', color: '#1E4FA8', letterSpacing: 1 }}>处理方式</Text>
+        <Text style={{ flex: 1, fontSize: 14, fontWeight: 'bold', color: '#1E4FA8', letterSpacing: 1 }}>结果</Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 60, top: 134, width: 1160, height: 2, background: '#1E4FA8' }} />
+
+    <Box style={{ position: 'absolute', left: 60, top: 136, width: 1160, height: 146, flexDirection: 'row', paddingTop: 16, borderBottom: '1px solid #E5E7EB' }}>
+        <Text style={{ width: 340, fontSize: 17, color: '#1A2230', lineHeight: 1.7, paddingRight: 24 }}>
+            边界容易越写越界：工坊的事写进自学平台
+        </Text>
+        <Text style={{ width: 480, fontSize: 17, color: '#1A2230', lineHeight: 1.7, paddingRight: 24 }}>
+            只对外提供「课程元数据 + 完成状态」两项能力，绑定关系留在工坊；平台不存 projectId、不感知项目状态。
+        </Text>
+        <Text style={{ flex: 1, fontSize: 17, color: '#4A5568', lineHeight: 1.7 }}>
+            开放接口固定为 6 个，工坊调整准入规则时本平台无需改动。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 282, width: 1160, height: 146, flexDirection: 'row', paddingTop: 16, borderBottom: '1px solid #E5E7EB' }}>
+        <Text style={{ width: 340, fontSize: 17, color: '#1A2230', lineHeight: 1.7, paddingRight: 24 }}>
+            进度上报是高频写入，网络重试会造成重复计数
+        </Text>
+        <Text style={{ width: 480, fontSize: 17, color: '#1A2230', lineHeight: 1.7, paddingRight: 24 }}>
+            按 userId + lessonId 限流 6 次/分钟；进度只取最大值；事件 eventId 全局唯一，通道异常时写入 outbox 重试。
+        </Text>
+        <Text style={{ flex: 1, fontSize: 17, color: '#4A5568', lineHeight: 1.7 }}>
+            重复到达不重复生效，断网重连可续传；上报成功率目标 ≥99.5%（待压测确认）。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 428, width: 1160, height: 146, flexDirection: 'row', paddingTop: 16, borderBottom: '1px solid #E5E7EB' }}>
+        <Text style={{ width: 340, fontSize: 17, color: '#1A2230', lineHeight: 1.7, paddingRight: 24 }}>
+            既有环境老旧：Phalcon 3.4 与 1.87 GB 内存的机器
+        </Text>
+        <Text style={{ width: 480, fontSize: 17, color: '#1A2230', lineHeight: 1.7, paddingRight: 24 }}>
+            源码编译 phalcon 扩展；选 MariaDB 10.5 避免 MySQL 8 被 OOM；新增独立 server 块，不碰 80 端口的既有站点。
+        </Text>
+        <Text style={{ flex: 1, fontSize: 17, color: '#4A5568', lineHeight: 1.7 }}>
+            32126 个文件 md5 与本地产物一致，全部页面返回 200，备份与开机自启均已就位。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 590, width: 1160, flexDirection: 'row', alignItems: 'center' }}>
+        <Box style={{ width: 3, height: 22, background: '#1E4FA8', marginRight: 12 }} />
+        <Text style={{ fontSize: 18, color: '#1A2230' }}>
+            三个问题都不是算法难题，而是
+            <span style={{ fontWeight: 'bold', color: '#1E4FA8' }}>边界划不清</span>
+            与
+            <span style={{ fontWeight: 'bold', color: '#1E4FA8' }}>约束没写死</span>
+            造成的返工。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>19 / 21</Text>
+    </Box>
+</Slide>

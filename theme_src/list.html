@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN-Hans">
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="csrf-token" content="ve1q/R4wHsxS4CgslfOJWBZX7tGKd+AhktIEOC9HZ1ualW0bPS0fvg==">
+    <title>课程 - 自学平台</title>
+            <link rel="shortcut icon" href="/static/favicon.ico?v=202611041350">        <link rel="stylesheet" type="text/css" href="/static/lib/iconfont/iconfont.css?v=202611041350">    <link rel="stylesheet" type="text/css" href="/static/lib/layui/css/layui.css?v=202611041350">    <link rel="stylesheet" type="text/css" href="/static/home/css/common.css?v=202611041350">    <link rel="stylesheet" type="text/css" href="/static/home/css/theme-police.css?v=2026110502">
+    
+    
+</head>
+<body class="main">
+<div id="header">
+        
+<div class="logo">
+    <a href="/" title="自学平台">
+        <span class="police-emblem" aria-hidden="true">
+            <svg viewBox="0 0 44 52" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                <path d="M22 2 L40 8.5 V26 C40 37 32 45.5 22 50 C12 45.5 4 37 4 26 V8.5 Z"
+                      fill="none" stroke="#A8843B" stroke-width="2.2" stroke-linejoin="round"/>
+                <path d="M22 6.4 L36.2 11.6 V26 C36.2 34.8 30.1 41.6 22 45.3 C13.9 41.6 7.8 34.8 7.8 26 V11.6 Z"
+                      fill="none" stroke="#C8A24A" stroke-width="0.9" stroke-linejoin="round" opacity="0.85"/>
+                <polygon points="22,12.3 24.03,17.71 29.8,17.97 25.28,21.57 26.82,27.13 22,23.95 17.18,27.13 18.72,21.57 14.2,17.97 19.97,17.71"
+                         fill="#A8843B"/>
+                <path d="M13.4 31.6 H30.6" stroke="#A8843B" stroke-width="1.6" stroke-linecap="round" opacity="0.9"/>
+                <path d="M15.4 35.4 H28.6" stroke="#A8843B" stroke-width="1.2" stroke-linecap="round" opacity="0.65"/>
+            </svg>
+        </span>
+        <span class="logo-plate"><img src="/static/brand-logo.png" /></span>
+    </a>
+</div>
+
+<div class="top-nav">
+    <ul class="layui-nav">
+                    <li class="layui-nav-item">
+                <a href="/" class="nav-1" target="_self">首页</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/course/list" class="nav-2" target="_self">课程</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/article/list" class="nav-3" target="_self">专栏</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/question/list" class="nav-4" target="_self">问答</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/teacher/list" class="nav-5" target="_self">师资</a>
+                            </li>
+            </ul>
+</div>
+
+<div class="user">
+    <ul class="layui-nav">
+        <li class="layui-nav-item">
+            <a class="nav-search" href="javascript:" data-url="/search"><i class="layui-icon layui-icon-search"></i> 搜索</a>
+        </li>
+                    <li class="layui-nav-item">
+                <a href="javascript:"><i class="layui-icon layui-icon-add-circle"></i> 发布</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/question/add" target="_blank">提问题</a></dd>
+                    <dd><a href="/article/add" target="_blank">写文章</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/uc/notifications" target="notify"><i class="layui-icon layui-icon-notice"></i> 消息<span id="notify-dot"></span></a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:">自学平台</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/user/10000">我的主页</a></dd>
+                                            <dd><a href="/tc">教学中心</a></dd>
+                                        <dd><a href="/uc">用户中心</a></dd>
+                </dl>
+            </li>
+            </ul>
+</div>
+</div>
+<div id="main" class="layui-main">
+    
+
+            
+<div class="filter-toggle">
+    <span class="layui-icon layui-icon-up"></span>
+</div>
+
+<div class="filter-wrap wrap">
+            <div class="filter-group">
+            <div class="title">方向</div>
+            <div class="content">
+                                                        <a class="layui-btn layui-btn-xs" href="/course/list">全部</a>
+                                                        <a class="none" href="/course/list?tc=7">警务业务知识</a>
+                                                        <a class="none" href="/course/list?tc=6">网络安全</a>
+                                                        <a class="none" href="/course/list?tc=5">数据库</a>
+                                                        <a class="none" href="/course/list?tc=4">容器与部署</a>
+                                                        <a class="none" href="/course/list?tc=3">计算机视觉</a>
+                                                        <a class="none" href="/course/list?tc=2">Python 与算法</a>
+                                                        <a class="none" href="/course/list?tc=1">前端开发</a>
+                            </div>
+        </div>
+            <div class="filter-group">
+        <div class="title">类型</div>
+        <div class="content">
+                                            <a class="layui-btn layui-btn-xs" href="/course/list">全部</a>
+                                            <a class="none" href="/course/list?model=1">点播</a>
+                                            <a class="none" href="/course/list?model=2">直播</a>
+                                            <a class="none" href="/course/list?model=3">图文</a>
+                                            <a class="none" href="/course/list?model=4">面授</a>
+                    </div>
+    </div>
+    <div class="filter-group">
+        <div class="title">难度</div>
+        <div class="content">
+                                            <a class="layui-btn layui-btn-xs" href="/course/list">全部</a>
+                                            <a class="none" href="/course/list?level=1">入门</a>
+                                            <a class="none" href="/course/list?level=2">初级</a>
+                                            <a class="none" href="/course/list?level=3">中级</a>
+                                            <a class="none" href="/course/list?level=4">高级</a>
+                    </div>
+    </div>
+</div>
+
+<div class="filter-sort wrap">
+                    <a class="layui-btn layui-btn-xs" href="/course/list?sort=score">综合</a>
+                    <a class="none" href="/course/list?sort=rating">好评</a>
+                    <a class="none" href="/course/list?sort=latest">最新</a>
+                    <a class="none" href="/course/list?sort=popular">最热</a>
+                    <a class="none" href="/course/list?sort=featured">推荐</a>
+                    <a class="none" href="/course/list?sort=free">免费</a>
+    </div>
+    
+    
+    <div id="course-list" data-url="/course/pager"></div>
+
+
+</div>
+<div id="footer">
+    <div class="police-ribbon" aria-hidden="true">
+    <svg viewBox="0 0 44 52" xmlns="http://www.w3.org/2000/svg" focusable="false">
+        <path d="M22 2 L40 8.5 V26 C40 37 32 45.5 22 50 C12 45.5 4 37 4 26 V8.5 Z"
+              fill="none" stroke="#231903" stroke-width="2.6" stroke-linejoin="round" opacity="0.8"/>
+        <polygon points="22,12.3 24.03,17.71 29.8,17.97 25.28,21.57 26.82,27.13 22,23.95 17.18,27.13 18.72,21.57 14.2,17.97 19.97,17.71"
+                 fill="#231903" opacity="0.85"/>
+    </svg>
+    <span>明德 &middot; 笃学 &middot; 守正</span>
+</div>
+<div class="layui-main">
+    <div class="row nav">
+                    <a href="#" target="_blank">关于我们</a>
+                    <a href="#" target="_blank">联系我们</a>
+                    <a href="#" target="_blank">人才招聘</a>
+                    <a href="/help" target="_blank">帮助中心</a>
+                    <a href="#" target="_blank">友情链接</a>
+            </div>
+    <div class="row copyright">
+        <span class="brand">&copy; 2026 自学平台</span>
+                                            </div>
+    </div>
+</div>
+
+<script>
+
+    window.user = {
+        id: '10000',
+        name: '自学平台',
+        avatar: 'https://8.138.34.151/static/img/default/user_avatar.png',
+        locked: '0'
+    };
+
+    window.contact = {
+        enabled: '0',
+        qq: '',
+        wechat: '',
+        toutiao: '',
+        douyin: '',
+        weibo: '',
+        zhihu: '',
+        phone: '',
+        email: '',
+        address: ''
+    };
+
+    window.websocket = {
+        connect_url: 'wss://127.0.0.1/wss',
+        ping_interval: '30'
+    };
+
+</script><script type="text/javascript" src="/static/lib/layui/layui.js?v=202611041350"></script><script type="text/javascript" src="/static/home/js/common.js?v=202611041350"></script><script type="text/javascript" src="/static/home/js/fixbar.js?v=202611041350"></script>
+
+
+    <script type="text/javascript" src="/static/home/js/list.filter.js?v=202611041350"></script>    <script type="text/javascript" src="/static/home/js/course.list.js?v=202611041350"></script>
+
+
+</body>
+</html>

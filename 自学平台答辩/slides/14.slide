@@ -1,0 +1,90 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            非功能指标：12 项可测的性能口径
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            03 · 系统实现与验证
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 82, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        指标不写「流畅」「快速」，一律给分位数与前置条件
+    </Text>
+
+    <Table
+        style={{ position: 'absolute', left: 60, top: 118, width: 700, height: 414 }}
+        defaultTextStyle={{ fontSize: 15, color: '#1A2230' }}
+        defaultCellStyle={{
+            border: {
+                left: { width: 0, color: '#FFFFFF' },
+                right: { width: 0, color: '#FFFFFF' },
+                top: { width: 0, color: '#FFFFFF' },
+                bottom: { width: 1, color: '#E5E7EB' },
+            },
+            paddingLeft: 6,
+            paddingRight: 6,
+        }}
+        cells={[
+            [
+                { text: '场景', textStyle: { bold: true, color: '#1E4FA8', fontSize: 14 }, cellStyle: { border: { bottom: { width: 2, color: '#1E4FA8' } } } },
+                { text: '指标', textStyle: { bold: true, color: '#1E4FA8', fontSize: 14 }, cellStyle: { border: { bottom: { width: 2, color: '#1E4FA8' } } } },
+                { text: '口径与前提', textStyle: { bold: true, color: '#1E4FA8', fontSize: 14 }, cellStyle: { border: { bottom: { width: 2, color: '#1E4FA8' } } } },
+            ],
+            ['课程列表首屏', { text: '≤ 1.5s', textStyle: { bold: true } }, 'LCP · P75 · 含封面图'],
+            ['课程详情可交互', { text: '≤ 1.8s', textStyle: { bold: true } }, 'TTI · P75 · 目录 ≤200 课时'],
+            ['视频起播时间', { text: '≤ 2s', textStyle: { bold: true } }, 'P75 · 1080p · CDN 命中'],
+            ['学习进度上报', { text: '≤ 200ms', textStyle: { bold: true, color: '#1E4FA8' } }, 'P95 · 单条写入'],
+            ['课程列表 / 搜索', { text: '≤ 300ms', textStyle: { bold: true } }, 'P95 · pageSize ≤20'],
+            ['完成状态单查', { text: '≤ 300ms', textStyle: { bold: true } }, 'P95 · 外部系统调用'],
+            ['完成状态批量', { text: '≤ 800ms', textStyle: { bold: true } }, 'P95 · 1000 组上限'],
+            ['并发在线学习', { text: '500 人 / 210 QPS', textStyle: { bold: true } }, '按开学第一周峰值估算'],
+        ]}
+    />
+
+    <Box style={{ position: 'absolute', left: 800, top: 118, width: 420, height: 2, background: '#D6DCE5' }} />
+    <Text style={{ position: 'absolute', left: 800, top: 130, fontSize: 18, fontWeight: 'bold', color: '#4A5568' }}>
+        可用性与恢复
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 800, top: 166, width: 420, flexDirection: 'column', gap: 16 }}>
+        <Box style={{ flexDirection: 'column', gap: 2 }}>
+            <Box style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                <Text style={{ fontSize: 46, fontWeight: 'bold', color: '#1E4FA8', lineHeight: 1 }}>99.9</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1E4FA8', marginLeft: 4, marginBottom: 4 }}>%</Text>
+            </Box>
+            <Text style={{ fontSize: 15, color: '#4A5568' }}>对外完成状态查询可用率（服务整体 99.5%）</Text>
+        </Box>
+        <Box style={{ height: 1, background: '#E5E7EB' }} />
+        <Box style={{ flexDirection: 'column', gap: 2 }}>
+            <Box style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                <Text style={{ fontSize: 46, fontWeight: 'bold', color: '#1E4FA8', lineHeight: 1 }}>15</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1E4FA8', marginLeft: 4, marginBottom: 4 }}>min</Text>
+                <Text style={{ fontSize: 15, color: '#4A5568', marginLeft: 12, marginBottom: 6 }}>RPO　RTO ≤2h</Text>
+            </Box>
+            <Text style={{ fontSize: 15, color: '#4A5568' }}>数据库每日全量 + 增量日志备份</Text>
+        </Box>
+        <Box style={{ height: 1, background: '#E5E7EB' }} />
+        <Box style={{ flexDirection: 'column', gap: 2 }}>
+            <Box style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                <Text style={{ fontSize: 46, fontWeight: 'bold', color: '#1E4FA8', lineHeight: 1 }}>5</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1E4FA8', marginLeft: 4, marginBottom: 4 }}>s</Text>
+            </Box>
+            <Text style={{ fontSize: 15, color: '#4A5568' }}>完成到下游可查的 P95 事件时延</Text>
+        </Box>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 580, width: 1160, height: 56, background: '#F7F9FC', borderLeft: '3px solid #1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
+        <Text style={{ fontSize: 18, color: '#1A2230' }}>
+            这些数值目前是设计目标而非实测：
+            <span style={{ fontWeight: 'bold', color: '#1E4FA8' }}>单机验证环境尚未做 500 并发压测</span>
+            ，第 19 页会把这条列为局限。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>14 / 21</Text>
+    </Box>
+</Slide>

@@ -1,0 +1,1240 @@
+/* ==========================================================================
+   警院风格主题覆盖层  theme-police.css
+   主色：藏蓝 #0B1F3A / #102A4C      辅色：警徽金 #C8A24A
+   用法：置于 common.css 之后加载，仅覆盖视觉，不改变任何结构与功能
+   ========================================================================== */
+
+:root {
+    --navy-950: #08152A;
+    --navy-900: #0B1F3A;
+    --navy-800: #102A4C;
+    --navy-700: #16375E;
+    --navy-600: #1D4773;
+    --gold-600: #A8843B;
+    --gold-500: #C8A24A;
+    --gold-400: #D9B75E;
+    --gold-300: #E8CF92;
+    --gold-200: #F2E4C0;
+    /* 白底上的金色文本（保证 4.5:1 以上对比度） */
+    --gold-ink: #7A5B1E;
+    --paper: #F4F6FA;
+    --paper-2: #EDF1F6;
+    --line: #DCE3EB;
+    --line-2: #C9D3DF;
+    --ink: #16202B;
+    --ink-2: #48586A;
+    --ink-3: #76869A;
+    --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", Georgia, serif;
+    --sans: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Helvetica Neue", Arial, sans-serif;
+    /* 与 layui-main 可视宽度对齐，用于页头左右留白 */
+    --shell: 1250px;
+    --gutter: max(16px, calc((100% - var(--shell)) / 2));
+}
+
+/* ---------- 1. 基础排版 ---------- */
+
+body.main {
+    color: var(--ink);
+    font-family: var(--sans);
+    background-color: var(--paper);
+    background-image:
+        linear-gradient(90deg, rgba(16, 42, 76, 0.032) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(16, 42, 76, 0.032) 1px, transparent 1px);
+    background-size: 44px 44px;
+    background-attachment: fixed;
+}
+
+h1, h2, h3, h4, h5,
+.title, .article-card .title, .course-card .title {
+    font-family: var(--serif);
+    letter-spacing: 0.02em;
+}
+
+a {
+    transition: color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+}
+
+/* 正文默认链接色：压掉 layui 默认的亮蓝（:where 降低特异性，不干扰头部/页脚） */
+body.main a:where(:not([class*="layui-btn"]):not([class*="layui-badge"]):not(.iconfont)) {
+    color: var(--navy-700);
+}
+
+/* 价格/免费标记：统一为暗金，避免纯绿破坏配色 */
+.free,
+.value.free,
+span.free,
+.course-card .free,
+.course-card .meta .free,
+.course-meta .info .free,
+.sidebar-course-card .meta .free,
+.search-course-card .free {
+    color: var(--gold-ink) !important;
+}
+
+::selection {
+    background: var(--gold-300);
+    color: var(--navy-950);
+}
+
+/* ---------- 2. 顶部导航 ---------- */
+
+#header {
+    height: 66px;
+    background: linear-gradient(120deg, var(--navy-950) 0%, var(--navy-800) 48%, var(--navy-900) 100%);
+    border-bottom: 1px solid rgba(200, 162, 74, 0.55);
+    box-shadow: 0 2px 0 rgba(200, 162, 74, 0.16), 0 8px 20px rgba(8, 21, 42, 0.16);
+}
+
+/* 顶部金线：警徽绶带的提炼 */
+#header::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+        var(--gold-600) 0%, var(--gold-300) 22%, var(--gold-500) 50%,
+        var(--gold-300) 78%, var(--gold-600) 100%);
+}
+
+/* 纪律感细斜纹 */
+#header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(115deg,
+        rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 9px);
+    opacity: 0.9;
+}
+
+#header,
+#main,
+#footer,
+#footer .layui-main {
+    box-sizing: border-box;
+}
+
+#main {
+    margin-top: 88px;
+}
+
+#header .logo {
+    height: 66px;
+    left: var(--gutter);
+}
+
+/* 校徽铭牌：白色托底 + 金色双环，解决深底上 logo 对比度不足 */
+#header .logo a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 13px 5px 9px;
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px var(--gold-500), 0 0 0 3px rgba(200, 162, 74, 0.22);
+    text-decoration: none;
+}
+
+.police-emblem {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 35px;
+    flex: 0 0 auto;
+}
+
+.police-emblem svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.logo-plate {
+    display: inline-flex;
+    align-items: center;
+}
+
+.logo img {
+    max-width: 168px;
+    max-height: 42px;
+}
+
+.top-nav {
+    margin-left: calc(var(--gutter) + 210px);
+    position: relative;
+    z-index: 2;
+}
+
+#header .layui-nav,
+#header .layui-nav-item {
+    background: none;
+}
+
+#header .layui-nav .layui-nav-item > a {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    font-family: var(--serif);
+    padding: 0 18px;
+    height: 66px;
+    line-height: 66px;
+}
+
+#header .layui-nav .layui-nav-item > a:hover {
+    color: var(--gold-300);
+}
+
+#header .layui-nav .layui-nav-item > a:hover::after,
+#header .layui-nav .layui-this > a::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 14px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-500), transparent);
+}
+
+#header .layui-nav .layui-this > a,
+#header .layui-nav .layui-this > a:hover {
+    color: var(--gold-300) !important;
+}
+
+#header .layui-nav-child {
+    background: var(--navy-900);
+    border: 1px solid rgba(200, 162, 74, 0.35);
+    box-shadow: 0 10px 24px rgba(8, 21, 42, 0.35);
+}
+
+#header .layui-nav-child dd a {
+    color: rgba(255, 255, 255, 0.86) !important;
+}
+
+#header .layui-nav-child dd a:hover {
+    background: var(--navy-700) !important;
+    color: var(--gold-300) !important;
+}
+
+#header .user {
+    height: 66px;
+    right: var(--gutter);
+    z-index: 2;
+}
+
+#header .user .layui-nav-item > a {
+    text-align: right;
+}
+
+/* ---------- 3. 区块标题：金色纪律线 ---------- */
+
+.index-wrap {
+    padding: 6px 20px 26px;
+    margin-bottom: 26px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(11, 31, 58, 0.05);
+}
+
+.index-wrap .header {
+    position: relative;
+    text-align: center;
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    color: var(--navy-900);
+    padding: 18px 0 16px;
+    margin: 0 30px 6px;
+    border-bottom: 1px solid var(--line);
+}
+
+.index-wrap .header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: linear-gradient(90deg,
+        transparent 0%, var(--gold-500) 32%, var(--gold-300) 50%, var(--gold-500) 68%, transparent 100%);
+    opacity: 0.85;
+}
+
+.index-wrap .simple {
+    padding-top: 18px;
+}
+
+.index-carousel .carousel {
+    border: 1px solid var(--line);
+}
+
+/* ---------- 4. 课程 / 文章卡片 ---------- */
+
+.course-card {
+    height: auto;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    box-shadow: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.course-card:hover {
+    border-color: var(--gold-500);
+    box-shadow: 0 10px 24px rgba(11, 31, 58, 0.13);
+    transform: translateY(-2px);
+}
+
+.course-card::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--navy-800), var(--gold-500));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 3;
+}
+
+.course-card:hover::after {
+    opacity: 1;
+}
+
+.course-card .cover {
+    position: relative;
+    overflow: hidden;
+}
+
+.course-card .cover img {
+    width: 100%;
+    height: 155px;
+    object-fit: cover;
+    filter: saturate(0.86) contrast(1.04);
+    transition: transform 0.6s ease;
+}
+
+.course-card .cover img:hover {
+    transform: scale(1.06);
+}
+
+/* 轻微藏蓝罩色，统一不同封面的色相 */
+.course-card .cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(11, 31, 58, 0.06) 0%, rgba(11, 31, 58, 0.2) 100%);
+}
+
+.course-card .info,
+.index-course-list .course-card .info {
+    padding: 12px 14px 16px;
+    border: none;
+    border-top: 1px solid var(--line);
+    background: #fff;
+}
+
+.course-card .title,
+.course-card .title a {
+    color: var(--navy-900);
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.course-card .title a:hover {
+    color: var(--gold-600);
+}
+
+.course-card .meta {
+    color: #5C6B7E;
+    font-size: 12px;
+}
+
+.course-card .meta .free,
+.course-card .free {
+    color: var(--gold-ink);
+    font-weight: 600;
+}
+
+.course-card .rating .layui-icon,
+.course-card .rating .layui-icon-star-fill,
+.layui-icon-star-fill {
+    color: var(--gold-500) !important;
+}
+
+.course-card .model,
+.course-card .type {
+    z-index: 2;
+}
+
+/* 角标「免费 / 点播」：金底藏蓝字 */
+.layui-badge.layui-bg-green,
+.course-card .model .layui-badge,
+.course-card .type .layui-badge {
+    background-color: var(--gold-500) !important;
+    color: #241a05 !important;
+    border-radius: 2px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+/* 文章 / 搜索卡片 */
+.article-card,
+.search-course-card,
+.search-article-card,
+.question-card,
+.topic-card {
+    border: 1px solid var(--line) !important;
+    border-radius: 3px;
+    background: #fff;
+    box-shadow: none !important;
+}
+
+.article-card:hover,
+.search-course-card:hover {
+    border-color: var(--gold-500) !important;
+    box-shadow: 0 8px 20px rgba(11, 31, 58, 0.1) !important;
+}
+
+.article-card .title a,
+.search-course-card .title a {
+    color: var(--navy-900);
+    font-family: var(--serif);
+}
+
+.article-card .title a:hover,
+.search-course-card .title a:hover {
+    color: var(--gold-600);
+}
+
+.search-course-card em,
+.search-article-card em {
+    background: rgba(200, 162, 74, 0.22);
+    color: var(--navy-900);
+    font-style: normal;
+    padding: 0 1px;
+    border-radius: 2px;
+}
+
+/* ---------- 5. 按钮 / 表单 / 标签 / 分页 ---------- */
+
+.layui-btn {
+    background-color: var(--navy-800);
+    border-radius: 2px;
+    letter-spacing: 0.06em;
+    font-family: var(--serif);
+    transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.layui-btn:hover {
+    background-color: var(--navy-700);
+    box-shadow: 0 3px 10px rgba(16, 42, 76, 0.22);
+    opacity: 1;
+}
+
+.layui-btn-normal {
+    background-color: var(--navy-600);
+}
+
+.layui-btn-normal:hover {
+    background-color: var(--navy-700);
+}
+
+.layui-btn-warm {
+    background-color: var(--gold-600);
+}
+
+.layui-btn-warm:hover {
+    background-color: var(--gold-500);
+}
+
+.layui-btn-primary {
+    border-color: var(--line-2);
+    background-color: #fff;
+    color: var(--navy-800);
+}
+
+.layui-btn-primary:hover {
+    border-color: var(--gold-500);
+    color: var(--gold-600);
+}
+
+.layui-btn-disabled,
+.layui-btn-disabled:hover {
+    background-color: #dfe5ec;
+    color: #96a3b3;
+    border-color: #dfe5ec;
+}
+
+.layui-input,
+.layui-textarea,
+.layui-select {
+    border-color: var(--line-2);
+    border-radius: 2px;
+    background-color: #fff;
+}
+
+.layui-input:focus,
+.layui-textarea:focus {
+    border-color: var(--gold-500) !important;
+    box-shadow: 0 0 0 2px rgba(200, 162, 74, 0.16);
+}
+
+.layui-form-select dl dd.layui-this {
+    background-color: var(--navy-800);
+    color: #fff;
+}
+
+.layui-form-checked[lay-skin=primary] i {
+    border-color: var(--gold-500) !important;
+    background-color: var(--gold-500) !important;
+    color: #241a05 !important;
+}
+
+.layui-form-onswitch {
+    border-color: var(--navy-800) !important;
+    background-color: var(--navy-800) !important;
+}
+
+.layui-form-radio > i:hover,
+.layui-form-radioed > i {
+    color: var(--gold-600);
+}
+
+/* 标签页 */
+.layui-tab-title li {
+    color: var(--ink-2);
+    font-family: var(--serif);
+    letter-spacing: 0.06em;
+}
+
+.layui-tab-title .layui-this {
+    color: var(--navy-900);
+    font-weight: 600;
+}
+
+.layui-tab-brief > .layui-tab-title .layui-this {
+    color: var(--navy-900);
+}
+
+.layui-tab-brief > .layui-tab-title .layui-this:after {
+    border: none;
+    border-bottom: 2px solid var(--gold-500);
+}
+
+.layui-tab-title li:hover {
+    color: var(--gold-600);
+}
+
+/* layui-tabs 扩展组件（课程详情页使用） */
+.layui-tabs-header > li {
+    color: var(--ink-2);
+    font-family: var(--serif);
+    letter-spacing: 0.06em;
+}
+
+.layui-tabs-header > li:hover {
+    color: var(--gold-600);
+}
+
+.layui-tabs-header > li.layui-this {
+    color: var(--navy-900) !important;
+    border-color: transparent transparent var(--gold-500) transparent !important;
+    font-weight: 600;
+}
+
+/* 部分皮肤用伪元素画下划线（只改颜色，不改图形，避免出现实心色块） */
+.layui-tabs-header > li.layui-this::after {
+    border-color: var(--gold-500) !important;
+    border-bottom-color: var(--gold-500) !important;
+}
+
+/* 学习进度条 */
+.kg-bar {
+    background-color: var(--paper-2);
+}
+
+.kg-bar-inner {
+    background-color: var(--navy-700) !important;
+    background-image: linear-gradient(90deg, var(--navy-800), var(--navy-600));
+}
+
+.kg-bar-text {
+    color: var(--navy-800) !important;
+}
+
+/* 笔记小标题 */
+.kg-note-ch {
+    color: var(--navy-700) !important;
+}
+
+.kg-study-panel {
+    border-color: var(--line);
+}
+
+/* 分页 */
+.layui-laypage a,
+.layui-laypage span {
+    border-color: var(--line);
+    color: var(--ink-2);
+    border-radius: 2px;
+}
+
+.layui-laypage a:hover {
+    color: var(--gold-600);
+    border-color: var(--gold-500);
+}
+
+.layui-laypage .layui-laypage-curr .layui-laypage-em {
+    background-color: var(--navy-800);
+}
+
+.layui-laypage .layui-laypage-curr em {
+    color: #fff;
+}
+
+/* 表格 */
+.layui-table thead tr {
+    background-color: var(--paper-2);
+}
+
+.layui-table th {
+    color: var(--navy-900);
+    font-family: var(--serif);
+    font-weight: 600;
+}
+
+.layui-table tbody tr:hover {
+    background-color: #faf7ee;
+}
+
+/* 进度条 / 分割线 */
+.layui-progress-bar {
+    background-color: var(--navy-600);
+}
+
+.layui-elem-quote {
+    border-left: 4px solid var(--gold-500);
+    background-color: #fbf8ef;
+}
+
+/* ---------- 6. 筛选条 / 面包屑 / 侧栏 ---------- */
+
+.breadcrumb {
+    color: #5C6B7E;
+    border-bottom: 1px dashed var(--line-2);
+}
+
+.breadcrumb a {
+    color: var(--ink-2);
+}
+
+.breadcrumb a:hover {
+    color: var(--gold-600);
+}
+
+.search-form .query-input {
+    border-color: var(--line-2) !important;
+}
+
+.search-form .search-btn {
+    background-color: var(--navy-800) !important;
+}
+
+.search-tab .layui-tabs-header,
+.index-wrap .layui-tabs-header {
+    border-bottom: 1px solid var(--line);
+}
+
+.search-tab .layui-tabs-header li.layui-this,
+.search-tab .layui-tabs-header li:hover {
+    color: var(--navy-900);
+}
+
+.search-empty .icon .layui-icon {
+    color: var(--line-2);
+}
+
+.layout-sidebar .sidebar {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 4px 0;
+}
+
+/* 通用卡片：统一描边与标题字 */
+.layui-card {
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(11, 31, 58, 0.05);
+}
+
+.layui-card-header {
+    font-family: var(--serif);
+    font-weight: 600;
+    color: var(--navy-900);
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--line);
+}
+
+.my-menu li a:hover,
+.sidebar a:hover {
+    color: var(--gold-600);
+}
+
+/* 左侧浮动工具条 */
+.fixbar .fixbar-item,
+.fixbar li,
+.fixbar a {
+    background-color: #fff;
+    color: var(--navy-800);
+    border: 1px solid var(--line);
+    box-shadow: 0 2px 8px rgba(11, 31, 58, 0.08);
+}
+
+.fixbar .fixbar-item:hover,
+.fixbar li:hover a {
+    background-color: var(--navy-800);
+    color: var(--gold-300);
+    border-color: var(--navy-800);
+}
+
+/* ---------- 7. 正文内容 ---------- */
+
+.ke-content {
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.ke-content h1,
+.ke-content h2,
+.ke-content h3,
+.ke-content h4 {
+    font-family: var(--serif);
+    color: var(--navy-900);
+    letter-spacing: 0.02em;
+}
+
+.ke-content h2 {
+    padding-left: 12px;
+    border-left: 4px solid var(--gold-500);
+    line-height: 1.4;
+}
+
+.ke-content a {
+    color: var(--navy-600);
+    border-bottom: 1px solid rgba(29, 71, 115, 0.3);
+}
+
+.ke-content a:hover {
+    color: var(--gold-600);
+    border-bottom-color: var(--gold-500);
+}
+
+.ke-content blockquote {
+    border-left: 4px solid var(--gold-500);
+    background: #fbf8ef;
+    padding: 12px 18px;
+    color: var(--ink-2);
+}
+
+.ke-content blockquote p {
+    color: var(--ink-2);
+}
+
+.ke-content pre {
+    border-left: 4px solid var(--navy-800);
+    background: #f6f8fb;
+    border-radius: 2px;
+}
+
+.ke-content table thead {
+    background: var(--paper-2);
+}
+
+.ke-content table tr:hover {
+    background: #faf7ee;
+}
+
+/* ---------- 8. 页脚 + 绶带 ---------- */
+
+#footer {
+    position: relative;
+    margin-top: 56px;
+    padding: 42px 0 30px;
+    background: linear-gradient(180deg, var(--navy-900) 0%, var(--navy-950) 100%);
+    border-top: 3px solid transparent;
+    border-image: linear-gradient(90deg, var(--gold-600), var(--gold-300) 50%, var(--gold-600)) 1;
+}
+
+/* 绶带：顶部居中的金色折带 */
+.police-ribbon {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 22px;
+    height: 30px;
+    background: linear-gradient(180deg, var(--gold-400) 0%, var(--gold-600) 100%);
+    clip-path: polygon(0 0, 100% 0, 92% 50%, 100% 100%, 0 100%, 8% 50%);
+    box-shadow: 0 4px 12px rgba(8, 21, 42, 0.35);
+}
+
+.police-ribbon span {
+    font-family: var(--serif);
+    font-size: 13px;
+    letter-spacing: 0.24em;
+    color: #231903;
+    font-weight: 600;
+    white-space: nowrap;
+    padding-left: 2px;
+}
+
+.police-ribbon svg {
+    width: 14px;
+    height: 16px;
+    flex: 0 0 auto;
+}
+
+#footer .nav a {
+    color: rgba(255, 255, 255, 0.82);
+    font-family: var(--serif);
+    letter-spacing: 0.08em;
+    padding: 0 4px;
+}
+
+#footer .nav a:hover {
+    color: var(--gold-300);
+}
+
+#footer span,
+#footer a {
+    color: rgba(255, 255, 255, 0.64);
+}
+
+#footer a:hover {
+    color: var(--gold-300);
+}
+
+#footer .copyright {
+    color: rgba(255, 255, 255, 0.42);
+}
+
+#footer .contact a {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+#footer .contact .iconfont:hover {
+    color: var(--gold-300);
+}
+
+/* ---------- 9. 错误页 / 空态 ---------- */
+
+.no-records .icon .layui-icon {
+    color: var(--line-2);
+}
+
+.error-page,
+#main .layui-error {
+    color: var(--navy-900);
+}
+
+/* ---------- 10. 响应式 ---------- */
+
+/* 中等屏：导航收窄 */
+@media (max-width: 1200px) {
+    .top-nav {
+        margin-left: calc(var(--gutter) + 205px);
+    }
+
+    #header .layui-nav .layui-nav-item > a {
+        padding: 0 13px;
+        font-size: 14px;
+    }
+}
+
+/* 中等屏：定宽容器放开，卡片降为三列 */
+@media (max-width: 1260px) {
+    #main,
+    #footer .layui-main {
+        width: auto;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* 抵消栅格负边距，避免窄屏横向滚动 */
+    #main {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .course-card .cover img {
+        width: 100%;
+        height: 155px;
+        object-fit: cover;
+    }
+
+    .layui-col-md3 {
+        width: 33.3333%;
+    }
+}
+
+/* 平板 / 手机：头部两行栅格，导航横向滚动 */
+@media (max-width: 991px) {
+    #header {
+        height: auto;
+        min-height: 58px;
+        padding: 8px 10px 0;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "logo user"
+            "nav  nav";
+        align-items: center;
+        row-gap: 2px;
+    }
+
+    #header .logo {
+        position: static;
+        grid-area: logo;
+        height: auto;
+        line-height: 1;
+    }
+
+    #header .logo a {
+        padding: 2px 8px 2px 5px;
+    }
+
+    .police-emblem {
+        width: 22px;
+        height: 26px;
+    }
+
+    .logo img {
+        max-width: 124px;
+        max-height: 30px;
+    }
+
+    #header .user {
+        position: static;
+        grid-area: user;
+        height: auto;
+    }
+
+    #header .user .layui-nav {
+        display: flex;
+        align-items: center;
+    }
+
+    #header .layui-nav .layui-nav-item > a,
+    #header .user .layui-nav-item > a {
+        height: 34px;
+        line-height: 34px;
+        padding: 0 8px;
+        font-size: 13px;
+    }
+
+    #header .layui-nav .layui-nav-item > a:hover::after,
+    #header .layui-nav .layui-this > a::after {
+        bottom: 4px;
+        left: 8px;
+        right: 8px;
+    }
+
+    .top-nav {
+        grid-area: nav;
+        margin-left: 0;
+        margin-top: 2px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        border-top: 1px solid rgba(200, 162, 74, 0.18);
+    }
+
+    .top-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .top-nav .layui-nav {
+        display: flex;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        width: max-content;
+    }
+
+    .top-nav .layui-nav-item {
+        float: none;
+        display: inline-block;
+    }
+
+    #main {
+        margin-top: 104px;
+        margin-bottom: 24px;
+        min-height: 420px;
+        padding: 0 10px;
+        width: auto;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* layui-main 是定宽容器，窄屏必须放开，否则整页横向溢出 */
+    #footer .layui-main,
+    #footer .layui-main .row {
+        width: auto;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* 栅格归位：两列起，超窄屏再降为单列 */
+    .layui-col-md3,
+    .layui-col-md4 {
+        width: 50%;
+    }
+
+    .layui-col-md6,
+    .layui-col-md8,
+    .layui-col-md9,
+    .layui-col-md12 {
+        width: 100%;
+        float: none;
+        left: auto;
+        right: auto;
+    }
+
+    .layui-col-md3,
+    .layui-col-md4 {
+        float: left;
+        left: auto;
+        right: auto;
+    }
+
+    .course-card .cover img {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
+
+    /* 详情页 / 用户中心：固定栏宽改为纵向堆叠（保持 DOM 原有顺序） */
+    .layout-main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .layout-content,
+    .my-content,
+    .layout-sidebar,
+    .my-sidebar {
+        width: 100%;
+    }
+
+    .course-meta {
+        display: block;
+    }
+
+    .course-meta .cover {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+        margin: 0 0 12px;
+    }
+
+    .course-meta .cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .course-meta .info {
+        width: 100%;
+        padding-top: 0;
+    }
+
+    .course-meta .ratings {
+        padding-top: 10px;
+        margin-top: 6px;
+        border-top: 1px solid var(--line);
+    }
+
+    .course-meta .ratings .score {
+        color: #5C6B7E;
+    }
+
+    /* 面包屑右侧分享按钮：由绝对定位改为独立一行 */
+    .breadcrumb .share {
+        position: static;
+        display: block;
+        margin-top: 8px;
+    }
+
+    .wrap {
+        padding: 14px;
+    }
+
+    /* 筛选条：固定 40px 行高在窄屏会压字，改为可换行 */
+    .filter-group {
+        height: auto;
+        line-height: 1.6;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        padding: 4px 0 10px;
+    }
+
+    .filter-group .title {
+        width: 100%;
+        margin-bottom: 2px;
+        font-size: 13px;
+        color: var(--navy-800);
+    }
+
+    .filter-group .content {
+        display: block;
+        width: 100%;
+    }
+
+    .filter-group .content a {
+        display: inline-block;
+        line-height: 26px;
+        margin: 0 14px 4px 0;
+        font-size: 13px;
+    }
+
+    .filter-sort {
+        padding: 10px 0;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .filter-sort a {
+        margin-right: 16px;
+    }
+
+    /* 搜索表单：固定 696px 输入框改为整行 */
+    .search-form .layui-form-item {
+        margin-bottom: 0;
+    }
+
+    .search-form .layui-inline {
+        display: block;
+        width: 100%;
+        margin: 0 0 10px;
+    }
+
+    .search-form .query-input {
+        width: 100%;
+    }
+
+    .search-form .search-btn {
+        width: 100%;
+    }
+
+    .index-wrap {
+        margin-bottom: 16px;
+        padding: 4px 12px 18px;
+    }
+
+    .index-wrap .header {
+        font-size: 17px;
+        letter-spacing: 0.2em;
+        margin: 0 16px 6px;
+        padding: 14px 0 12px;
+    }
+
+    .fixbar,
+    .layui-fixbar {
+        display: none;
+    }
+
+    #footer {
+        margin-top: 34px;
+        padding: 34px 12px 24px;
+    }
+
+    .police-ribbon {
+        height: 26px;
+        padding: 0 16px;
+    }
+
+    .police-ribbon span {
+        font-size: 11px;
+        letter-spacing: 0.22em;
+    }
+}
+
+/* 手机：卡片单列 */
+@media (max-width: 600px) {
+    .layui-col-md3,
+    .layui-col-md4 {
+        width: 100%;
+        float: none;
+    }
+}
+
+/* 窄屏微调 */
+@media (max-width: 480px) {
+    #header .logo {
+        min-width: 0;
+    }
+
+    #header .logo a {
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    /* 用户区收紧但保持单行，避免逐字换行把页头撑高 */
+    #header .user,
+    #header .user .layui-nav,
+    #header .user .layui-nav-item > a {
+        white-space: nowrap;
+    }
+
+    .logo img {
+        max-width: 92px;
+        max-height: 24px;
+    }
+
+    #header .layui-nav .layui-nav-item > a,
+    #header .user .layui-nav-item > a {
+        padding: 0 6px;
+        font-size: 12px;
+    }
+
+    #main {
+        margin-top: 98px;
+    }
+
+    .course-card .title,
+    .course-card .title a {
+        font-size: 14px;
+    }
+}
+
+/* 打印：去掉装饰，保持清晰 */
+@media print {
+    #header,
+    #footer,
+    .fixbar,
+    .police-ribbon {
+        display: none !important;
+    }
+
+    body.main {
+        background: #fff;
+    }
+}

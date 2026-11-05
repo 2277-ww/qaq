@@ -1,0 +1,56 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 916, top: 0, width: 364, height: 720, background: '#0F2A47' }}>
+        <Box style={{ position: 'absolute', left: 48, top: 128, width: 56, height: 2, background: 'rgba(255,255,255,0.5)' }} />
+        <Text style={{ position: 'absolute', left: 48, top: 152, fontSize: 14, color: 'rgba(255,255,255,0.62)', letterSpacing: 4, lineHeight: 2 }}>
+            SELF-STUDY
+            <br />
+            PLATFORM
+        </Text>
+        <Text style={{ position: 'absolute', left: 48, top: 246, width: 260, fontSize: 15, color: 'rgba(255,255,255,0.45)', lineHeight: 1.9 }}>
+            课程 · 章节 · 进度
+            <br />
+            一个入口，全部留下
+        </Text>
+        <Image src="assets/qr.png" style={{ position: 'absolute', left: 102, top: 342, width: 160, height: 160 }} />
+        <Text style={{ position: 'absolute', left: 48, top: 518, width: 268, fontSize: 13, color: 'rgba(255,255,255,0.5)', letterSpacing: 1, textAlign: 'center' }}>
+            手机扫码，直接打开
+        </Text>
+        <Text style={{ position: 'absolute', left: 48, top: 640, fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>
+            2026.11
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 92, top: 92, fontSize: 16, color: '#1E4FA8', letterSpacing: 2 }}>
+        警院 WeChat 全生态 · 五平台之一
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 90, top: 132, fontSize: 84, fontWeight: 'bold', color: '#0F2A47', letterSpacing: 4 }}>
+        自学平台
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 92, top: 250, width: 96, height: 5, background: '#E8622C' }} />
+
+    <Text style={{ position: 'absolute', left: 92, top: 288, width: 760, fontSize: 27, color: '#1A2230', lineHeight: 1.62 }}>
+        把散在群文件里的课，
+        <br />
+        做成一个能搜、能播、能看进度的网站
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 92, top: 400, width: 700, fontSize: 17, color: '#5A6678', lineHeight: 1.85 }}>
+        不用装 App，不用注册，手机上打开就能学。
+        <br />
+        学过哪一节、看到第几分钟、写了什么笔记，都留在系统里。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 92, top: 502, width: 700, height: 1, background: '#D6DCE5' }} />
+
+    <Text style={{ position: 'absolute', left: 92, top: 524, fontSize: 16, color: '#1A2230', fontWeight: 'bold' }}>
+        赛道：________________
+    </Text>
+    <Text style={{ position: 'absolute', left: 92, top: 558, fontSize: 16, color: '#1A2230' }}>
+        姓名：______________　　区队：______________
+    </Text>
+    <Text style={{ position: 'absolute', left: 92, top: 610, fontSize: 14, color: '#9AA5B4', letterSpacing: 0.5 }}>
+        2026 年 11 月　·　路演答辩
+    </Text>
+</Slide>

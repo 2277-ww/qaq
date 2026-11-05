@@ -1,0 +1,79 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            技术架构：四层本体，两条外挂能力
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            03 · 系统实现与验证
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 82, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        前后端分离　·　不自建账号体系　·　跨平台只走公开 API 与业务事件
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 60, top: 122, fontSize: 14, color: '#8B97A8' }}>接入层</Text>
+    <Box style={{ position: 'absolute', left: 140, top: 112, width: 760, height: 88, border: '1px solid #D6DCE5', padding: 16, flexDirection: 'column', gap: 6 }}>
+        <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#1A2230' }}>浏览器 · 响应式 H5</Text>
+        <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>
+            桌面与移动共用一套前端，不做原生 App；统一加载态、空状态、错误页与权限不足页
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 230, fontSize: 14, color: '#8B97A8' }}>前端</Text>
+    <Box style={{ position: 'absolute', left: 140, top: 220, width: 760, height: 100, border: '1px solid #D6DCE5', padding: 16, flexDirection: 'column', gap: 6 }}>
+        <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#1A2230' }}>React 18 + TypeScript(strict) + Vite + Ant Design 5 + GSAP</Text>
+        <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>
+            请求、认证、权限、上传、错误处理复用公共基础包；主题变量统一，动效三档 150 / 250 / 400ms
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 350, fontSize: 14, color: '#8B97A8' }}>服务层</Text>
+    <Box style={{ position: 'absolute', left: 140, top: 340, width: 760, height: 100, background: '#E8EFF8', borderLeft: '3px solid #1E4FA8', padding: 16, flexDirection: 'column', gap: 6 }}>
+        <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#1E4FA8' }}>课程 · 学习 · 审核 · 开放接口 · 事件投递</Text>
+        <Text style={{ fontSize: 15, color: '#1A2230', lineHeight: 1.55 }}>
+            完成判定只在服务层实现一处；事件走 outbox，失败重试并支持人工重放，对外接口以 OpenAPI 为唯一契约
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 470, fontSize: 14, color: '#8B97A8' }}>数据层</Text>
+    <Box style={{ position: 'absolute', left: 140, top: 460, width: 760, height: 96, border: '1px solid #D6DCE5', padding: 16, flexDirection: 'column', gap: 6 }}>
+        <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#1A2230' }}>MySQL · Redis · 对象存储 + CDN</Text>
+        <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>
+            主数据与进度分库存放；视频与附件走对象存储，只发限时签名地址（有效期 ≤2 小时）
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 940, top: 112, width: 280, height: 200, border: '1px solid #3D7BD9', padding: 20, flexDirection: 'column' }}>
+        <Text style={{ fontSize: 14, color: '#3D7BD9', letterSpacing: 1 }}>外挂能力 ① 身份</Text>
+        <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#1A2230', marginTop: 8, lineHeight: 1.4 }}>
+            论坛认证中心
+        </Text>
+        <Text style={{ fontSize: 15, color: '#4A5568', marginTop: 8, lineHeight: 1.7 }}>
+            OAuth 2.1 + OIDC 授权码模式，强制 PKCE；令牌只在服务端换取，不落前端、不进 URL。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 940, top: 330, width: 280, height: 226, border: '1px solid #D6DCE5', background: '#F7F9FC', padding: 20, flexDirection: 'column' }}>
+        <Text style={{ fontSize: 14, color: '#8B97A8', letterSpacing: 1 }}>外挂能力 ② 事件</Text>
+        <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#1A2230', marginTop: 8, lineHeight: 1.4 }}>
+            业务事件通道
+        </Text>
+        <Text style={{ fontSize: 15, color: '#4A5568', marginTop: 8, lineHeight: 1.7 }}>
+            course.completed → 实训工坊准入、统一档案归集；eventId 全局唯一，重复到达不重复生效。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 580, width: 1160, height: 56, background: '#F7F9FC', borderLeft: '3px solid #1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
+        <Text style={{ fontSize: 18, color: '#1A2230' }}>
+            部署形态：独立工程、独立仓库、独立部署，开发 / 测试 / 预发布 / 生产四套配置，
+            <span style={{ fontWeight: 'bold', color: '#1E4FA8' }}>不与其他四平台合并构建</span>。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>12 / 21</Text>
+    </Box>
+</Slide>

@@ -1,0 +1,24 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#12304F' }}>
+    <Box style={{ position: 'absolute', left: 100, top: 96, width: 60, height: 2, background: 'rgba(255,255,255,0.5)' }} />
+    <Text style={{ position: 'absolute', left: 100, top: 118, fontSize: 15, color: 'rgba(255,255,255,0.7)', letterSpacing: 2 }}>
+        警院 WeChat 全生态 · 五平台之一
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 96, top: 268, fontSize: 54, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 4 }}>
+        请各位老师指正
+    </Text>
+    <Text style={{ position: 'absolute', left: 100, top: 356, width: 700, fontSize: 20, color: 'rgba(255,255,255,0.82)', lineHeight: 1.7, letterSpacing: 1 }}>
+        自学平台　·　资源沉淀 · 技能铺垫 · 前置学习
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 100, top: 470, width: 620, height: 1, background: 'rgba(255,255,255,0.25)' }} />
+    <Text style={{ position: 'absolute', left: 100, top: 492, fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.8 }}>
+        需求基线：自学平台软件需求规格说明书 SRS V1.0
+        <br />
+        生态基线：警院 WeChat 全生态五平台整体方案
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 100, top: 620, fontSize: 15, color: 'rgba(255,255,255,0.55)', letterSpacing: 1 }}>
+        2026.11
+    </Text>
+</Slide>

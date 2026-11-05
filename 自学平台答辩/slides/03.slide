@@ -1,0 +1,23 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 10, height: 720, background: '#12304F' }} />
+    <Box style={{ position: 'absolute', left: 100, top: 552, width: 1080, height: 1, background: '#E5E7EB' }} />
+
+    <Text style={{ position: 'absolute', left: 96, top: 236, fontSize: 140, fontWeight: 'bold', color: '#1E4FA8', lineHeight: 1 }}>
+        01
+    </Text>
+    <Box style={{ position: 'absolute', left: 396, top: 258, width: 1, height: 116, background: '#D6DCE5' }} />
+
+    <Text style={{ position: 'absolute', left: 448, top: 268, fontSize: 44, fontWeight: 'bold', color: '#12304F', letterSpacing: 2 }}>
+        选题背景与平台定位
+    </Text>
+    <Text style={{ position: 'absolute', left: 450, top: 328, fontSize: 15, color: '#8B97A8', letterSpacing: 1.5 }}>
+        BACKGROUND &amp; POSITIONING
+    </Text>
+    <Text style={{ position: 'absolute', left: 450, top: 358, fontSize: 16, color: '#4A5568', letterSpacing: 1 }}>
+        资源分散 · 未学先做 · 过程无痕 · 数据割裂
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 104, top: 600, fontSize: 15, color: '#8B97A8', letterSpacing: 1 }}>
+        警院 WeChat 全生态 · 自学平台
+    </Text>
+</Slide>

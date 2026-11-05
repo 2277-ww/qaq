@@ -1,0 +1,60 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#0F2A47' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 6, height: 720, background: '#E8622C' }} />
+
+    <Text style={{ position: 'absolute', left: 92, top: 76, fontSize: 14, color: 'rgba(255,255,255,0.5)', letterSpacing: 4 }}>
+        现 场 演 示
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 88, top: 108, fontSize: 50, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+        接下来，我现场演示三件事
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 92, top: 220, width: 1096, height: 1, background: 'rgba(255,255,255,0.16)' }} />
+
+    <Text style={{ position: 'absolute', left: 90, top: 244, fontSize: 26, fontWeight: 'bold', color: '#E8622C' }}>
+        01
+    </Text>
+    <Text style={{ position: 'absolute', left: 176, top: 246, width: 220, fontSize: 21, color: '#FFFFFF' }}>
+        搜一门课
+    </Text>
+    <Text style={{ position: 'absolute', left: 420, top: 250, width: 760, fontSize: 15, color: 'rgba(255,255,255,0.62)' }}>
+        搜“Python”，从首页一路点到章节页，十秒之内
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 92, top: 314, width: 1096, height: 1, background: 'rgba(255,255,255,0.16)' }} />
+
+    <Text style={{ position: 'absolute', left: 90, top: 338, fontSize: 26, fontWeight: 'bold', color: '#E8622C' }}>
+        02
+    </Text>
+    <Text style={{ position: 'absolute', left: 176, top: 340, width: 220, fontSize: 21, color: '#FFFFFF' }}>
+        看一节视频
+    </Text>
+    <Text style={{ position: 'absolute', left: 420, top: 344, width: 760, fontSize: 15, color: 'rgba(255,255,255,0.62)' }}>
+        把进度条拖到中段，随手记一条笔记，看它自动带上时间点
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 92, top: 408, width: 1096, height: 1, background: 'rgba(255,255,255,0.16)' }} />
+
+    <Text style={{ position: 'absolute', left: 90, top: 432, fontSize: 26, fontWeight: 'bold', color: '#E8622C' }}>
+        03
+    </Text>
+    <Text style={{ position: 'absolute', left: 176, top: 434, width: 220, fontSize: 21, color: '#FFFFFF' }}>
+        后台加一门课
+    </Text>
+    <Text style={{ position: 'absolute', left: 420, top: 438, width: 760, fontSize: 15, color: 'rgba(255,255,255,0.62)' }}>
+        建课、发布、回前台刷新，不碰一行代码
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 92, top: 508, width: 1096, height: 1, background: 'rgba(255,255,255,0.16)' }} />
+
+    <Text style={{ position: 'absolute', left: 88, top: 552, fontSize: 34, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+        感谢聆听，欢迎提问
+    </Text>
+    <Text style={{ position: 'absolute', left: 92, top: 612, fontSize: 15, color: 'rgba(255,255,255,0.5)' }}>
+        自学平台　·　https://8.138.34.151　·　2026.11
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 1050, top: 636, fontSize: 13, color: 'rgba(255,255,255,0.28)', letterSpacing: 3 }}>
+        SELF-STUDY
+    </Text>
+</Slide>

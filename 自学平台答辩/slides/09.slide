@@ -1,0 +1,115 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            流程二：学习过程如何被记录成证据
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            02 · 需求分析与功能设计
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 82, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        学习进度链路　·　不干扰学习体验的前提下，自动、准确、可恢复地记录进度
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 118, width: 200, height: 86, border: '1px solid #D6DCE5', padding: 12, flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 15, color: '#3D7BD9' }}>01</Text>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1A2230' }}>进入课时</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>鉴权 · 取上次位置</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 266, top: 148, fontSize: 18, color: '#8B97A8' }}>→</Text>
+
+    <Box style={{ position: 'absolute', left: 300, top: 118, width: 200, height: 86, border: '1px solid #D6DCE5', padding: 12, flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 15, color: '#3D7BD9' }}>02</Text>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1A2230' }}>心跳上报</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>按事件 · 限流 6 次/分</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 506, top: 148, fontSize: 18, color: '#8B97A8' }}>→</Text>
+
+    <Box style={{ position: 'absolute', left: 540, top: 118, width: 200, height: 86, border: '1px solid #D6DCE5', padding: 12, flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 15, color: '#3D7BD9' }}>03</Text>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1A2230' }}>进度聚合</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>取最大进度，不倒退</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 746, top: 148, fontSize: 18, color: '#8B97A8' }}>→</Text>
+
+    <Box style={{ position: 'absolute', left: 780, top: 118, width: 200, height: 86, border: '1px solid #3D7BD9', padding: 12, flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 15, color: '#3D7BD9' }}>04</Text>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1E4FA8' }}>完成判定</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>课时 → 章节 → 课程</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 986, top: 148, fontSize: 18, color: '#8B97A8' }}>→</Text>
+
+    <Box style={{ position: 'absolute', left: 1020, top: 118, width: 200, height: 86, background: '#1E4FA8', padding: 12, flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)' }}>05</Text>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#FFFFFF' }}>事件投递</Text>
+        <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.78)' }}>course.completed</Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 240, width: 640, height: 2, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 60, top: 252, fontSize: 18, fontWeight: 'bold', color: '#1E4FA8' }}>
+        判定与续学规则
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 286, width: 640, flexDirection: 'column' }}>
+        <Box style={{ flexDirection: 'row', paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 34, fontSize: 16, color: '#3D7BD9' }}>①</Text>
+            <Text style={{ flex: 1, fontSize: 17, color: '#1A2230', lineHeight: 1.6 }}>
+                完成判定：章节内课时全部完成即章节完成，全部章节完成即课程完成；判定只在服务端实现一处，前端不做二次计算
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 34, fontSize: 16, color: '#3D7BD9' }}>②</Text>
+            <Text style={{ flex: 1, fontSize: 17, color: '#1A2230', lineHeight: 1.6 }}>
+                断点续学：视频记录播放位置与已看区段，换设备、换会话均可恢复，记录保留 30 天
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 34, fontSize: 16, color: '#3D7BD9' }}>③</Text>
+            <Text style={{ flex: 1, fontSize: 17, color: '#1A2230', lineHeight: 1.6 }}>
+                图文阅读：翻到末段并停留达到阈值才计为完成，避免「打开即完成」把数据做虚
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 10, paddingBottom: 10, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 34, fontSize: 16, color: '#3D7BD9' }}>④</Text>
+            <Text style={{ flex: 1, fontSize: 17, color: '#1A2230', lineHeight: 1.6 }}>
+                收藏与笔记：学生自建知识库，笔记正文加密存储，仅本人可读，管理员查看须留痕
+            </Text>
+        </Box>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 740, top: 240, width: 480, height: 2, background: '#D6DCE5' }} />
+    <Text style={{ position: 'absolute', left: 740, top: 252, fontSize: 18, fontWeight: 'bold', color: '#4A5568' }}>
+        可靠性设计
+    </Text>
+    <Box style={{ position: 'absolute', left: 740, top: 286, width: 480, flexDirection: 'column' }}>
+        <Box style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+            <Text style={{ fontSize: 54, fontWeight: 'bold', color: '#1E4FA8', lineHeight: 1 }}>≤200</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1E4FA8', marginLeft: 6, marginBottom: 5 }}>ms</Text>
+            <Text style={{ fontSize: 15, color: '#4A5568', marginLeft: 12, marginBottom: 6 }}>进度上报接口 P95</Text>
+        </Box>
+        <Text style={{ fontSize: 17, color: '#1A2230', marginTop: 18, lineHeight: 1.65 }}>
+            限流：按 userId + lessonId 限制 6 次/分钟，超限提示稍后重试，不丢进度
+        </Text>
+        <Text style={{ fontSize: 17, color: '#1A2230', marginTop: 12, lineHeight: 1.65 }}>
+            幂等：重复上报不产生重复记录，进度只取最大值，网络重试安全
+        </Text>
+        <Text style={{ fontSize: 17, color: '#1A2230', marginTop: 12, lineHeight: 1.65 }}>
+            兜底：事件通道不可用时写入 outbox 待投递，学习流程不被阻塞
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 580, width: 1160, height: 56, background: '#F7F9FC', borderLeft: '3px solid #1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
+        <Text style={{ fontSize: 18, color: '#1A2230' }}>
+            这条链路的产出只有一个：
+            <span style={{ fontWeight: 'bold', color: '#1E4FA8' }}>一个下游可查询、可信任的完成状态</span>
+            ，而不是一堆看板数字。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>09 / 21</Text>
+    </Box>
+</Slide>

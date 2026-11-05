@@ -1,0 +1,94 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 68, top: 60, width: 9, height: 9, background: '#E8622C' }} />
+    <Text style={{ position: 'absolute', left: 88, top: 56, fontSize: 14, color: '#E8622C', letterSpacing: 2 }}>
+        02　方案
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 66, top: 92, fontSize: 40, fontWeight: 'bold', color: '#0F2A47', letterSpacing: 0.5 }}>
+        我把这些课，做成了一个会记账的网站
+    </Text>
+    <Text style={{ position: 'absolute', left: 68, top: 150, fontSize: 18, color: '#5A6678', letterSpacing: 0.5 }}>
+        一句话：原来 1 小时的活，现在 1 分钟。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 196, width: 392, height: 330, background: '#0F2A47' }}>
+        <Text style={{ position: 'absolute', left: 34, top: 44, fontSize: 40, fontWeight: 'bold', color: '#FFFFFF', lineHeight: 1.45, letterSpacing: 1 }}>
+            学没学，
+            <br />
+            不再靠问。
+        </Text>
+        <Box style={{ position: 'absolute', left: 36, top: 172, width: 48, height: 3, background: '#E8622C' }} />
+        <Text style={{ position: 'absolute', left: 34, top: 196, width: 320, fontSize: 15, color: 'rgba(255,255,255,0.62)', lineHeight: 2 }}>
+            网盘只负责存文件；
+            <br />
+            这个系统负责回答三件事：
+            <br />
+            谁、学到哪、学完没有。
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 520, top: 172, fontSize: 13, color: '#9AA5B4', letterSpacing: 1.5 }}>
+        原来
+    </Text>
+    <Text style={{ position: 'absolute', left: 860, top: 172, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.5 }}>
+        现在
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 520, top: 210, fontSize: 16, fontWeight: 'bold', color: '#1A2230' }}>
+        找一节课
+    </Text>
+    <Text style={{ position: 'absolute', left: 630, top: 211, width: 220, fontSize: 15, color: '#8B97A8', lineHeight: 1.6 }}>
+        翻群消息、问课代表
+    </Text>
+    <Text style={{ position: 'absolute', left: 852, top: 211, fontSize: 18, color: '#D6DCE5' }}>
+        →
+    </Text>
+    <Text style={{ position: 'absolute', left: 884, top: 209, width: 330, fontSize: 19, color: '#1A2230' }}>
+        搜索框输关键词，秒出结果
+    </Text>
+    <Box style={{ position: 'absolute', left: 520, top: 262, width: 700, height: 1, background: '#E5E7EB' }} />
+
+    <Text style={{ position: 'absolute', left: 520, top: 296, fontSize: 16, fontWeight: 'bold', color: '#1A2230' }}>
+        看一节视频
+    </Text>
+    <Text style={{ position: 'absolute', left: 630, top: 297, width: 220, fontSize: 15, color: '#8B97A8', lineHeight: 1.6 }}>
+        群文件过期，还得先下载
+    </Text>
+    <Text style={{ position: 'absolute', left: 852, top: 297, fontSize: 18, color: '#D6DCE5' }}>
+        →
+    </Text>
+    <Text style={{ position: 'absolute', left: 884, top: 295, width: 330, fontSize: 19, color: '#1A2230' }}>
+        网页打开就播，能拖进度
+    </Text>
+    <Box style={{ position: 'absolute', left: 520, top: 348, width: 700, height: 1, background: '#E5E7EB' }} />
+
+    <Text style={{ position: 'absolute', left: 520, top: 382, fontSize: 16, fontWeight: 'bold', color: '#1A2230' }}>
+        查学习情况
+    </Text>
+    <Text style={{ position: 'absolute', left: 630, top: 383, width: 220, fontSize: 15, color: '#8B97A8', lineHeight: 1.6 }}>
+        逐个问、收截图、人工对
+    </Text>
+    <Text style={{ position: 'absolute', left: 852, top: 383, fontSize: 18, color: '#D6DCE5' }}>
+        →
+    </Text>
+    <Text style={{ position: 'absolute', left: 884, top: 381, width: 330, fontSize: 19, color: '#1A2230' }}>
+        后台一页看全，谁学到哪
+    </Text>
+    <Box style={{ position: 'absolute', left: 520, top: 434, width: 700, height: 1, background: '#E5E7EB' }} />
+
+    <Text style={{ position: 'absolute', left: 520, top: 470, width: 700, fontSize: 16, color: '#5A6678', lineHeight: 1.8 }}>
+        关键差别不在“存”，在“记”：每看一节、每写一条笔记，都会落成一条可查的记录。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 566, width: 1160, height: 60, background: '#FFF3EC' }} />
+    <Text style={{ position: 'absolute', left: 84, top: 584, fontSize: 19, color: '#8A3A12', letterSpacing: 0.3 }}>
+        所以它不是又一个资料网盘，而是一个把“学过”变成数据的地方。
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 60, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        自学平台 · 路演答辩
+    </Text>
+    <Text style={{ position: 'absolute', left: 1130, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        03 / 11
+    </Text>
+</Slide>

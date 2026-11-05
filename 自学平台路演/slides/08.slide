@@ -1,0 +1,78 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 68, top: 60, width: 9, height: 9, background: '#E8622C' }} />
+    <Text style={{ position: 'absolute', left: 88, top: 56, fontSize: 14, color: '#E8622C', letterSpacing: 2 }}>
+        04　技术与 AI
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 66, top: 92, fontSize: 38, fontWeight: 'bold', color: '#0F2A47', letterSpacing: 0.5 }}>
+        AI 没写进产品，但写进了我做产品的每一步
+    </Text>
+    <Text style={{ position: 'absolute', left: 68, top: 148, fontSize: 18, color: '#5A6678', letterSpacing: 0.5 }}>
+        这一页只讲实际发生的：AI 帮我读、帮我改、帮我跑，代码是我自己确认的
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 196, width: 570, height: 164, background: '#F8FAFD' }}>
+        <Text style={{ position: 'absolute', left: 24, top: 18, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.2 }}>
+            ① 读文档
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 42, fontSize: 18, fontWeight: 'bold', color: '#0F2A47' }}>
+            把 60 页方案拆成能逐条核对的清单
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 78, width: 520, fontSize: 14, color: '#4A5568', lineHeight: 1.8 }}>
+            五平台方案 PDF 和 SRS 交给模型，拆出 38 项功能、状态机、9 类错误码，我再对着代码一条条核。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 650, top: 196, width: 570, height: 164, background: '#F8FAFD' }}>
+        <Text style={{ position: 'absolute', left: 24, top: 18, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.2 }}>
+            ② 改代码
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 42, fontSize: 18, fontWeight: 'bold', color: '#0F2A47' }}>
+            在 93 个控制器里找登录模块的耦合点
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 78, width: 520, fontSize: 14, color: '#4A5568', lineHeight: 1.8 }}>
+            要摘掉登录和会员，靠人读太慢；让 AI 按关键词列出全部引用处，再人工判断改哪几行。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 372, width: 570, height: 164, background: '#F8FAFD' }}>
+        <Text style={{ position: 'absolute', left: 24, top: 18, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.2 }}>
+            ③ 写部署
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 42, fontSize: 18, fontWeight: 'bold', color: '#0F2A47' }}>
+            编译 Phalcon 3.4.5 失败三次，靠报错定位
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 78, width: 520, fontSize: 14, color: '#4A5568', lineHeight: 1.8 }}>
+            每次把报错贴回去，确认是 PHP 7.3 的 API 变更，换掉函数才编过，最后固化成 26 个脚本。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 650, top: 372, width: 570, height: 164, background: '#F8FAFD' }}>
+        <Text style={{ position: 'absolute', left: 24, top: 18, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.2 }}>
+            ④ 做巡检
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 42, fontSize: 18, fontWeight: 'bold', color: '#0F2A47' }}>
+            一个脚本查完 6 个面，10 分钟出结论
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 78, width: 520, fontSize: 14, color: '#4A5568', lineHeight: 1.8 }}>
+            服务、端口、媒体、搜索、发帖、数据库，一次跑完；脚本里的检查项和判断逻辑由 AI 起草。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 548, width: 1160, height: 118, background: '#FFF3EC' }}>
+        <Text style={{ position: 'absolute', left: 24, top: 16, fontSize: 15, fontWeight: 'bold', color: '#8A3A12' }}>
+            说实话：产品功能里现在还没有 AI
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 46, width: 1112, fontSize: 14.5, color: '#6B4A34', lineHeight: 1.75 }}>
+            AI 目前全部用在开发侧：读文档、定位代码、写部署与巡检脚本、生成测试数据。
+            下一步（V2）才会把它放进产品：按章节内容做课程问答，按学习进度生成复习计划。
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        自学平台 · 路演答辩
+    </Text>
+    <Text style={{ position: 'absolute', left: 1130, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        08 / 11
+    </Text>
+</Slide>

@@ -1,0 +1,111 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            生态定位：闭环中的一段，而不是又一个资源库
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            01 · 选题背景与平台定位
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 84, fontSize: 14, color: '#8B97A8', letterSpacing: 1 }}>
+        五平台闭环　·　每一个模块的产出都是下一个模块的输入
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 116, width: 196, height: 96, border: '1px solid #D6DCE5', background: '#F7F9FC', padding: 14, flexDirection: 'column', gap: 6 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1A2230' }}>论坛</Text>
+        <Text style={{ fontSize: 14, color: '#4A5568', lineHeight: 1.5 }}>身份底座<br />交流与组队</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 258, top: 148, fontSize: 18, color: '#8B97A8' }}>→</Text>
+
+    <Box style={{ position: 'absolute', left: 301, top: 116, width: 196, height: 96, background: '#1E4FA8', padding: 14, flexDirection: 'column', gap: 6 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#FFFFFF' }}>自学平台</Text>
+        <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5 }}>资源沉淀<br />前置学习</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 499, top: 148, fontSize: 18, color: '#8B97A8' }}>→</Text>
+
+    <Box style={{ position: 'absolute', left: 542, top: 116, width: 196, height: 96, border: '1px solid #D6DCE5', background: '#F7F9FC', padding: 14, flexDirection: 'column', gap: 6 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1A2230' }}>考试平台</Text>
+        <Text style={{ fontSize: 14, color: '#4A5568', lineHeight: 1.5 }}>能力考核<br />项目准入</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 740, top: 148, fontSize: 18, color: '#8B97A8' }}>→</Text>
+
+    <Box style={{ position: 'absolute', left: 783, top: 116, width: 196, height: 96, border: '1px solid #D6DCE5', background: '#F7F9FC', padding: 14, flexDirection: 'column', gap: 6 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1A2230' }}>实训工坊</Text>
+        <Text style={{ fontSize: 14, color: '#4A5568', lineHeight: 1.5 }}>项目生产<br />团队协作</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 981, top: 148, fontSize: 18, color: '#8B97A8' }}>→</Text>
+
+    <Box style={{ position: 'absolute', left: 1024, top: 116, width: 196, height: 96, border: '1px solid #D6DCE5', background: '#F7F9FC', padding: 14, flexDirection: 'column', gap: 6 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1A2230' }}>成果广场</Text>
+        <Text style={{ fontSize: 14, color: '#4A5568', lineHeight: 1.5 }}>公开展示<br />反馈迭代</Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 246, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        本平台输入：工坊项目所需的技术栈清单　　输出：完成状态查询 + course.completed 事件 + 学习汇总
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 288, width: 560, height: 2, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 60, top: 300, fontSize: 18, fontWeight: 'bold', color: '#1E4FA8' }}>
+        本平台承担
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 332, width: 560, flexDirection: 'column' }}>
+        <Text style={{ fontSize: 18, color: '#1A2230', lineHeight: 1.5, paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            ① 分类课程体系与图文 / 视频教程
+        </Text>
+        <Text style={{ fontSize: 18, color: '#1A2230', lineHeight: 1.5, paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            ② 学习进度记录、断点续学与完成判定
+        </Text>
+        <Text style={{ fontSize: 18, color: '#1A2230', lineHeight: 1.5, paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            ③ 收藏、笔记与学习数据归集
+        </Text>
+        <Text style={{ fontSize: 18, color: '#1A2230', lineHeight: 1.5, paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            ④ 课程审核、发布、下架与归档
+        </Text>
+        <Text style={{ fontSize: 18, color: '#1A2230', lineHeight: 1.5, paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            ⑤ 开放接口与 course.completed 事件
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 660, top: 288, width: 560, height: 2, background: '#D6DCE5' }} />
+    <Text style={{ position: 'absolute', left: 660, top: 300, fontSize: 18, fontWeight: 'bold', color: '#4A5568' }}>
+        明确不承担（归属）
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 660, top: 332, width: 560, flexDirection: 'column' }}>
+        <Box style={{ flexDirection: 'row', paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ flex: 1, fontSize: 18, color: '#4A5568' }}>命题、组卷、判卷、成绩与错题</Text>
+            <Text style={{ fontSize: 14, color: '#8B97A8' }}>考试平台</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ flex: 1, fontSize: 18, color: '#4A5568' }}>立项、派单、组队、里程碑、评审</Text>
+            <Text style={{ fontSize: 14, color: '#8B97A8' }}>实训工坊</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ flex: 1, fontSize: 18, color: '#4A5568' }}>作品展示、评论反馈、优秀成果沉淀</Text>
+            <Text style={{ fontSize: 14, color: '#8B97A8' }}>成果广场</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ flex: 1, fontSize: 18, color: '#4A5568' }}>账号、密码、角色源头管理</Text>
+            <Text style={{ fontSize: 14, color: '#8B97A8' }}>论坛平台</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ flex: 1, fontSize: 18, color: '#4A5568' }}>成长档案本体与档案页面</Text>
+            <Text style={{ fontSize: 14, color: '#8B97A8' }}>统一档案服务</Text>
+        </Box>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 580, width: 1160, height: 56, background: '#F7F9FC', borderLeft: '3px solid #1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
+        <Text style={{ fontSize: 18, color: '#1A2230' }}>
+            边界即接口：平台不保存「项目—课程」绑定关系，工坊调整准入规则时
+            <span style={{ fontWeight: 'bold', color: '#1E4FA8' }}>不需要改动本平台一行代码</span>。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>05 / 21</Text>
+    </Box>
+</Slide>

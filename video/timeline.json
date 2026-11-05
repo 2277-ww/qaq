@@ -1,0 +1,347 @@
+{
+ "fps": 25,
+ "duration": 269.0,
+ "scenes": [
+  {
+   "id": "intro",
+   "title": "片头",
+   "start": 0.0,
+   "dur": 17.68,
+   "lines": [
+    {
+     "text": "自学平台，是警院全生态中课程与学习记录的权威来源。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\intro_00.wav",
+     "start": 0.55,
+     "end": 6.262,
+     "dur": 5.712
+    },
+    {
+     "text": "本片依据五平台前端与功能联动约束规范，演示核心页面、三类角色的权限差异，以及一条完整的上下游联动链路。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\intro_01.wav",
+     "start": 6.522,
+     "end": 16.842,
+     "dur": 10.32
+    }
+   ]
+  },
+  {
+   "id": "sso",
+   "title": "统一身份",
+   "start": 17.68,
+   "dur": 24.68,
+   "lines": [
+    {
+     "text": "所有入口统一经过论坛身份中心的 OIDC 授权，浏览器不保存任何令牌。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\sso_00.wav",
+     "start": 18.23,
+     "end": 25.31,
+     "dur": 7.08
+    },
+    {
+     "text": "BFF 在服务端完成授权码交换，只向浏览器下发 HttpOnly 会话 Cookie。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\sso_01.wav",
+     "start": 25.57,
+     "end": 32.77,
+     "dur": 7.2
+    },
+    {
+     "text": "登录后回到原始路径，认证中心的 sub 映射为平台 userId，三类角色按权限点分别授权。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\sso_02.wav",
+     "start": 33.03,
+     "end": 41.526,
+     "dur": 8.496
+    }
+   ]
+  },
+  {
+   "id": "catalog",
+   "title": "课程目录",
+   "start": 42.36,
+   "dur": 16.24,
+   "lines": [
+    {
+     "text": "课程目录由服务端分页，页码从 1 开始，默认每页 20 条。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\catalog_00.wav",
+     "start": 42.91,
+     "end": 48.742,
+     "dur": 5.832
+    },
+    {
+     "text": "分类、关键字和排序都使用白名单字段，页面状态来自带类型的接口响应，组件不拼接域名。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\catalog_01.wav",
+     "start": 49.002,
+     "end": 57.762,
+     "dur": 8.76
+    }
+   ]
+  },
+  {
+   "id": "detail",
+   "title": "课程详情",
+   "start": 58.6,
+   "dur": 21.48,
+   "lines": [
+    {
+     "text": "课程详情聚合了课程元数据、章节结构和当前用户的学习记录。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\detail_00.wav",
+     "start": 59.15,
+     "end": 65.582,
+     "dur": 6.432
+    },
+    {
+     "text": "学习记录以 recordId 与 courseId 关联，progress 取值 0 到 100，未完成时完成时间显式为 null。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\detail_01.wav",
+     "start": 65.842,
+     "end": 74.338,
+     "dur": 8.496
+    },
+    {
+     "text": "这里的字段名与规范第七章的数据字典逐字一致。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\detail_02.wav",
+     "start": 74.598,
+     "end": 79.23,
+     "dur": 4.632
+    }
+   ]
+  },
+  {
+   "id": "learn",
+   "title": "学习与进度",
+   "start": 80.08,
+   "dur": 21.08,
+   "lines": [
+    {
+     "text": "播放页按章节记录进度，中途退出后可以从上次位置继续。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\learn_00.wav",
+     "start": 80.63,
+     "end": 86.198,
+     "dur": 5.568
+    },
+    {
+     "text": "进度写入使用 PATCH 局部更新并携带幂等键，网络重试不会产生重复记录。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\learn_01.wav",
+     "start": 86.458,
+     "end": 93.514,
+     "dur": 7.056
+    },
+    {
+     "text": "课件与案例包由文件服务返回 fileId，私有资源必须鉴权才能下载。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\learn_02.wav",
+     "start": 93.774,
+     "end": 100.302,
+     "dur": 6.528
+    }
+   ]
+  },
+  {
+   "id": "complete",
+   "title": "完成课程与事件",
+   "start": 101.16,
+   "dur": 30.08,
+   "lines": [
+    {
+     "text": "当课程完成规则满足，平台先在本地事务中同时提交学习记录与待发事件。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\complete_00.wav",
+     "start": 101.71,
+     "end": 109.006,
+     "dur": 7.296
+    },
+    {
+     "text": "随后由发布器投递 course.completed，封套包含事件编号、版本、来源平台和业务数据。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\complete_01.wav",
+     "start": 109.266,
+     "end": 117.546,
+     "dur": 8.28
+    },
+    {
+     "text": "投递采用至少一次语义，消费者按 eventId 去重，保证同一条事件只产生一次副作用。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\complete_02.wav",
+     "start": 117.806,
+     "end": 125.198,
+     "dur": 7.392
+    },
+    {
+     "text": "这条事件同时供考试准入和个人成长档案消费。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\complete_03.wav",
+     "start": 125.458,
+     "end": 130.402,
+     "dur": 4.944
+    }
+   ]
+  },
+  {
+   "id": "admit",
+   "title": "考试准入联动",
+   "start": 131.24,
+   "dur": 22.12,
+   "lines": [
+    {
+     "text": "学生打开结课测验时，考试平台通过同步接口核验课程完成状态。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\admit_00.wav",
+     "start": 131.79,
+     "end": 138.054,
+     "dur": 6.264
+    },
+    {
+     "text": "事件投影存在秒级延迟时，平台回源查询权威记录，不会用过期缓存拒绝学生。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\admit_01.wav",
+     "start": 138.314,
+     "end": 145.706,
+     "dur": 7.392
+    },
+    {
+     "text": "资格判定同时校验考试、通过状态和规则版本，而不是只看一个布尔值。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\admit_02.wav",
+     "start": 145.966,
+     "end": 152.494,
+     "dur": 6.528
+    }
+   ]
+  },
+  {
+   "id": "teacher",
+   "title": "教师端",
+   "start": 153.36,
+   "dur": 22.76,
+   "lines": [
+    {
+     "text": "教师端按权限点开放课程创建、资源上传和学情查看。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\teacher_00.wav",
+     "start": 153.91,
+     "end": 159.838,
+     "dur": 5.928
+    },
+    {
+     "text": "课程状态在草稿、已发布、已归档之间流转，写操作全部经过服务端校验。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\teacher_01.wav",
+     "start": 160.098,
+     "end": 167.706,
+     "dur": 7.608
+    },
+    {
+     "text": "学情看板按进度区间统计人数，完成率直接取自学习记录，不做二次加工。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\teacher_02.wav",
+     "start": 167.966,
+     "end": 175.262,
+     "dur": 7.296
+    }
+   ]
+  },
+  {
+   "id": "perm",
+   "title": "权限边界",
+   "start": 176.12,
+   "dur": 22.72,
+   "lines": [
+    {
+     "text": "学生直接构造写请求访问课程接口，网关通过后仍会被业务服务拒绝。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\perm_00.wav",
+     "start": 176.67,
+     "end": 183.606,
+     "dur": 6.936
+    },
+    {
+     "text": "返回统一的 403 与 FORBIDDEN 错误码，并带上可检索的 requestId。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\perm_01.wav",
+     "start": 183.866,
+     "end": 190.25,
+     "dur": 6.384
+    },
+    {
+     "text": "前端隐藏按钮不算授权，页面和接口都要做角色、权限点与数据范围检查。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\perm_02.wav",
+     "start": 190.51,
+     "end": 197.998,
+     "dur": 7.488
+    }
+   ]
+  },
+  {
+   "id": "ops",
+   "title": "运营与审计",
+   "start": 198.84,
+   "dur": 21.56,
+   "lines": [
+    {
+     "text": "管理端可以按 requestId 检索审计日志，看到操作者、资源、结果和时间。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\ops_00.wav",
+     "start": 199.39,
+     "end": 206.566,
+     "dur": 7.176
+    },
+    {
+     "text": "运行状态面板汇总网关、事件消费者和死信队列，异常能被第一时间定位。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\ops_01.wav",
+     "start": 206.826,
+     "end": 213.81,
+     "dur": 6.984
+    },
+    {
+     "text": "角色与权限点的映射由平台维护，但不改变三类角色的语义。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\ops_02.wav",
+     "start": 214.07,
+     "end": 219.542,
+     "dur": 5.472
+    }
+   ]
+  },
+  {
+   "id": "stack",
+   "title": "工程基线",
+   "start": 220.4,
+   "dur": 32.96,
+   "lines": [
+    {
+     "text": "工程基线统一使用 React、TypeScript、Vite、Ant Design 5 和 GSAP 3，依赖锁定在 lockfile。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\stack_00.wav",
+     "start": 220.95,
+     "end": 229.902,
+     "dur": 8.952
+    },
+    {
+     "text": "strict 模式开启，禁止新增 any，lint、类型检查和构建全部纳入流水线。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\stack_01.wav",
+     "start": 230.162,
+     "end": 237.194,
+     "dur": 7.032
+    },
+    {
+     "text": "认证、HTTP 客户端、权限判断和状态页来自版本化公共包，不在各平台复制演化。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\stack_02.wav",
+     "start": 237.454,
+     "end": 245.446,
+     "dur": 7.992
+    },
+    {
+     "text": "交付物包含 OpenAPI 契约、事件 schema、网络矩阵和可运行的 Demo。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\stack_03.wav",
+     "start": 245.706,
+     "end": 252.522,
+     "dur": 6.816
+    }
+   ]
+  },
+  {
+   "id": "outro",
+   "title": "片尾",
+   "start": 253.36,
+   "dur": 15.64,
+   "lines": [
+    {
+     "text": "界面中的课程、身份和事件均为演示数据，用于说明契约与流程。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\outro_00.wav",
+     "start": 253.91,
+     "end": 260.702,
+     "dur": 6.792
+    },
+    {
+     "text": "自学平台为下游提供课程与学习记录的权威状态，其余数据由各平台自行负责。",
+     "wav": "C:\\Users\\paradox\\Desktop\\自学·平台\\video\\audio\\outro_01.wav",
+     "start": 260.962,
+     "end": 268.162,
+     "dur": 7.2
+    }
+   ]
+  }
+ ]
+}

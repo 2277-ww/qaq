@@ -1,0 +1,112 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 104, background: '#0F2A47' }}>
+        <Text style={{ position: 'absolute', left: 60, top: 22, fontSize: 34, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 2 }}>
+            自学平台
+        </Text>
+        <Text style={{ position: 'absolute', left: 60, top: 70, fontSize: 15, color: 'rgba(255,255,255,0.66)' }}>
+            把散在群文件里的课，做成一个能搜、能播、能看进度的网站
+        </Text>
+        <Text style={{ position: 'absolute', left: 900, top: 42, width: 320, fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8 }}>
+            赛道：＿＿＿＿＿＿
+            <br />
+            姓名：＿＿＿＿　区队：＿＿＿＿
+        </Text>
+    </Box>
+
+    <Image src="assets/f_home.png" style={{ position: 'absolute', left: 60, top: 116, width: 373, height: 233, objectFit: 'cover' }} />
+    <Text style={{ position: 'absolute', left: 60, top: 358, fontSize: 13, fontWeight: 'bold', color: '#1E4FA8' }}>
+        ① 找得到
+    </Text>
+    <Text style={{ position: 'absolute', left: 60, top: 380, width: 373, fontSize: 12, color: '#7A8698' }}>
+        课程按方向分组，搜索框直接命中
+    </Text>
+
+    <Image src="assets/f_chapter.png" style={{ position: 'absolute', left: 454, top: 116, width: 373, height: 233, objectFit: 'cover' }} />
+    <Text style={{ position: 'absolute', left: 454, top: 358, fontSize: 13, fontWeight: 'bold', color: '#1E4FA8' }}>
+        ② 看得下去
+    </Text>
+    <Text style={{ position: 'absolute', left: 454, top: 380, width: 373, fontSize: 12, color: '#7A8698' }}>
+        打开就播，进度与笔记自动留下
+    </Text>
+
+    <Image src="assets/f_admin.png" style={{ position: 'absolute', left: 848, top: 116, width: 373, height: 233, objectFit: 'cover' }} />
+    <Text style={{ position: 'absolute', left: 848, top: 358, fontSize: 13, fontWeight: 'bold', color: '#1E4FA8' }}>
+        ③ 管得住
+    </Text>
+    <Text style={{ position: 'absolute', left: 848, top: 380, width: 373, fontSize: 12, color: '#7A8698' }}>
+        后台建课发布，不碰一行代码
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 414, width: 560, height: 1, background: '#E5E7EB' }} />
+
+    <Text style={{ position: 'absolute', left: 60, top: 430, fontSize: 11, color: '#E8622C', letterSpacing: 2 }}>
+        问 题
+    </Text>
+    <Text style={{ position: 'absolute', left: 60, top: 452, width: 520, fontSize: 13, color: '#4A5568', lineHeight: 1.95 }}>
+        ·　课件散在群文件，超 7 天过期，找一次十几分钟
+        <br />
+        ·　课发出去，谁看了、看到第几分钟，全不知道
+        <br />
+        ·　区队长每周收截图核对，1 小时，还容易错
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 60, top: 550, fontSize: 11, color: '#E8622C', letterSpacing: 2 }}>
+        做 法
+    </Text>
+    <Text style={{ position: 'absolute', left: 60, top: 572, width: 530, fontSize: 15, fontWeight: 'bold', color: '#0F2A47', lineHeight: 1.7 }}>
+        每看一节、每记一条笔记，都落成一条可查的记录。
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 640, top: 430, fontSize: 11, color: '#1E4FA8', letterSpacing: 2 }}>
+        技 术
+    </Text>
+    <Box style={{ position: 'absolute', left: 640, top: 452, width: 136, height: 28, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 10, top: 5, fontSize: 12, color: '#1E4FA8' }}>
+            PHP 7.3
+        </Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 786, top: 452, width: 136, height: 28, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 10, top: 5, fontSize: 12, color: '#1E4FA8' }}>
+            Phalcon 3.4
+        </Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 932, top: 452, width: 136, height: 28, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 10, top: 5, fontSize: 12, color: '#1E4FA8' }}>
+            MariaDB 10.5
+        </Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 1078, top: 452, width: 140, height: 28, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 10, top: 5, fontSize: 12, color: '#1E4FA8' }}>
+            nginx + Redis
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 640, top: 492, fontSize: 11, color: '#1E4FA8', letterSpacing: 2 }}>
+        A I 用 在 哪
+    </Text>
+    <Text style={{ position: 'absolute', left: 640, top: 506, width: 578, fontSize: 12, color: '#4A5568', lineHeight: 1.95 }}>
+        ·　开发全程：读方案拆 38 项需求、定位 93 个控制器、写 26 个部署脚本
+        <br />
+        ·　产品内暂无 AI，V2 放进课程问答与复习计划
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 640, top: 584, fontSize: 11, color: '#1E4FA8', letterSpacing: 2 }}>
+        价 值
+    </Text>
+    <Text style={{ position: 'absolute', left: 640, top: 606, width: 580, fontSize: 13, color: '#0F2A47', lineHeight: 1.6 }}>
+        9 门课 28 个视频在线　·　首页响应 0.17 秒　·　每周省下约 1 小时核对
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 0, top: 648, width: 1280, height: 72, background: '#0F2A47' }}>
+        <Text style={{ position: 'absolute', left: 60, top: 18, fontSize: 38, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 0.5 }}>
+            https://8.138.34.151
+        </Text>
+        <Text style={{ position: 'absolute', left: 620, top: 20, fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
+            后台 /admin/video_upload/
+        </Text>
+        <Text style={{ position: 'absolute', left: 620, top: 38, fontSize: 12, color: 'rgba(255,255,255,0.72)' }}>
+            账号 admin　口令 现场提供
+        </Text>
+        <Image src="assets/qr.png" style={{ position: 'absolute', left: 1164, top: 8, width: 56, height: 56 }} />
+    </Box>
+</Slide>

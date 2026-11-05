@@ -1,0 +1,40 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 1000, top: 0, width: 280, height: 720, background: '#12304F' }}>
+        <Box style={{ position: 'absolute', left: 44, top: 96, width: 60, height: 1, background: 'rgba(255,255,255,0.45)' }} />
+        <Text style={{ position: 'absolute', left: 44, top: 118, fontSize: 14, color: 'rgba(255,255,255,0.62)', letterSpacing: 3, lineHeight: 1.9 }}>
+            SELF-STUDY
+            <br />
+            PLATFORM
+            <br />
+            V1.0
+        </Text>
+        <Text style={{ position: 'absolute', left: 44, top: 620, fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+            生态闭环 · 前置学习环节
+        </Text>
+        <Text style={{ position: 'absolute', left: 44, top: 648, fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+            2026.11
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 100, top: 148, fontSize: 18, color: '#3D7BD9', letterSpacing: 1.5 }}>
+        警院 WeChat 全生态 · 五平台之一
+    </Text>
+    <Text style={{ position: 'absolute', left: 98, top: 180, fontSize: 62, fontWeight: 'bold', color: '#12304F', lineHeight: 1.2, letterSpacing: 2 }}>
+        自学平台
+    </Text>
+    <Box style={{ position: 'absolute', left: 100, top: 272, width: 88, height: 3, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 100, top: 296, fontSize: 26, color: '#1A2230', letterSpacing: 1 }}>
+        资源沉淀 · 技能铺垫 · 前置学习
+    </Text>
+    <Text style={{ position: 'absolute', left: 100, top: 352, width: 760, fontSize: 18, color: '#4A5568', lineHeight: 1.8 }}>
+        以分类课程体系承载图文与视频教程，以学习进度与完成状态为实训工坊提供项目前置能力校验依据，并将学习数据按统一用户 ID 归集到全局个人成长档案。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 100, top: 546, width: 800, height: 1, background: '#D6DCE5' }} />
+    <Text style={{ position: 'absolute', left: 100, top: 566, fontSize: 15, color: '#8B97A8' }}>
+        项目答辩　｜　需求定义 · 系统设计 · 落地验证
+    </Text>
+    <Text style={{ position: 'absolute', left: 100, top: 600, fontSize: 15, color: '#8B97A8' }}>
+        答辩人：＿＿＿＿　　指导教师：＿＿＿＿　　单位：警察学院 · 数据警务教研组
+    </Text>
+</Slide>

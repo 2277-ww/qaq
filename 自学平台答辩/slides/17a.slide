@@ -1,0 +1,104 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            附录 A：状态字典与九类错误码
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            03 · 系统实现与验证
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 82, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        接口只认英文状态编码，中文仅用于界面展示；错误码固定九类，不随业务增长
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 110, width: 540, height: 2, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 60, top: 122, fontSize: 18, fontWeight: 'bold', color: '#1E4FA8' }}>
+        课程状态字典
+    </Text>
+
+    <Table
+        style={{ position: 'absolute', left: 60, top: 156, width: 540, height: 372 }}
+        defaultTextStyle={{ fontSize: 15, color: '#1A2230' }}
+        defaultCellStyle={{
+            border: {
+                left: { width: 0, color: '#FFFFFF' },
+                right: { width: 0, color: '#FFFFFF' },
+                top: { width: 0, color: '#FFFFFF' },
+                bottom: { width: 1, color: '#E5E7EB' },
+            },
+            paddingLeft: 6,
+            paddingRight: 6,
+        }}
+        cells={[
+            [
+                { text: '编码', textStyle: { bold: true, color: '#1E4FA8', fontSize: 14 }, cellStyle: { border: { bottom: { width: 2, color: '#1E4FA8' } } } },
+                { text: '界面', textStyle: { bold: true, color: '#1E4FA8', fontSize: 14 }, cellStyle: { border: { bottom: { width: 2, color: '#1E4FA8' } } } },
+                { text: '允许动作', textStyle: { bold: true, color: '#1E4FA8', fontSize: 14 }, cellStyle: { border: { bottom: { width: 2, color: '#1E4FA8' } } } },
+            ],
+            ['draft', '草稿', '提交审核、删除'],
+            ['pending', '待审核', '通过、驳回'],
+            ['rejected', '已驳回', '整改后重新提交'],
+            ['published', '已发布', '下架、归档'],
+            ['offline', '已下架', '重新发布、归档'],
+            ['archived', '已归档', '恢复（仅管理员）'],
+        ]}
+    />
+
+    <Box style={{ position: 'absolute', left: 660, top: 110, width: 560, height: 2, background: '#D6DCE5' }} />
+    <Text style={{ position: 'absolute', left: 660, top: 122, fontSize: 18, fontWeight: 'bold', color: '#4A5568' }}>
+        九类错误码
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 660, top: 156, width: 560, flexDirection: 'column' }}>
+        <Box style={{ flexDirection: 'row', paddingTop: 6, paddingBottom: 6, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 260, fontSize: 15, fontWeight: 'bold', color: '#1A2230' }}>VALIDATION_ERROR</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568' }}>入参校验失败</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 6, paddingBottom: 6, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 260, fontSize: 15, fontWeight: 'bold', color: '#1A2230' }}>AUTH_REQUIRED</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568' }}>未登录或会话失效</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 6, paddingBottom: 6, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 260, fontSize: 15, fontWeight: 'bold', color: '#1A2230' }}>AUTH_TOKEN_EXPIRED</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568' }}>登录状态已过期</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 6, paddingBottom: 6, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 260, fontSize: 15, fontWeight: 'bold', color: '#1A2230' }}>FORBIDDEN</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568' }}>无权限或越权访问</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 6, paddingBottom: 6, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 260, fontSize: 15, fontWeight: 'bold', color: '#1A2230' }}>NOT_FOUND</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568' }}>资源不存在或已归档</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 6, paddingBottom: 6, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 260, fontSize: 15, fontWeight: 'bold', color: '#1A2230' }}>CONFLICT</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568' }}>状态冲突（重复提交、重复发布）</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 6, paddingBottom: 6, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 260, fontSize: 15, fontWeight: 'bold', color: '#1A2230' }}>BUSINESS_ERROR</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568' }}>业务规则不满足（含限流）</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 6, paddingBottom: 6, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 260, fontSize: 15, fontWeight: 'bold', color: '#1A2230' }}>SERVICE_UNAVAILABLE</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568' }}>下游依赖不可用</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 6, paddingBottom: 6, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 260, fontSize: 15, fontWeight: 'bold', color: '#1A2230' }}>INTERNAL_ERROR</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568' }}>服务内部异常</Text>
+        </Box>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 566, width: 1160, height: 1, background: '#D6DCE5' }} />
+    <Text style={{ position: 'absolute', left: 60, top: 580, width: 1160, fontSize: 16, color: '#1A2230', lineHeight: 1.6 }}>
+        业务原因写进 message 与 data.reason：
+        <span style={{ fontWeight: 'bold', color: '#1E4FA8' }}>错误码不扩张，前端就不必为每个新场景加一个分支</span>
+        ，联调时也不必逐个对文案。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>17 / 21</Text>
+    </Box>
+</Slide>

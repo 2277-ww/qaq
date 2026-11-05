@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN-Hans">
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="前端,HTML,CSS,JavaScript">
+    <meta name="description" content="以真实页面为线索，讲清 HTML 结构、CSS 布局与 JavaScript 交互三件事。">
+    <meta name="csrf-token" content="eoW0CDRVoENAiNpJqMz4dB3s3YGTbRq1O7/MZkIngiWDYs1Fwx7u4g==">
+    <title>课程 - 前端开发实战：从页面到交互 - 自学平台</title>
+            <link rel="shortcut icon" href="/static/favicon.ico?v=202611041350">        <link rel="stylesheet" type="text/css" href="/static/lib/iconfont/iconfont.css?v=202611041350">    <link rel="stylesheet" type="text/css" href="/static/lib/layui/css/layui.css?v=202611041350">    <link rel="stylesheet" type="text/css" href="/static/home/css/common.css?v=202611041350">    <link rel="stylesheet" type="text/css" href="/static/home/css/theme-police.css?v=2026110502">
+    
+
+    <link rel="stylesheet" type="text/css" href="/static/home/css/content.css?v=202611041350">
+
+    
+    <style>
+        .kg-study-panel { margin-top: 28px; border-top: 1px solid #eee; padding-top: 18px; }
+        .kg-study-head { display: flex; align-items: center; justify-content: space-between; }
+        .kg-study-head h3 { font-size: 16px; font-weight: 600; margin: 0; padding-left: 9px; border-left: 3px solid #16baaa; }
+        .kg-study-progress { display: flex; align-items: center; gap: 10px; margin: 14px 0 18px; font-size: 13px; color: #666; }
+        .kg-label { color: #888; }
+        .kg-bar { display: inline-block; width: 180px; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+        .kg-bar-inner { height: 100%; background: #16baaa; }
+        .kg-bar-text { color: #16baaa; font-weight: 600; }
+        .kg-status { font-size: 12px; color: #999; }
+        .kg-note-block h4 { font-size: 14px; margin: 0 0 10px; color: #444; }
+        .kg-note-block textarea { width: 100%; min-height: 96px; padding: 10px; border: 1px solid #e6e6e6; border-radius: 4px; font-size: 13px; line-height: 1.7; box-sizing: border-box; resize: vertical; }
+        .kg-note-ops { margin: 10px 0 12px; display: flex; align-items: center; gap: 12px; font-size: 13px; }
+        .kg-note-mini { list-style: none; margin: 0; padding: 0; }
+        .kg-note-mini li { border: 1px solid #f0f0f0; border-radius: 4px; padding: 8px 12px; margin-bottom: 8px; }
+        .kg-note-mini-head { display: flex; justify-content: space-between; font-size: 12px; color: #999; margin-bottom: 4px; }
+        .kg-note-ch { color: #16baaa; }
+        .kg-note-mini-body { font-size: 13px; color: #555; line-height: 1.7; }
+        .kg-note-mini-body code { background: #f5f5f5; padding: 1px 4px; border-radius: 2px; }
+    </style>
+
+</head>
+<body class="main">
+<div id="header">
+        
+<div class="logo">
+    <a href="/" title="自学平台">
+        <span class="police-emblem" aria-hidden="true">
+            <svg viewBox="0 0 44 52" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                <path d="M22 2 L40 8.5 V26 C40 37 32 45.5 22 50 C12 45.5 4 37 4 26 V8.5 Z"
+                      fill="none" stroke="#A8843B" stroke-width="2.2" stroke-linejoin="round"/>
+                <path d="M22 6.4 L36.2 11.6 V26 C36.2 34.8 30.1 41.6 22 45.3 C13.9 41.6 7.8 34.8 7.8 26 V11.6 Z"
+                      fill="none" stroke="#C8A24A" stroke-width="0.9" stroke-linejoin="round" opacity="0.85"/>
+                <polygon points="22,12.3 24.03,17.71 29.8,17.97 25.28,21.57 26.82,27.13 22,23.95 17.18,27.13 18.72,21.57 14.2,17.97 19.97,17.71"
+                         fill="#A8843B"/>
+                <path d="M13.4 31.6 H30.6" stroke="#A8843B" stroke-width="1.6" stroke-linecap="round" opacity="0.9"/>
+                <path d="M15.4 35.4 H28.6" stroke="#A8843B" stroke-width="1.2" stroke-linecap="round" opacity="0.65"/>
+            </svg>
+        </span>
+        <span class="logo-plate"><img src="/static/brand-logo.png" /></span>
+    </a>
+</div>
+
+<div class="top-nav">
+    <ul class="layui-nav">
+                    <li class="layui-nav-item">
+                <a href="/" class="nav-1" target="_self">首页</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/course/list" class="nav-2" target="_self">课程</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/article/list" class="nav-3" target="_self">专栏</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/question/list" class="nav-4" target="_self">问答</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/teacher/list" class="nav-5" target="_self">师资</a>
+                            </li>
+            </ul>
+</div>
+
+<div class="user">
+    <ul class="layui-nav">
+        <li class="layui-nav-item">
+            <a class="nav-search" href="javascript:" data-url="/search"><i class="layui-icon layui-icon-search"></i> 搜索</a>
+        </li>
+                    <li class="layui-nav-item">
+                <a href="javascript:"><i class="layui-icon layui-icon-add-circle"></i> 发布</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/question/add" target="_blank">提问题</a></dd>
+                    <dd><a href="/article/add" target="_blank">写文章</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/uc/notifications" target="notify"><i class="layui-icon layui-icon-notice"></i> 消息<span id="notify-dot"></span></a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:">自学平台</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/user/10000">我的主页</a></dd>
+                                            <dd><a href="/tc">教学中心</a></dd>
+                                        <dd><a href="/uc">用户中心</a></dd>
+                </dl>
+            </li>
+            </ul>
+</div>
+</div>
+<div id="main" class="layui-main">
+    
+
+    
+        
+    <div class="breadcrumb">
+        <span class="layui-breadcrumb">
+            <a href="/">首页</a>
+            <a href="/course/list">全部课程</a>
+            <a><cite>前端开发实战：从页面到交互</cite></a>
+        </span>
+        <span class="share">
+            <a class="share-wechat" href="javascript:" title="分享到微信"><i class="layui-icon layui-icon-login-wechat"></i></a>
+            <a class="share-qq" href="javascript:" title="分享到QQ空间"><i class="layui-icon layui-icon-login-qq"></i></a>
+            <a class="share-weibo" href="javascript:" title="分享到微博"><i class="layui-icon layui-icon-login-weibo"></i></a>
+            <a class="share-link kg-copy" href="javascript:" title="复制链接" data-clipboard-text="https://8.138.34.151/course/1?source=pc&referer=10000"><i class="layui-icon layui-icon-share"></i></a>
+        </span>
+    </div>
+
+    
+<div class="course-meta wrap">
+    <div class="cover">
+        <span class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </span>
+        <img src="https://8.138.34.151/static/cover/c1.png!cover_270" alt="前端开发实战：从页面到交互">
+    </div>
+    <div class="info">
+                        <p class="item">
+        <span class="key">课程时长</span>
+        <span class="value">00分钟</span>
+    </p>
+        <p class="item">
+        <span class="key">学习期限</span>
+        <span class="value">12 个月</span>
+                    <span class="key">退款期限</span>
+            <span class="value">30 天</span>
+            </p>        <p class="item">
+                    <span class="key">市场价格</span>
+            <span class="value free">免费</span>
+            </p>        <p class="item">
+        <span class="key">难度级别</span>
+        <span class="value">            入门
+    </span>
+        <span class="key">学习人次</span>
+        <span class="value">1</span>
+        <span class="key">综合评分</span>
+        <span class="value">5.0</span>
+    </p>            </div>
+    <div class="ratings">
+        <p class="item">
+            <span class="name">内容实用</span>
+            <span class="star" id="rating1" data-value="5"></span>
+            <span class="score">5.0 分</span>
+        </p>
+        <p class="item">
+            <span class="name">简洁易懂</span>
+            <span class="star" id="rating2" data-value="5"></span>
+            <span class="score">5.0 分</span>
+        </p>
+        <p class="item">
+            <span class="name">逻辑清晰</span>
+            <span class="star" id="rating3" data-value="5"></span>
+            <span class="score">5.0 分</span>
+        </p>
+    </div>
+</div>
+
+    <div class="layout-main">
+
+                                        
+        <div class="layout-content">
+            <div class="course-tab-wrap wrap">
+                <div class="layui-tabs course-tab">
+                    <ul class="layui-tabs-header">
+                        <li class="layui-this">详情</li>
+                        <li>目录</li>
+                                                                                                                    </ul>
+                    <div class="layui-tabs-body">
+                        <div class="layui-tabs-item layui-show">
+                            <div class="course-details ke-content kg-zoom"><p>以真实页面为线索，讲清 HTML 结构、CSS 布局与 JavaScript 交互三件事。</p><p>本课程为本地复现环境生成的演示课程，用于验证课程浏览与学习流程。</p></div>
+
+                                                            <div class="kg-study-panel">
+                                    <div class="kg-study-head">
+                                        <h3>我的学习</h3>
+                                        <div class="kg-study-ops">
+                                            <button class="layui-btn layui-btn-sm "
+                                                    id="btn-course-favorite"
+                                                    data-id="1"
+                                                    data-favorited="1">
+                                                已收藏                                            </button>
+                                            <a class="layui-btn layui-btn-sm layui-btn-primary"
+                                               href="/uc/growth" target="_blank">成长档案</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="kg-study-progress">
+                                        <span class="kg-label">学习进度</span>
+                                        <div class="kg-bar"><div class="kg-bar-inner" style="width:100%"></div></div>
+                                        <span class="kg-bar-text">100%</span>
+                                        <span class="kg-status">
+                                            已完成
+                                                                                    </span>
+                                    </div>
+
+                                    <div class="kg-note-block">
+                                        <h4>我的笔记（3）</h4>
+                                        <textarea id="kg-note-input" placeholder="记录这门课程的重点，保存后会汇总到「我的笔记」与个人成长档案"></textarea>
+                                        <div class="kg-note-ops">
+                                            <button class="layui-btn layui-btn-sm" id="btn-note-save" data-course="1">保存笔记</button>
+                                            <a href="/uc/notes" target="_blank">查看全部笔记</a>
+                                        </div>
+                                                                                    <ul class="kg-note-mini">
+                                                                                                    <li>
+                                                        <div class="kg-note-mini-head">
+                                                                                                                            <span class="kg-note-ch">DOM 事件与网页交互</span>
+                                                                                                                        <span class="kg-note-time">2026-11-03 10:28</span>
+                                                        </div>
+                                                        <div class="kg-note-mini-body">表单校验先做原生约束（required、type、pattern），再用 JS 补交互提示，能少写很多逻辑。</div>
+                                                    </li>
+                                                                                                    <li>
+                                                        <div class="kg-note-mini-head">
+                                                                                                                            <span class="kg-note-ch">页面骨架与语义化标签</span>
+                                                                                                                        <span class="kg-note-time">2026-11-03 08:28</span>
+                                                        </div>
+                                                        <div class="kg-note-mini-body">Flex 与 Grid 的选择：一维排列用 Flex，二维网格用 Grid。Grid 的 <code>grid-template-areas</code> 在页面级布局里可读性更好。</div>
+                                                    </li>
+                                                                                                    <li>
+                                                        <div class="kg-note-mini-head">
+                                                                                                                            <span class="kg-note-ch">课程笔记</span>
+                                                                                                                        <span class="kg-note-time">2026-11-03 06:28</span>
+                                                        </div>
+                                                        <div class="kg-note-mini-body">课程整体脉络：先讲骨架与语义化，再讲布局，最后落到工程化。复习时按这个顺序过一遍效率最高。</div>
+                                                    </li>
+                                                                                            </ul>
+                                                                            </div>
+                                </div>
+                                                    </div>
+                        <div class="layui-tabs-item">
+                            
+
+            <div class="layui-collapse" lay-accordion="true">
+                                            <div class="layui-colla-item">
+                    <h2 class="layui-colla-title">第一章 结构与样式</h2>
+                    <div class="layui-colla-content layui-show">
+                            <ul class="lesson-list">
+                                                            <li class="lesson-item allow" data-url="/chapter/2">    <div class="left">
+        <span class="model"><i class="iconfont icon-video"></i></span>
+        <span class="title">页面骨架与语义化标签</span>
+                    <span class="study-time" title="学习时长：05分钟24秒"><i class="layui-icon layui-icon-time"></i></span>
+                            </div>
+    <div class="right">
+        <span class="duration">05分钟37秒</span>
+    </div></li>
+                                                                        <li class="lesson-item allow" data-url="/chapter/3">    <div class="left">
+        <span class="model"><i class="iconfont icon-video"></i></span>
+        <span class="title">盒模型与页面布局</span>
+                    <span class="study-time" title="学习时长：05分钟59秒"><i class="layui-icon layui-icon-time"></i></span>
+                            </div>
+    <div class="right">
+        <span class="duration">06分钟14秒</span>
+    </div></li>
+                        </ul>                    </div>
+                </div>
+                                            <div class="layui-colla-item">
+                    <h2 class="layui-colla-title">第二章 交互与工程化</h2>
+                    <div class="layui-colla-content layui-show">
+                            <ul class="lesson-list">
+                                                            <li class="lesson-item allow" data-url="/chapter/5">    <div class="left">
+        <span class="model"><i class="iconfont icon-video"></i></span>
+        <span class="title">DOM 事件与网页交互</span>
+                    <span class="study-time" title="学习时长：06分钟35秒"><i class="layui-icon layui-icon-time"></i></span>
+                            </div>
+    <div class="right">
+        <span class="duration">06分钟51秒</span>
+    </div></li>
+                                                                        <li class="lesson-item allow" data-url="/chapter/6">    <div class="left">
+        <span class="model"><i class="iconfont icon-video"></i></span>
+        <span class="title">模块化与构建工具</span>
+                    <span class="study-time" title="学习时长：07分钟10秒"><i class="layui-icon layui-icon-time"></i></span>
+                            </div>
+    <div class="right">
+        <span class="duration">07分钟28秒</span>
+    </div></li>
+                        </ul>                    </div>
+                </div>
+                    </div>
+                            </div>
+                                                                                                                    </div>
+                </div>
+            </div>
+        </div>
+
+                
+        <div class="layout-sidebar">
+                                        <div class="sidebar">
+        <div class="layui-card">
+            <div class="layui-card-header">授课教师</div>
+            <div class="layui-card-body">
+                <div class="sidebar-user-card">
+                    <div class="avatar">
+                        <img src="https://8.138.34.151/static/img/default/user_avatar.png!avatar_160" alt="自学平台">
+                    </div>
+                    <div class="info">
+                        <div class="name layui-elip">
+                            <a href="/teacher/10000" title="酷瓜云课堂，开源在线教育解决方案" target="_blank">自学平台</a>
+                        </div>
+                        <div class="title layui-elip">官方人员</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                                                        <div class="sidebar" id="sidebar-topics" data-url="/course/1/topics"></div>
+                                                        <div class="sidebar" id="sidebar-related" data-url="/course/1/related"></div>
+                    </div>
+
+    </div>
+
+    <div class="layout-sticky">
+        
+<div class="toolbar-sticky">
+    <div class="item">
+        <div class="icon" title="学习人次">
+            <i class="layui-icon layui-icon-user icon-user"></i>
+        </div>
+        <div class="text">1</div>
+    </div>
+    <div class="item">
+        <div class="icon" title="课程评价">
+            <i class="layui-icon layui-icon-reply-fill"></i>
+        </div>
+        <div class="text">0</div>
+    </div>
+        <div class="item" id="toolbar-favorite">
+        <div class="icon" title="取消收藏" data-url="/course/1/favorite">
+            <i class="layui-icon icon-star layui-icon-star-fill"></i>
+        </div>
+        <div class="text" data-count="1">1</div>
+    </div>
+</div>
+    </div>
+
+    <div class="layui-hide">
+        <input type="hidden" name="share.title" value="前端开发实战：从页面到交互">
+        <input type="hidden" name="share.pic" value="https://8.138.34.151/static/cover/c1.png">
+        <input type="hidden" name="share.url" value="https://8.138.34.151/course/1?source=pc&referer=10000">
+        <input type="hidden" name="share.qrcode" value="/qrcode?text=https%3A%2F%2F8.138.34.151%2Fcourse%2F1%3Fsource%3Dpc%26referer%3D10000">
+    </div>
+
+
+</div>
+<div id="footer">
+    <div class="police-ribbon" aria-hidden="true">
+    <svg viewBox="0 0 44 52" xmlns="http://www.w3.org/2000/svg" focusable="false">
+        <path d="M22 2 L40 8.5 V26 C40 37 32 45.5 22 50 C12 45.5 4 37 4 26 V8.5 Z"
+              fill="none" stroke="#231903" stroke-width="2.6" stroke-linejoin="round" opacity="0.8"/>
+        <polygon points="22,12.3 24.03,17.71 29.8,17.97 25.28,21.57 26.82,27.13 22,23.95 17.18,27.13 18.72,21.57 14.2,17.97 19.97,17.71"
+                 fill="#231903" opacity="0.85"/>
+    </svg>
+    <span>明德 &middot; 笃学 &middot; 守正</span>
+</div>
+<div class="layui-main">
+    <div class="row nav">
+                    <a href="#" target="_blank">关于我们</a>
+                    <a href="#" target="_blank">联系我们</a>
+                    <a href="#" target="_blank">人才招聘</a>
+                    <a href="/help" target="_blank">帮助中心</a>
+                    <a href="#" target="_blank">友情链接</a>
+            </div>
+    <div class="row copyright">
+        <span class="brand">&copy; 2026 自学平台</span>
+                                            </div>
+    </div>
+</div>
+
+<script>
+
+    window.user = {
+        id: '10000',
+        name: '自学平台',
+        avatar: 'https://8.138.34.151/static/img/default/user_avatar.png',
+        locked: '0'
+    };
+
+    window.contact = {
+        enabled: '0',
+        qq: '',
+        wechat: '',
+        toutiao: '',
+        douyin: '',
+        weibo: '',
+        zhihu: '',
+        phone: '',
+        email: '',
+        address: ''
+    };
+
+    window.websocket = {
+        connect_url: 'wss://127.0.0.1/wss',
+        ping_interval: '30'
+    };
+
+</script><script type="text/javascript" src="/static/lib/layui/layui.js?v=202611041350"></script><script type="text/javascript" src="/static/home/js/common.js?v=202611041350"></script><script type="text/javascript" src="/static/home/js/fixbar.js?v=202611041350"></script>
+
+
+    <script type="text/javascript" src="/static/lib/clipboard.min.js?v=202611041350"></script>    <script type="text/javascript" src="/static/home/js/course.show.js?v=202611041350"></script>    <script type="text/javascript" src="/static/home/js/course.share.js?v=202611041350"></script>    <script type="text/javascript" src="/static/home/js/copy.js?v=202611041350"></script>
+
+
+    <script>
+        layui.use(['jquery', 'layer'], function () {
+            var $ = layui.jquery, layer = layui.layer;
+
+            $('#btn-course-favorite').on('click', function () {
+                var btn = $(this);
+                $.post('/course/' + btn.data('id') + '/favorite', {}, function (res) {
+                    layer.msg(res.msg, {icon: 1});
+                    var on = res.data.action === 'do';
+                    btn.data('favorited', on ? 1 : 0)
+                        .toggleClass('layui-btn-primary', !on)
+                        .text(on ? '已收藏' : '收藏课程');
+                });
+            });
+
+            $('#btn-note-save').on('click', function () {
+                var btn = $(this);
+                var content = $('#kg-note-input').val();
+                if (!$.trim(content)) {
+                    layer.msg('请先填写笔记内容', {icon: 2});
+                    return;
+                }
+                btn.addClass('layui-btn-disabled');
+                $.post('/note/save', {course_id: btn.data('course'), chapter_id: 0, content: content}, function (res) {
+                    layer.msg(res.msg, {icon: 1});
+                    setTimeout(function () { location.reload(); }, 800);
+                }).always(function () {
+                    btn.removeClass('layui-btn-disabled');
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

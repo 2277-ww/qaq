@@ -1,0 +1,102 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            流程一：课程从哪里来，谁能看见
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            02 · 需求分析与功能设计
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 82, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        课程生命周期状态机　·　对外可见的前提是「审核通过且已发布」
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 124, width: 168, height: 78, border: '1px solid #D6DCE5', padding: 12, flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1A2230' }}>草稿</Text>
+        <Text style={{ fontSize: 14, color: '#8B97A8' }}>draft</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 232, top: 150, fontSize: 18, color: '#8B97A8' }}>→</Text>
+    <Box style={{ position: 'absolute', left: 278, top: 124, width: 168, height: 78, border: '1px solid #3D7BD9', padding: 12, flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1E4FA8' }}>待审核</Text>
+        <Text style={{ fontSize: 14, color: '#8B97A8' }}>pending</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 450, top: 150, fontSize: 18, color: '#8B97A8' }}>→</Text>
+    <Box style={{ position: 'absolute', left: 496, top: 124, width: 168, height: 78, background: '#1E4FA8', padding: 12, flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#FFFFFF' }}>已发布</Text>
+        <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>published</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 668, top: 150, fontSize: 18, color: '#8B97A8' }}>→</Text>
+    <Box style={{ position: 'absolute', left: 714, top: 124, width: 168, height: 78, border: '1px solid #D6DCE5', padding: 12, flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1A2230' }}>已下架</Text>
+        <Text style={{ fontSize: 14, color: '#8B97A8' }}>offline</Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 886, top: 150, fontSize: 18, color: '#8B97A8' }}>→</Text>
+    <Box style={{ position: 'absolute', left: 932, top: 124, width: 168, height: 78, border: '1px solid #D6DCE5', padding: 12, flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1A2230' }}>已归档</Text>
+        <Text style={{ fontSize: 14, color: '#8B97A8' }}>archived</Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 214, width: 1040, fontSize: 15, color: '#4A5568', lineHeight: 1.6 }}>
+        异常分支：待审核 → 已驳回（rejected）→ 回到草稿，驳回必须填写原因；已发布课程下架后移出「可绑定课程清单」，历史学习记录保留。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 272, width: 700, height: 2, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 60, top: 284, fontSize: 18, fontWeight: 'bold', color: '#1E4FA8' }}>
+        发布前置条件与业务规则
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 318, width: 700, flexDirection: 'column' }}>
+        <Box style={{ flexDirection: 'row', paddingTop: 11, paddingBottom: 11, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 34, fontSize: 16, color: '#3D7BD9' }}>①</Text>
+            <Text style={{ flex: 1, fontSize: 17, color: '#1A2230', lineHeight: 1.6 }}>
+                前置校验：标题、分类、简介、封面齐全，且至少 1 个章节、1 个已上传成功的课时
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 11, paddingBottom: 11, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 34, fontSize: 16, color: '#3D7BD9' }}>②</Text>
+            <Text style={{ flex: 1, fontSize: 17, color: '#1A2230', lineHeight: 1.6 }}>
+                涉密自查：审核台设置涉密自查项，涉警敏感内容按校方规定处理后方可发布
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 11, paddingBottom: 11, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 34, fontSize: 16, color: '#3D7BD9' }}>③</Text>
+            <Text style={{ flex: 1, fontSize: 17, color: '#1A2230', lineHeight: 1.6 }}>
+                越权隔离：教师只能管理本人创建且处于草稿 / 驳回态的课程，不能自审自发
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 11, paddingBottom: 11, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 34, fontSize: 16, color: '#3D7BD9' }}>④</Text>
+            <Text style={{ flex: 1, fontSize: 17, color: '#1A2230', lineHeight: 1.6 }}>
+                全程留痕：审核、发布、下架、归档四个动作写入审计日志，保留 3 年
+            </Text>
+        </Box>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 800, top: 272, width: 420, height: 336, background: '#12304F', padding: 28, flexDirection: 'column' }}>
+        <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            内容质量指标
+        </Text>
+        <Box style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: 6 }}>
+            <Text style={{ fontSize: 68, fontWeight: 'bold', color: '#FFFFFF', lineHeight: 1 }}>
+                ≥70
+            </Text>
+            <Text style={{ fontSize: 22, fontWeight: 'bold', color: 'rgba(255,255,255,0.85)', marginLeft: 4, marginBottom: 6 }}>
+                %
+            </Text>
+        </Box>
+        <Text style={{ fontSize: 16, color: 'rgba(255,255,255,0.9)', marginTop: 8, lineHeight: 1.6 }}>
+            课程审核一次通过率
+        </Text>
+        <Box style={{ height: 1, background: 'rgba(255,255,255,0.22)', marginTop: 18, marginBottom: 16 }} />
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.78)', lineHeight: 1.8 }}>
+            通过率低不代表审得严，而是说明教师自检不到位。这一指标把「整改成本」交给内容生产端，而不是靠审核兜底。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>08 / 21</Text>
+    </Box>
+</Slide>

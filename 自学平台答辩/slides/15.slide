@@ -1,0 +1,103 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            落地验证：从文档跑到一台真实服务器上
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            03 · 系统实现与验证
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 82, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        阿里云 Alinux 3　·　2 核 / 1.87 GB / 40 GB　·　与既有站点共用一台机器
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 116, width: 700, height: 2, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 60, top: 128, fontSize: 18, fontWeight: 'bold', color: '#1E4FA8' }}>
+        环境构成与选型理由
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 164, width: 700, flexDirection: 'column' }}>
+        <Box style={{ flexDirection: 'row', paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 96, fontSize: 17, fontWeight: 'bold', color: '#1A2230' }}>PHP</Text>
+            <Text style={{ width: 108, fontSize: 15, color: '#4A5568' }}>7.3.33</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568', lineHeight: 1.5 }}>Phalcon 3.4 最高只支持到 7.3，升 7.4 要改 93 个控制器</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 96, fontSize: 17, fontWeight: 'bold', color: '#1A2230' }}>Phalcon</Text>
+            <Text style={{ width: 108, fontSize: 15, color: '#4A5568' }}>3.4.5</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568', lineHeight: 1.5 }}>包管理器装不了，只能从源码编译扩展</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 96, fontSize: 17, fontWeight: 'bold', color: '#1A2230' }}>MariaDB</Text>
+            <Text style={{ width: 108, fontSize: 15, color: '#4A5568' }}>10.5.29</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568', lineHeight: 1.5 }}>1.87 GB 内存装 MySQL 8 会被 OOM，且与开发库语义最接近</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 96, fontSize: 17, fontWeight: 'bold', color: '#1A2230' }}>Redis</Text>
+            <Text style={{ width: 108, fontSize: 15, color: '#4A5568' }}>6.2.24</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568', lineHeight: 1.5 }}>会话与缓存后端，应用硬依赖 ext-redis</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 9, paddingBottom: 9, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 96, fontSize: 17, fontWeight: 'bold', color: '#1A2230' }}>nginx</Text>
+            <Text style={{ width: 108, fontSize: 15, color: '#4A5568' }}>1.24</Text>
+            <Text style={{ flex: 1, fontSize: 15, color: '#4A5568', lineHeight: 1.5 }}>新增独立 server 块与证书，未改动 80 端口既有站点配置</Text>
+        </Box>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 500, width: 700, fontSize: 14, color: '#8B97A8', lineHeight: 1.6 }}>
+        另装扩展：phalcon / redis / igbinary / pdo_mysql / gd / mbstring / opcache / zip / bcmath，均设开机自启。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 820, top: 116, width: 400, height: 2, background: '#D6DCE5' }} />
+    <Text style={{ position: 'absolute', left: 820, top: 128, fontSize: 18, fontWeight: 'bold', color: '#4A5568' }}>
+        部署结果
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 820, top: 176, width: 400, flexDirection: 'row' }}>
+        <Box style={{ width: 132, flexDirection: 'column', gap: 2 }}>
+            <Text style={{ fontSize: 44, fontWeight: 'bold', color: '#1E4FA8', lineHeight: 1 }}>73</Text>
+            <Text style={{ fontSize: 14, color: '#4A5568' }}>张数据表</Text>
+        </Box>
+        <Box style={{ width: 134, flexDirection: 'column', gap: 2 }}>
+            <Text style={{ fontSize: 44, fontWeight: 'bold', color: '#1E4FA8', lineHeight: 1 }}>9</Text>
+            <Text style={{ fontSize: 14, color: '#4A5568' }}>门课程 · 50 章节</Text>
+        </Box>
+        <Box style={{ width: 132, flexDirection: 'column', gap: 2 }}>
+            <Text style={{ fontSize: 44, fontWeight: 'bold', color: '#1E4FA8', lineHeight: 1 }}>28</Text>
+            <Text style={{ fontSize: 14, color: '#4A5568' }}>个视频文件</Text>
+        </Box>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 820, top: 268, width: 400, height: 1, background: '#E5E7EB' }} />
+
+    <Box style={{ position: 'absolute', left: 820, top: 288, width: 400, flexDirection: 'column', gap: 12 }}>
+        <Text style={{ fontSize: 15, color: '#1A2230', lineHeight: 1.6 }}>
+            代码部署 32126 个文件，md5 与本地打包产物一致
+        </Text>
+        <Text style={{ fontSize: 15, color: '#1A2230', lineHeight: 1.6 }}>
+            首页、列表、详情、章节、搜索、专栏、问答、用户中心全部 200
+        </Text>
+        <Text style={{ fontSize: 15, color: '#1A2230', lineHeight: 1.6 }}>
+            视频走 Range 请求（206），防盗链按预期返回 403
+        </Text>
+        <Text style={{ fontSize: 15, color: '#1A2230', lineHeight: 1.6 }}>
+            每日 03:30 自动备份，保留 7 天；nginx / php-fpm / mariadb / redis 均开机自启
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 556, width: 1160, height: 80, background: '#F7F9FC', borderLeft: '3px solid #D9534F', paddingLeft: 20, paddingTop: 12, flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#D9534F' }}>
+            口径说明（不回避）
+        </Text>
+        <Text style={{ fontSize: 15, color: '#1A2230', lineHeight: 1.55 }}>
+            该服务器部署的是由开源云课堂改造的业务验证环境，用于跑通「课程 → 学习 → 完成」主干与部署运维链路；正式实现仍按 SRS 的 React 技术基线重写。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>15 / 21</Text>
+    </Box>
+</Slide>

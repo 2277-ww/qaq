@@ -1,0 +1,94 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            权限与安全：四层判断，缺一层就漏
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            03 · 系统实现与验证
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 82, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        「统一角色 + 权限点」模型　·　权限判断必须同时覆盖页面、菜单、接口、数据范围
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 112, width: 660, height: 2, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 60, top: 124, fontSize: 18, fontWeight: 'bold', color: '#1E4FA8' }}>
+        四层鉴权
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 160, width: 660, flexDirection: 'column' }}>
+        <Box style={{ flexDirection: 'row', paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 46, fontSize: 16, fontWeight: 'bold', color: '#3D7BD9' }}>L1</Text>
+            <Box style={{ flex: 1, flexDirection: 'column', gap: 3 }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1A2230' }}>页面访问</Text>
+                <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>未登录统一跳转认证中心，不留可匿名访问的业务页面</Text>
+            </Box>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 46, fontSize: 16, fontWeight: 'bold', color: '#3D7BD9' }}>L2</Text>
+            <Box style={{ flex: 1, flexDirection: 'column', gap: 3 }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1A2230' }}>菜单与按钮</Text>
+                <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>按权限点控制显隐，只做体验优化，不承担安全职责</Text>
+            </Box>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 46, fontSize: 16, fontWeight: 'bold', color: '#3D7BD9' }}>L3</Text>
+            <Box style={{ flex: 1, flexDirection: 'column', gap: 3 }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1A2230' }}>接口鉴权</Text>
+                <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>每个业务接口在服务端校验权限点，越权返回 FORBIDDEN</Text>
+            </Box>
+        </Box>
+        <Box style={{ flexDirection: 'row', paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid #E5E7EB' }}>
+            <Text style={{ width: 46, fontSize: 16, fontWeight: 'bold', color: '#3D7BD9' }}>L4</Text>
+            <Box style={{ flex: 1, flexDirection: 'column', gap: 3 }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1A2230' }}>数据范围</Text>
+                <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>
+                    学生仅本人；教师仅本人课程；管理员全量，但查看笔记正文须留痕
+                </Text>
+            </Box>
+        </Box>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 760, top: 112, width: 460, height: 2, background: '#D6DCE5' }} />
+    <Text style={{ position: 'absolute', left: 760, top: 124, fontSize: 18, fontWeight: 'bold', color: '#4A5568' }}>
+        五条硬要求
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 760, top: 160, width: 460, flexDirection: 'column', gap: 14 }}>
+        <Box style={{ flexDirection: 'column', gap: 3 }}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#1A2230' }}>会话</Text>
+            <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>Cookie 为 HttpOnly + Secure + SameSite=Lax，空闲 30 分钟、绝对 8 小时超时</Text>
+        </Box>
+        <Box style={{ flexDirection: 'column', gap: 3 }}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#1A2230' }}>令牌</Text>
+            <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>Access Token 不写前端持久化、不进日志与 URL，换取与续期都在服务端</Text>
+        </Box>
+        <Box style={{ flexDirection: 'column', gap: 3 }}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#1A2230' }}>资源</Text>
+            <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>视频与私有附件只发限时签名地址（≤2 小时），禁止目录遍历</Text>
+        </Box>
+        <Box style={{ flexDirection: 'column', gap: 3 }}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#1A2230' }}>上传</Text>
+            <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>扩展名、MIME、文件头、大小四重校验；图片二次编码，文件名重命名存储</Text>
+        </Box>
+        <Box style={{ flexDirection: 'column', gap: 3 }}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#1A2230' }}>审计</Text>
+            <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.55 }}>登录、审核、发布、归档、权限变更与敏感数据访问全量留痕，保留 3 年</Text>
+        </Box>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 580, width: 1160, height: 56, background: '#F7F9FC', borderLeft: '3px solid #D9534F', flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
+        <Text style={{ fontSize: 18, color: '#1A2230' }}>
+            前端隐藏按钮不是鉴权：真正的判断发生在
+            <span style={{ fontWeight: 'bold', color: '#D9534F' }}>服务端与数据范围</span>
+            上，前端只负责别让人白点。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>13 / 21</Text>
+    </Box>
+</Slide>

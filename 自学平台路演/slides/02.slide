@@ -1,0 +1,85 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 68, top: 60, width: 9, height: 9, background: '#E8622C' }} />
+    <Text style={{ position: 'absolute', left: 88, top: 56, fontSize: 14, color: '#E8622C', letterSpacing: 2 }}>
+        01　问题
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 66, top: 92, fontSize: 40, fontWeight: 'bold', color: '#0F2A47', letterSpacing: 0.5 }}>
+        一节课的内容，学生要花十几分钟才找得到
+    </Text>
+    <Text style={{ position: 'absolute', left: 68, top: 150, fontSize: 18, color: '#5A6678', letterSpacing: 0.5 }}>
+        不是没有资源，是资源躺在微信群里 —— 没有入口，也没有痕迹
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 208, width: 368, height: 392, background: '#F8FAFD' }}>
+        <Box style={{ position: 'absolute', left: 0, top: 0, width: 368, height: 4, background: '#1E4FA8' }} />
+        <Text style={{ position: 'absolute', left: 26, top: 30, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.5 }}>
+            学生 · 找课件
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 62, width: 316, fontSize: 17, color: '#1A2230', lineHeight: 1.85 }}>
+            课件和录屏都在班级群文件里，超过 7 天就过期。想找“上节课那个视频”，得往上翻几百条消息，或者私聊课代表要。
+        </Text>
+        <Box style={{ position: 'absolute', left: 26, top: 254, width: 316, height: 1, background: '#DDE4EE' }} />
+        <Text style={{ position: 'absolute', left: 26, top: 270, fontSize: 12, color: '#9AA5B4', letterSpacing: 1 }}>
+            一次找课
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 292, fontSize: 27, fontWeight: 'bold', color: '#E8622C' }}>
+            十几分钟
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 334, fontSize: 13, color: '#5A6678' }}>
+            找完还得等下载，视频 200MB 起
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 456, top: 208, width: 368, height: 392, background: '#F8FAFD' }}>
+        <Box style={{ position: 'absolute', left: 0, top: 0, width: 368, height: 4, background: '#1E4FA8' }} />
+        <Text style={{ position: 'absolute', left: 26, top: 30, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.5 }}>
+            教师 · 看过程
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 62, width: 316, fontSize: 17, color: '#1A2230', lineHeight: 1.85 }}>
+            课是发出去了，可谁看了、看到第几分钟、有没有看完，全不知道。期末只能问一句“大家都学了吧”。
+        </Text>
+        <Box style={{ position: 'absolute', left: 26, top: 254, width: 316, height: 1, background: '#DDE4EE' }} />
+        <Text style={{ position: 'absolute', left: 26, top: 270, fontSize: 12, color: '#9AA5B4', letterSpacing: 1 }}>
+            过程掌握
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 292, fontSize: 27, fontWeight: 'bold', color: '#E8622C' }}>
+            全靠问
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 334, fontSize: 13, color: '#5A6678' }}>
+            没法验证，也没法在课上针对性讲
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 852, top: 208, width: 368, height: 392, background: '#F8FAFD' }}>
+        <Box style={{ position: 'absolute', left: 0, top: 0, width: 368, height: 4, background: '#1E4FA8' }} />
+        <Text style={{ position: 'absolute', left: 26, top: 30, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.5 }}>
+            区队长 · 做统计
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 62, width: 316, fontSize: 17, color: '#1A2230', lineHeight: 1.85 }}>
+            每周收几十份“已学习”截图，人工核对要一小时，还容易看漏、对错人。核完这周，下周再来一遍。
+        </Text>
+        <Box style={{ position: 'absolute', left: 26, top: 254, width: 316, height: 1, background: '#DDE4EE' }} />
+        <Text style={{ position: 'absolute', left: 26, top: 270, fontSize: 12, color: '#9AA5B4', letterSpacing: 1 }}>
+            每周核对
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 292, fontSize: 27, fontWeight: 'bold', color: '#E8622C' }}>
+            1 小时 / 周
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 334, fontSize: 13, color: '#5A6678' }}>
+            而且截图可以 P，统计结果不可信
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 620, width: 1160, height: 52, background: '#EEF3FA' }} />
+    <Text style={{ position: 'absolute', left: 84, top: 636, fontSize: 16, color: '#1A2230', letterSpacing: 0.3 }}>
+        三件事的共同点：学习发生在群里，而群里没有“进度”这个概念。
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 60, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        自学平台 · 路演答辩
+    </Text>
+    <Text style={{ position: 'absolute', left: 1130, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        02 / 11
+    </Text>
+</Slide>

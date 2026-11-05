@@ -1,0 +1,127 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 68, top: 60, width: 9, height: 9, background: '#E8622C' }} />
+    <Text style={{ position: 'absolute', left: 88, top: 56, fontSize: 14, color: '#E8622C', letterSpacing: 2 }}>
+        04　技术与 AI
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 66, top: 92, fontSize: 40, fontWeight: 'bold', color: '#0F2A47', letterSpacing: 0.5 }}>
+        一台 2 核 2G 的服务器，就能把它跑起来
+    </Text>
+    <Text style={{ position: 'absolute', left: 68, top: 150, fontSize: 18, color: '#5A6678', letterSpacing: 0.5 }}>
+        没有用 Docker，没有买云数据库，全部装在一台普通 ECS 上
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 200, width: 250, height: 92, background: '#F8FAFD', border: '1px solid #DDE4EE' }}>
+        <Text style={{ position: 'absolute', left: 18, top: 18, fontSize: 19, fontWeight: 'bold', color: '#0F2A47' }}>
+            浏览器
+        </Text>
+        <Text style={{ position: 'absolute', left: 18, top: 50, fontSize: 13, color: '#7A8698' }}>
+            手机 / 电脑，免登录
+        </Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 316, top: 234, fontSize: 18, color: '#B8C4D4' }}>
+        →
+    </Text>
+    <Box style={{ position: 'absolute', left: 356, top: 200, width: 250, height: 92, background: '#F8FAFD', border: '1px solid #DDE4EE' }}>
+        <Text style={{ position: 'absolute', left: 18, top: 18, fontSize: 19, fontWeight: 'bold', color: '#0F2A47' }}>
+            nginx
+        </Text>
+        <Text style={{ position: 'absolute', left: 18, top: 50, fontSize: 13, color: '#7A8698' }}>
+            443 端口，HTTPS 与防盗链
+        </Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 612, top: 234, fontSize: 18, color: '#B8C4D4' }}>
+        →
+    </Text>
+    <Box style={{ position: 'absolute', left: 652, top: 200, width: 250, height: 92, background: '#1E4FA8' }}>
+        <Text style={{ position: 'absolute', left: 18, top: 18, fontSize: 19, fontWeight: 'bold', color: '#FFFFFF' }}>
+            PHP + Phalcon
+        </Text>
+        <Text style={{ position: 'absolute', left: 18, top: 50, fontSize: 13, color: 'rgba(255,255,255,0.68)' }}>
+            MVC 应用，93 个控制器
+        </Text>
+    </Box>
+    <Text style={{ position: 'absolute', left: 908, top: 234, fontSize: 18, color: '#B8C4D4' }}>
+        →
+    </Text>
+    <Box style={{ position: 'absolute', left: 948, top: 200, width: 272, height: 92, background: '#F8FAFD', border: '1px solid #DDE4EE' }}>
+        <Text style={{ position: 'absolute', left: 18, top: 18, fontSize: 19, fontWeight: 'bold', color: '#0F2A47' }}>
+            MariaDB + Redis
+        </Text>
+        <Text style={{ position: 'absolute', left: 18, top: 50, fontSize: 13, color: '#7A8698' }}>
+            73 张表 / 会话与缓存
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 322, width: 168, height: 38, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 14, top: 9, fontSize: 14, color: '#1E4FA8' }}>
+            PHP 7.3.33
+        </Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 240, top: 322, width: 168, height: 38, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 14, top: 9, fontSize: 14, color: '#1E4FA8' }}>
+            Phalcon 3.4.5
+        </Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 420, top: 322, width: 168, height: 38, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 14, top: 9, fontSize: 14, color: '#1E4FA8' }}>
+            MariaDB 10.5
+        </Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 600, top: 322, width: 168, height: 38, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 14, top: 9, fontSize: 14, color: '#1E4FA8' }}>
+            Redis 6.2
+        </Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 780, top: 322, width: 168, height: 38, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 14, top: 9, fontSize: 14, color: '#1E4FA8' }}>
+            nginx 1.24
+        </Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 960, top: 322, width: 260, height: 38, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 14, top: 9, fontSize: 14, color: '#1E4FA8' }}>
+            Let's Encrypt 免费证书
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 396, width: 366, height: 156, background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
+        <Box style={{ position: 'absolute', left: 0, top: 0, width: 366, height: 3, background: '#1E4FA8' }} />
+        <Text style={{ position: 'absolute', left: 22, top: 26, fontSize: 17, fontWeight: 'bold', color: '#0F2A47' }}>
+            数据是迁过来的，不是造的
+        </Text>
+        <Text style={{ position: 'absolute', left: 22, top: 60, width: 320, fontSize: 14, color: '#5A6678', lineHeight: 1.8 }}>
+            73 张表、9 门课、50 个章节、28 个视频，从本地整库导出再导入线上，md5 校验一致。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 456, top: 396, width: 366, height: 156, background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
+        <Box style={{ position: 'absolute', left: 0, top: 0, width: 366, height: 3, background: '#1E4FA8' }} />
+        <Text style={{ position: 'absolute', left: 22, top: 26, fontSize: 17, fontWeight: 'bold', color: '#0F2A47' }}>
+            每天自动备份，出事能回滚
+        </Text>
+        <Text style={{ position: 'absolute', left: 22, top: 60, width: 320, fontSize: 14, color: '#5A6678', lineHeight: 1.8 }}>
+            每天 03:30 全库导出，保留 7 天；nginx、PHP、数据库都已设开机自启。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 852, top: 396, width: 368, height: 156, background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
+        <Box style={{ position: 'absolute', left: 0, top: 0, width: 368, height: 3, background: '#1E4FA8' }} />
+        <Text style={{ position: 'absolute', left: 22, top: 26, fontSize: 17, fontWeight: 'bold', color: '#0F2A47' }}>
+            公网暴露的部分都加了锁
+        </Text>
+        <Text style={{ position: 'absolute', left: 22, top: 60, width: 322, fontSize: 14, color: '#5A6678', lineHeight: 1.8 }}>
+            后台独立口令、上传目录禁执行、视频防盗链，外站直接嵌入会返回 403。
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 580, width: 1160, fontSize: 16, color: '#5A6678' }}>
+        2 核 2G 能跑起来，说明它不是临时演示品，是一台可以长期挂着的服务。
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 60, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        自学平台 · 路演答辩
+    </Text>
+    <Text style={{ position: 'absolute', left: 1130, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        07 / 11
+    </Text>
+</Slide>

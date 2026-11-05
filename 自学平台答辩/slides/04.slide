@@ -1,0 +1,70 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            现状痛点：四类断裂
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            01 · 选题背景与平台定位
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 88, width: 1160, height: 56, background: '#E8EFF8', flexDirection: 'row', alignItems: 'center', paddingLeft: 22 }}>
+        <Text style={{ width: 96, fontSize: 14, fontWeight: 'bold', color: '#1E4FA8', letterSpacing: 2 }}>
+            问题提出
+        </Text>
+        <Box style={{ width: 1, height: 24, background: '#B9CCE8', marginRight: 18 }} />
+        <Text style={{ fontSize: 18, color: '#1A2230' }}>
+            资源不是没有，而是没有入口、没有记录、没有校验——四个环节各自断裂
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 168, width: 568, height: 184, border: '1px solid #D6DCE5', padding: 22, flexDirection: 'column', gap: 12 }}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#1A2230' }}>
+            <span style={{ color: '#3D7BD9' }}>Ⅰ</span>　资源分散
+        </Text>
+        <Text style={{ fontSize: 18, color: '#4A5568', lineHeight: 1.7 }}>
+            教程散落在群文件、网盘与个人电脑里，新生没有入门路径，同一个问题被反复从零讲起。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 652, top: 168, width: 568, height: 184, border: '1px solid #D6DCE5', padding: 22, flexDirection: 'column', gap: 12 }}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#1A2230' }}>
+            <span style={{ color: '#3D7BD9' }}>Ⅱ</span>　未学先做
+        </Text>
+        <Text style={{ fontSize: 18, color: '#4A5568', lineHeight: 1.7 }}>
+            训练缺少前置能力校验，学生带着空白基础进项目，返工率高，导师答疑成本居高不下。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 372, width: 568, height: 184, border: '1px solid #D6DCE5', padding: 22, flexDirection: 'column', gap: 12 }}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#1A2230' }}>
+            <span style={{ color: '#3D7BD9' }}>Ⅲ</span>　过程无痕
+        </Text>
+        <Text style={{ fontSize: 18, color: '#4A5568', lineHeight: 1.7 }}>
+            学习行为不记录、不量化，无法沉淀为可追溯的能力证据，评优与选拔缺少客观依据。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 652, top: 372, width: 568, height: 184, border: '1px solid #D6DCE5', padding: 22, flexDirection: 'column', gap: 12 }}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#1A2230' }}>
+            <span style={{ color: '#3D7BD9' }}>Ⅳ</span>　数据割裂
+        </Text>
+        <Text style={{ fontSize: 18, color: '#4A5568', lineHeight: 1.7 }}>
+            学习、考试、项目、成果四类数据彼此不通，个人成长档案只能靠人工汇总，无法自动归集。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 580, width: 1160, height: 56, background: '#F7F9FC', borderLeft: '3px solid #1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
+        <Text style={{ fontSize: 18, color: '#1A2230' }}>
+            自学平台只接其中一段：把散落资源变成
+            <span style={{ fontWeight: 'bold', color: '#1E4FA8' }}>可学习、可记录、可被下游查询</span>
+            的前置能力供给。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>04 / 21</Text>
+    </Box>
+</Slide>

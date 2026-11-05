@@ -1,0 +1,103 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            需求基线：6 项目标，38 项功能
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            02 · 需求分析与功能设计
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 82, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        业务目标不写「提升效果」，每条都给度量口径与 V1.0 目标值
+    </Text>
+
+    <Table
+        style={{ position: 'absolute', left: 60, top: 116, width: 720, height: 400 }}
+        defaultTextStyle={{ fontSize: 15, color: '#1A2230' }}
+        defaultCellStyle={{
+            border: {
+                left: { width: 0, color: '#FFFFFF' },
+                right: { width: 0, color: '#FFFFFF' },
+                top: { width: 0, color: '#FFFFFF' },
+                bottom: { width: 1, color: '#E5E7EB' },
+            },
+            paddingLeft: 8,
+            paddingRight: 8,
+        }}
+        cells={[
+            [
+                { text: '编号', textStyle: { bold: true, color: '#1E4FA8', fontSize: 14 }, cellStyle: { border: { bottom: { width: 2, color: '#1E4FA8' } } } },
+                { text: '业务目标', textStyle: { bold: true, color: '#1E4FA8', fontSize: 14 }, cellStyle: { border: { bottom: { width: 2, color: '#1E4FA8' } } } },
+                { text: '度量指标', textStyle: { bold: true, color: '#1E4FA8', fontSize: 14 }, cellStyle: { border: { bottom: { width: 2, color: '#1E4FA8' } } } },
+                { text: 'V1.0 目标值', textStyle: { bold: true, color: '#1E4FA8', fontSize: 14 }, cellStyle: { border: { bottom: { width: 2, color: '#1E4FA8' } } } },
+            ],
+            ['G-01', '学习资源集中化', '已发布课程 / 覆盖分类', { text: '≥60 门 · 7 分类全覆盖', textStyle: { bold: true, color: '#1E4FA8' } }],
+            ['G-02', '支撑前置能力校验', '被工坊绑定为必修的课程', { text: '≥15 门', textStyle: { bold: true, color: '#1E4FA8' } }],
+            ['G-03', '学习行为可追溯', '学习进度上报成功率', { text: '≥99.5%', textStyle: { bold: true, color: '#1E4FA8' } }],
+            ['G-04', '完成状态可信查询', '完成状态接口可用率', { text: '≥99.9%', textStyle: { bold: true, color: '#1E4FA8' } }],
+            ['G-05', '学习数据可归集', '按 userId 归集覆盖率', { text: '100% · 无孤儿记录', textStyle: { bold: true, color: '#1E4FA8' } }],
+            ['G-06', '课程内容质量可控', '审核一次通过率', { text: '≥70%', textStyle: { bold: true, color: '#1E4FA8' } }],
+        ]}
+    />
+
+    <Box style={{ position: 'absolute', left: 820, top: 116, width: 400, height: 2, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 820, top: 128, fontSize: 18, fontWeight: 'bold', color: '#1E4FA8' }}>
+        38 项功能需求 · 其中 P0 22 项
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 820, top: 176, width: 400, flexDirection: 'column', gap: 14 }}>
+        <Box style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ width: 92, fontSize: 16, color: '#1A2230' }}>学生端</Text>
+            <Box style={{ width: 240, height: 12, background: '#E8EFF8' }}>
+                <Box style={{ width: 240, height: 12, background: '#1E4FA8' }} />
+            </Box>
+            <Text style={{ width: 44, fontSize: 16, fontWeight: 'bold', color: '#1E4FA8', textAlign: 'right' }}>10</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ width: 92, fontSize: 16, color: '#1A2230' }}>教师端</Text>
+            <Box style={{ width: 240, height: 12, background: '#E8EFF8' }}>
+                <Box style={{ width: 216, height: 12, background: '#3D7BD9' }} />
+            </Box>
+            <Text style={{ width: 44, fontSize: 16, fontWeight: 'bold', color: '#1E4FA8', textAlign: 'right' }}>9</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ width: 92, fontSize: 16, color: '#1A2230' }}>管理员端</Text>
+            <Box style={{ width: 240, height: 12, background: '#E8EFF8' }}>
+                <Box style={{ width: 240, height: 12, background: '#1E4FA8' }} />
+            </Box>
+            <Text style={{ width: 44, fontSize: 16, fontWeight: 'bold', color: '#1E4FA8', textAlign: 'right' }}>10</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ width: 92, fontSize: 16, color: '#1A2230' }}>开放接口</Text>
+            <Box style={{ width: 240, height: 12, background: '#E8EFF8' }}>
+                <Box style={{ width: 144, height: 12, background: '#3D7BD9' }} />
+            </Box>
+            <Text style={{ width: 44, fontSize: 16, fontWeight: 'bold', color: '#1E4FA8', textAlign: 'right' }}>6</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ width: 92, fontSize: 16, color: '#1A2230' }}>业务事件</Text>
+            <Box style={{ width: 240, height: 12, background: '#E8EFF8' }}>
+                <Box style={{ width: 72, height: 12, background: '#3D7BD9' }} />
+            </Box>
+            <Text style={{ width: 44, fontSize: 16, fontWeight: 'bold', color: '#1E4FA8', textAlign: 'right' }}>3</Text>
+        </Box>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 820, top: 434, width: 400, fontSize: 15, color: '#4A5568', lineHeight: 1.75 }}>
+        P0 先交付主干：课程浏览与检索、图文与视频学习、进度自动记录、提交审核、审核发布、完成状态开放接口。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 580, width: 1160, height: 56, background: '#F7F9FC', borderLeft: '3px solid #1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
+        <Text style={{ fontSize: 18, color: '#1A2230' }}>
+            编号即契约：FR-STU / FR-TEA / FR-ADM / OPEN / EVT 五组各自对应流程节点，
+            <span style={{ fontWeight: 'bold', color: '#1E4FA8' }}>每一项都能落到测试用例</span>。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>07 / 21</Text>
+    </Box>
+</Slide>

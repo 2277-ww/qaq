@@ -1,0 +1,61 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 68, top: 60, width: 9, height: 9, background: '#E8622C' }} />
+    <Text style={{ position: 'absolute', left: 88, top: 56, fontSize: 14, color: '#E8622C', letterSpacing: 2 }}>
+        03　功能演示 · 之三
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 66, top: 92, fontSize: 40, fontWeight: 'bold', color: '#0F2A47', letterSpacing: 0.5 }}>
+        ③ 管得住：加一门课，不用改一行代码
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 186, width: 704, height: 442, background: '#F4F7FC', border: '1px solid #E1E7F0' }}>
+        <Image src="assets/f_admin.png" style={{ width: 702, height: 440, objectFit: 'cover' }} />
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 640, fontSize: 13, color: '#9AA5B4' }}>
+        线上后台实拍：课程列表，发布状态可直接开关
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 806, top: 186, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.5 }}>
+        内容自己维护，不找技术
+    </Text>
+    <Text style={{ position: 'absolute', left: 806, top: 214, width: 414, fontSize: 16, color: '#5A6678', lineHeight: 1.8 }}>
+        课程、章节、视频、用户，都在一个后台里。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 282, width: 6, height: 6, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 824, top: 274, width: 396, fontSize: 17, color: '#1A2230', lineHeight: 1.75 }}>
+        建课程、排章节、传视频，按表单填就行
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 362, width: 6, height: 6, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 824, top: 354, width: 396, fontSize: 17, color: '#1A2230', lineHeight: 1.75 }}>
+        视频上传后自动转码，转完才允许发布
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 422, width: 6, height: 6, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 824, top: 414, width: 396, fontSize: 17, color: '#1A2230', lineHeight: 1.75 }}>
+        发布开关一拨就上下架，改完立刻生效
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 482, width: 6, height: 6, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 824, top: 474, width: 396, fontSize: 17, color: '#1A2230', lineHeight: 1.75 }}>
+        后台独立口令保护，公网暴露也不会被随便改
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 556, width: 414, height: 72, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 20, top: 14, fontSize: 15, color: '#1E4FA8', letterSpacing: 0.5 }}>
+            现在后台里
+        </Text>
+        <Text style={{ position: 'absolute', left: 20, top: 38, fontSize: 17, color: '#0F2A47' }}>
+            7 门课在架，学员、课时、发布状态一屏可查
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        自学平台 · 路演答辩
+    </Text>
+    <Text style={{ position: 'absolute', left: 1130, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        06 / 11
+    </Text>
+</Slide>

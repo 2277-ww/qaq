@@ -1,0 +1,61 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 68, top: 60, width: 9, height: 9, background: '#E8622C' }} />
+    <Text style={{ position: 'absolute', left: 88, top: 56, fontSize: 14, color: '#E8622C', letterSpacing: 2 }}>
+        03　功能演示 · 之二
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 66, top: 92, fontSize: 40, fontWeight: 'bold', color: '#0F2A47', letterSpacing: 0.5 }}>
+        ② 看得下去：点开就播，学到哪记到哪
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 186, width: 704, height: 442, background: '#F4F7FC', border: '1px solid #E1E7F0' }}>
+        <Image src="assets/f_chapter.png" style={{ width: 702, height: 440, objectFit: 'cover' }} />
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 640, fontSize: 13, color: '#9AA5B4' }}>
+        线上章节页实拍：播放器、目录、进度、笔记在同一屏
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 806, top: 186, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.5 }}>
+        不用下载，也不用记自己看到哪
+    </Text>
+    <Text style={{ position: 'absolute', left: 806, top: 214, width: 414, fontSize: 16, color: '#5A6678', lineHeight: 1.8 }}>
+        左边播放，右边目录，往下就是这一节的笔记。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 282, width: 6, height: 6, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 824, top: 274, width: 396, fontSize: 17, color: '#1A2230', lineHeight: 1.75 }}>
+        播放器可拖进度、切清晰度、全屏，边下边播不卡
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 362, width: 6, height: 6, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 824, top: 354, width: 396, fontSize: 17, color: '#1A2230', lineHeight: 1.75 }}>
+        右侧目录直接跳章，不用退回课程列表
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 422, width: 6, height: 6, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 824, top: 414, width: 396, fontSize: 17, color: '#1A2230', lineHeight: 1.75 }}>
+        学完写回进度，章节页直接显示“已学 100%”
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 482, width: 6, height: 6, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 824, top: 474, width: 396, fontSize: 17, color: '#1A2230', lineHeight: 1.75 }}>
+        记笔记自动带上当前播放位置，回头能一键定位
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 556, width: 414, height: 72, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 20, top: 14, fontSize: 15, color: '#1E4FA8', letterSpacing: 0.5 }}>
+            视频链路已实测
+        </Text>
+        <Text style={{ position: 'absolute', left: 20, top: 38, fontSize: 17, color: '#0F2A47' }}>
+            28 个文件全 H.264，拖动返回 206，外站引用 403
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        自学平台 · 路演答辩
+    </Text>
+    <Text style={{ position: 'absolute', left: 1130, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        05 / 11
+    </Text>
+</Slide>

@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN-Hans">
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="自学平台,警务人才培养,在线课程,前端开发,Python 算法,计算机视觉,容器部署,数据库,网络安全,警务业务知识">
+    <meta name="description" content="面向警务人才培养的自主学习平台，提供前端开发、Python 算法、计算机视觉、容器部署、数据库、网络安全与警务业务知识等课程。">
+    <meta name="csrf-token" content="5VGDe8Kui59A/rE+hEqOMUuyrofuFjs5sBZiorXhuohiBoRw1bnlzw==">
+    <title>自学平台</title>
+            <link rel="shortcut icon" href="/static/favicon.ico?v=202611041350">        <link rel="stylesheet" type="text/css" href="/static/lib/iconfont/iconfont.css?v=202611041350">    <link rel="stylesheet" type="text/css" href="/static/lib/layui/css/layui.css?v=202611041350">    <link rel="stylesheet" type="text/css" href="/static/home/css/common.css?v=202611041350">    
+    
+</head>
+<body class="main">
+<div id="header">
+        
+<div class="logo">
+    <a href="/" title="自学平台"><img src="/static/brand-logo.png" /></a>
+</div>
+
+<div class="top-nav">
+    <ul class="layui-nav">
+                    <li class="layui-nav-item">
+                <a href="/" class="nav-1" target="_self">首页</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/course/list" class="nav-2" target="_self">课程</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/article/list" class="nav-3" target="_self">专栏</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/question/list" class="nav-4" target="_self">问答</a>
+                            </li>
+                    <li class="layui-nav-item">
+                <a href="/teacher/list" class="nav-5" target="_self">师资</a>
+                            </li>
+            </ul>
+</div>
+
+<div class="user">
+    <ul class="layui-nav">
+        <li class="layui-nav-item">
+            <a class="nav-search" href="javascript:" data-url="/search"><i class="layui-icon layui-icon-search"></i> 搜索</a>
+        </li>
+                    <li class="layui-nav-item">
+                <a href="javascript:"><i class="layui-icon layui-icon-add-circle"></i> 发布</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/question/add" target="_blank">提问题</a></dd>
+                    <dd><a href="/article/add" target="_blank">写文章</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/uc/notifications" target="notify"><i class="layui-icon layui-icon-notice"></i> 消息<span id="notify-dot"></span></a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:">自学平台</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/user/10000">我的主页</a></dd>
+                                            <dd><a href="/tc">教学中心</a></dd>
+                                        <dd><a href="/uc">用户中心</a></dd>
+                </dl>
+            </li>
+            </ul>
+</div></div>
+<div id="main" class="layui-main">
+    
+
+    
+    
+            <div class="index-wrap wrap">
+            <div class="header">推荐课程</div>
+            <div class="content simple">
+                        <div class="index-course-list">
+            <div class="layui-row layui-col-space20">
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/6" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c6.png!cover_270" alt="网络安全基础" title="网络安全基础">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/6" title="网络安全基础" target="_blank">网络安全基础</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">1 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/5" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c5.png!cover_270" alt="数据库原理与应用" title="数据库原理与应用">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/5" title="数据库原理与应用" target="_blank">数据库原理与应用</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">1 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/4" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c4.png!cover_270" alt="Docker 容器化部署" title="Docker 容器化部署">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/4" title="Docker 容器化部署" target="_blank">Docker 容器化部署</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">0 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/3" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c3.png!cover_270" alt="YOLO 目标检测实战" title="YOLO 目标检测实战">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/3" title="YOLO 目标检测实战" target="_blank">YOLO 目标检测实战</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">0 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/2" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c2.png!cover_270" alt="Python 算法入门" title="Python 算法入门">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/2" title="Python 算法入门" target="_blank">Python 算法入门</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">0 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/1" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c1.png!cover_270" alt="前端开发实战：从页面到交互" title="前端开发实战：从页面到交互">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/1" title="前端开发实战：从页面到交互" target="_blank">前端开发实战：从页面到交互</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">1 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                            </div>
+        </div>            </div>
+        </div>
+    
+            <div class="index-wrap wrap">
+            <div class="header">新上课程</div>
+            <div class="content simple">
+                        <div class="index-course-list">
+            <div class="layui-row layui-col-space20">
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/9" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c7.png!cover_270" alt="公安业务基础知识" title="公安业务基础知识">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/9" title="公安业务基础知识" target="_blank">公安业务基础知识</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">1 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/6" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c6.png!cover_270" alt="网络安全基础" title="网络安全基础">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/6" title="网络安全基础" target="_blank">网络安全基础</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">1 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/5" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c5.png!cover_270" alt="数据库原理与应用" title="数据库原理与应用">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/5" title="数据库原理与应用" target="_blank">数据库原理与应用</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">1 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/4" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c4.png!cover_270" alt="Docker 容器化部署" title="Docker 容器化部署">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/4" title="Docker 容器化部署" target="_blank">Docker 容器化部署</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">0 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/3" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c3.png!cover_270" alt="YOLO 目标检测实战" title="YOLO 目标检测实战">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/3" title="YOLO 目标检测实战" target="_blank">YOLO 目标检测实战</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">0 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/2" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c2.png!cover_270" alt="Python 算法入门" title="Python 算法入门">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/2" title="Python 算法入门" target="_blank">Python 算法入门</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">0 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/1" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c1.png!cover_270" alt="前端开发实战：从页面到交互" title="前端开发实战：从页面到交互">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/1" title="前端开发实战：从页面到交互" target="_blank">前端开发实战：从页面到交互</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">1 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                            </div>
+        </div>            </div>
+        </div>
+    
+            <div class="index-wrap wrap">
+            <div class="header">免费课程</div>
+            <div class="content simple">
+                        <div class="index-course-list">
+            <div class="layui-row layui-col-space20">
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/1" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c1.png!cover_270" alt="前端开发实战：从页面到交互" title="前端开发实战：从页面到交互">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/1" title="前端开发实战：从页面到交互" target="_blank">前端开发实战：从页面到交互</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">1 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/2" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c2.png!cover_270" alt="Python 算法入门" title="Python 算法入门">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/2" title="Python 算法入门" target="_blank">Python 算法入门</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">0 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/3" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c3.png!cover_270" alt="YOLO 目标检测实战" title="YOLO 目标检测实战">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/3" title="YOLO 目标检测实战" target="_blank">YOLO 目标检测实战</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">0 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/4" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c4.png!cover_270" alt="Docker 容器化部署" title="Docker 容器化部署">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/4" title="Docker 容器化部署" target="_blank">Docker 容器化部署</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">0 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/5" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c5.png!cover_270" alt="数据库原理与应用" title="数据库原理与应用">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/5" title="数据库原理与应用" target="_blank">数据库原理与应用</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">1 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/6" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c6.png!cover_270" alt="网络安全基础" title="网络安全基础">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/6" title="网络安全基础" target="_blank">网络安全基础</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">1 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                                    <div class="layui-col-md3">
+                                <div class="course-card">
+        <div class="model">            <span class="layui-badge layui-bg-green">点播</span>
+    </div>
+        <div class="rating">                <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+            <i class="layui-icon layui-icon-star-fill"></i>
+    </div>
+        <div class="cover">
+            <a href="/course/9" target="_blank">
+                <img src="https://8.138.34.151/static/cover/c7.png!cover_270" alt="公安业务基础知识" title="公安业务基础知识">
+            </a>
+        </div>
+        <div class="info">
+            <div class="title layui-elip">
+                <a href="/course/9" title="公安业务基础知识" target="_blank">公安业务基础知识</a>
+            </div>
+            <div class="meta">
+                                    <span class="free">全员免费</span>
+                    <span class="lesson">4 节课</span>
+                    <span class="user">1 人报名</span>
+                            </div>
+        </div>
+    </div>                    </div>
+                            </div>
+        </div>            </div>
+        </div>
+    
+
+</div>
+<div id="footer">
+    <div class="layui-main">
+    <div class="row nav">
+                    <a href="#" target="_blank">关于我们</a>
+                    <a href="#" target="_blank">联系我们</a>
+                    <a href="#" target="_blank">人才招聘</a>
+                    <a href="/help" target="_blank">帮助中心</a>
+                    <a href="#" target="_blank">友情链接</a>
+            </div>
+    <div class="row copyright">
+        <span class="brand">&copy; 2026 自学平台</span>
+                                            </div>
+    </div>
+</div>
+
+<script>
+
+    window.user = {
+        id: '10000',
+        name: '自学平台',
+        avatar: 'https://8.138.34.151/static/img/default/user_avatar.png',
+        locked: '0'
+    };
+
+    window.contact = {
+        enabled: '0',
+        qq: '',
+        wechat: '',
+        toutiao: '',
+        douyin: '',
+        weibo: '',
+        zhihu: '',
+        phone: '',
+        email: '',
+        address: ''
+    };
+
+    window.websocket = {
+        connect_url: 'wss://127.0.0.1/wss',
+        ping_interval: '30'
+    };
+
+</script><script type="text/javascript" src="/static/lib/layui/layui.js?v=202611041350"></script><script type="text/javascript" src="/static/home/js/common.js?v=202611041350"></script><script type="text/javascript" src="/static/home/js/fixbar.js?v=202611041350"></script>
+
+
+    <script type="text/javascript" src="/static/home/js/index.js?v=202611041350"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            流程三：前置必修，跨平台只留两个耦合点
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            02 · 需求分析与功能设计
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 82, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        联动三段　·　绑定前置必修 → 学习并完成 → 准入判定
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 118, width: 360, height: 322, border: '1px solid #D6DCE5', padding: 24, flexDirection: 'column' }}>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#3D7BD9', lineHeight: 1.2 }}>①</Text>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A2230', marginTop: 10 }}>绑定前置必修</Text>
+        <Text style={{ fontSize: 14, color: '#8B97A8', marginTop: 6, letterSpacing: 0.5 }}>执行方：实训工坊</Text>
+        <Text style={{ fontSize: 16, color: '#4A5568', marginTop: 14, lineHeight: 1.75 }}>
+            工坊在项目配置中选择已发布课程作为前置必修，自行保存「项目—课程」绑定关系。
+            平台只提供可绑定课程元数据查询，返回课程 ID、标题、分类、课时数。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 460, top: 118, width: 360, height: 322, border: '1px solid #D6DCE5', background: '#F7F9FC', padding: 24, flexDirection: 'column' }}>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#3D7BD9', lineHeight: 1.2 }}>②</Text>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A2230', marginTop: 10 }}>学习并完成</Text>
+        <Text style={{ fontSize: 14, color: '#8B97A8', marginTop: 6, letterSpacing: 0.5 }}>执行方：自学平台</Text>
+        <Text style={{ fontSize: 16, color: '#4A5568', marginTop: 14, lineHeight: 1.75 }}>
+            学生按课程学习，进度达标后判定课程完成，投递 course.completed 事件；
+            事件 5 秒内可被下游查到，失败自动重试并支持人工重放。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 860, top: 118, width: 360, height: 322, border: '1px solid #D6DCE5', padding: 24, flexDirection: 'column' }}>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#3D7BD9', lineHeight: 1.2 }}>③</Text>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#1A2230', marginTop: 10 }}>准入判定</Text>
+        <Text style={{ fontSize: 14, color: '#8B97A8', marginTop: 6, letterSpacing: 0.5 }}>执行方：实训工坊 / 考试平台</Text>
+        <Text style={{ fontSize: 16, color: '#4A5568', marginTop: 14, lineHeight: 1.75 }}>
+            工坊依据完成状态决定是否允许报名高阶任务。事件未到时用同步查询兜底：
+            单查 P95 ≤300ms，批量 1000 组 ≤800ms。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 462, width: 1160, height: 1, background: '#D6DCE5' }} />
+    <Text style={{ position: 'absolute', left: 60, top: 476, fontSize: 14, color: '#8B97A8', letterSpacing: 1 }}>
+        本平台的三条自我约束
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 506, width: 1160, flexDirection: 'row' }}>
+        <Box style={{ flex: 1, flexDirection: 'column', gap: 4, paddingRight: 20 }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#D9534F' }}>不存储 projectId</Text>
+            <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.6 }}>绑定关系归工坊，避免双写与不一致</Text>
+        </Box>
+        <Box style={{ width: 1, height: 54, background: '#E5E7EB' }} />
+        <Box style={{ flex: 1, flexDirection: 'column', gap: 4, paddingLeft: 24, paddingRight: 20 }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1A2230' }}>不感知项目状态</Text>
+            <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.6 }}>立项、结项与本平台无关</Text>
+        </Box>
+        <Box style={{ width: 1, height: 54, background: '#E5E7EB' }} />
+        <Box style={{ flex: 1, flexDirection: 'column', gap: 4, paddingLeft: 24 }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1A2230' }}>不参与准入判定</Text>
+            <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.6 }}>只给事实，不给结论</Text>
+        </Box>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 588, width: 1160, height: 48, background: '#E8EFF8', flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
+        <Text style={{ fontSize: 17, color: '#1A2230' }}>
+            耦合面收敛为「一个查询接口 + 一个事件」：任一方改内部实现，另一方都不需要跟着改。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>10 / 21</Text>
+    </Box>
+</Slide>

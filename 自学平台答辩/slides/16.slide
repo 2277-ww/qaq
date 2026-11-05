@@ -1,0 +1,52 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 1280, height: 62, background: '#1E4FA8', flexDirection: 'row', alignItems: 'center', paddingLeft: 60, paddingRight: 60 }}>
+        <Text style={{ flex: 1, fontSize: 30, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            实现效果：三个真实页面
+        </Text>
+        <Text style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', letterSpacing: 1 }}>
+            03 · 系统实现与验证
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 80, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        ① 首页　·　课程入口与检索
+    </Text>
+    <Box style={{ position: 'absolute', left: 60, top: 106, width: 620, height: 386, border: '1px solid #D6DCE5' }}>
+        <Image src="assets/shot_home.png" style={{ width: 618, height: 384, objectFit: 'cover' }} />
+    </Box>
+    <Text style={{ position: 'absolute', left: 60, top: 502, width: 620, fontSize: 16, color: '#1A2230', lineHeight: 1.55 }}>
+        卡片直接给出学时、难度与报名人数，学生不必先点进去才知道要花多久。
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 720, top: 80, fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>
+        ② 课程详情　·　我的学习与笔记
+    </Text>
+    <Box style={{ position: 'absolute', left: 720, top: 106, width: 500, height: 312, border: '1px solid #D6DCE5' }}>
+        <Image src="assets/shot_course.png" style={{ width: 498, height: 310, objectFit: 'cover' }} />
+    </Box>
+    <Text style={{ position: 'absolute', left: 720, top: 428, width: 500, fontSize: 16, color: '#1A2230', lineHeight: 1.55 }}>
+        学时可查、目录可跳，进度条与笔记就在学习区，不用跳到另一个页面。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 720, top: 486, width: 500, height: 1, background: '#D6DCE5' }} />
+    <Text style={{ position: 'absolute', left: 720, top: 498, fontSize: 16, fontWeight: 'bold', color: '#1E4FA8' }}>
+        ③ 后台与运维
+    </Text>
+    <Box style={{ position: 'absolute', left: 720, top: 528, width: 500, flexDirection: 'column', gap: 8 }}>
+        <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.5 }}>
+            课程、章节、视频、用户、审核队列一屏可管，审核动作留痕
+        </Text>
+        <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.5 }}>
+            系统信息直接暴露运行环境版本，排障时不必再登服务器
+        </Text>
+        <Text style={{ fontSize: 15, color: '#4A5568', lineHeight: 1.5 }}>
+            上传即校验格式与大小，失败原因回显，不产生无主文件
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 656, width: 1160, height: 1, background: '#E5E7EB' }} />
+    <Box style={{ position: 'absolute', left: 60, top: 668, width: 1160, flexDirection: 'row' }}>
+        <Text style={{ flex: 1, fontSize: 13, color: '#8B97A8' }}>警院 WeChat 全生态 · 自学平台 答辩</Text>
+        <Text style={{ fontSize: 13, color: '#8B97A8' }}>16 / 21</Text>
+    </Box>
+</Slide>

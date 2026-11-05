@@ -1,0 +1,56 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 68, top: 60, width: 9, height: 9, background: '#E8622C' }} />
+    <Text style={{ position: 'absolute', left: 88, top: 56, fontSize: 14, color: '#E8622C', letterSpacing: 2 }}>
+        03　功能演示 · 之一
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 66, top: 92, fontSize: 40, fontWeight: 'bold', color: '#0F2A47', letterSpacing: 0.5 }}>
+        ① 找得到：课程按方向摆好，搜索直接命中
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 186, width: 704, height: 442, background: '#F4F7FC', border: '1px solid #E1E7F0' }}>
+        <Image src="assets/f_home.png" style={{ width: 702, height: 440, objectFit: 'cover' }} />
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 640, fontSize: 13, color: '#9AA5B4' }}>
+        线上首页实拍：https://8.138.34.151
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 806, top: 186, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.5 }}>
+        一个入口，替代一串群文件
+    </Text>
+    <Text style={{ position: 'absolute', left: 806, top: 214, width: 414, fontSize: 16, color: '#5A6678', lineHeight: 1.8 }}>
+        打开就是课程墙，按方向分组，点进去就是章节。
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 282, width: 6, height: 6, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 824, top: 274, width: 396, fontSize: 17, color: '#1A2230', lineHeight: 1.75 }}>
+        网络安全、数据库、容器部署、计算机视觉、Python、前端，各成一类
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 372, width: 6, height: 6, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 824, top: 364, width: 396, fontSize: 17, color: '#1A2230', lineHeight: 1.75 }}>
+        顶部搜索框，输“Python”“算法”都能命中课程与章节
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 452, width: 6, height: 6, background: '#1E4FA8' }} />
+    <Text style={{ position: 'absolute', left: 824, top: 444, width: 396, fontSize: 17, color: '#1A2230', lineHeight: 1.75 }}>
+        手机浏览器打开就是同一套页面，不用装 App
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 806, top: 536, width: 414, height: 92, background: '#EEF3FA' }}>
+        <Text style={{ position: 'absolute', left: 20, top: 16, fontSize: 15, color: '#1E4FA8', letterSpacing: 0.5 }}>
+            目前站内
+        </Text>
+        <Text style={{ position: 'absolute', left: 20, top: 42, fontSize: 24, fontWeight: 'bold', color: '#0F2A47' }}>
+            9 门课程　50 个章节　28 个视频
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        自学平台 · 路演答辩
+    </Text>
+    <Text style={{ position: 'absolute', left: 1130, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        04 / 11
+    </Text>
+</Slide>

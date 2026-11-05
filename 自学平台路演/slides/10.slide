@@ -1,0 +1,102 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 68, top: 60, width: 9, height: 9, background: '#E8622C' }} />
+    <Text style={{ position: 'absolute', left: 88, top: 56, fontSize: 14, color: '#E8622C', letterSpacing: 2 }}>
+        06　价值与未来
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 66, top: 92, fontSize: 40, fontWeight: 'bold', color: '#0F2A47', letterSpacing: 0.5 }}>
+        它不大，但它解决的是每天都发生的问题
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 60, top: 166, fontSize: 13, color: '#9AA5B4', letterSpacing: 1.5 }}>
+        现 在 值 多 少
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 196, width: 288, height: 178, background: '#F8FAFD' }}>
+        <Text style={{ position: 'absolute', left: 22, top: 26, fontSize: 34, fontWeight: 'bold', color: '#E8622C' }}>
+            28 个
+        </Text>
+        <Text style={{ position: 'absolute', left: 22, top: 76, width: 244, fontSize: 15, color: '#1A2230', lineHeight: 1.7 }}>
+            视频全部结构化管理，配 9 门课、50 个章节
+        </Text>
+        <Text style={{ position: 'absolute', left: 22, top: 140, fontSize: 12, color: '#9AA5B4' }}>
+            不再怕群文件过期
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 368, top: 196, width: 288, height: 178, background: '#F8FAFD' }}>
+        <Text style={{ position: 'absolute', left: 22, top: 26, fontSize: 34, fontWeight: 'bold', color: '#E8622C' }}>
+            0.17 秒
+        </Text>
+        <Text style={{ position: 'absolute', left: 22, top: 76, width: 244, fontSize: 15, color: '#1A2230', lineHeight: 1.7 }}>
+            首页响应实测；找课从“翻消息”变成“打两个字”
+        </Text>
+        <Text style={{ position: 'absolute', left: 22, top: 140, fontSize: 12, color: '#9AA5B4' }}>
+            外网探测，非理想环境
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 394, width: 288, height: 178, background: '#F8FAFD' }}>
+        <Text style={{ position: 'absolute', left: 22, top: 26, fontSize: 34, fontWeight: 'bold', color: '#E8622C' }}>
+            40 分钟
+        </Text>
+        <Text style={{ position: 'absolute', left: 22, top: 76, width: 244, fontSize: 15, color: '#1A2230', lineHeight: 1.7 }}>
+            能把整套环境重装到一台新服务器，脚本化复用
+        </Text>
+        <Text style={{ position: 'absolute', left: 22, top: 140, fontSize: 12, color: '#9AA5B4' }}>
+            11-04 实际部署耗时
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 368, top: 394, width: 288, height: 178, background: '#F8FAFD' }}>
+        <Text style={{ position: 'absolute', left: 22, top: 26, fontSize: 34, fontWeight: 'bold', color: '#E8622C' }}>
+            1 小时
+        </Text>
+        <Text style={{ position: 'absolute', left: 22, top: 76, width: 244, fontSize: 15, color: '#1A2230', lineHeight: 1.7 }}>
+            区队长每周省下的核对时间，且不用再收截图
+        </Text>
+        <Text style={{ position: 'absolute', left: 22, top: 140, fontSize: 12, color: '#9AA5B4' }}>
+            按 40 人区队估算
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 700, top: 166, fontSize: 13, color: '#9AA5B4', letterSpacing: 1.5 }}>
+        接 下 来 加 什 么
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 700, top: 196, width: 520, height: 178, background: '#0F2A47' }}>
+        <Text style={{ position: 'absolute', left: 26, top: 24, fontSize: 12, color: 'rgba(255,255,255,0.55)', letterSpacing: 2 }}>
+            V2 · 第 一 步
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 50, fontSize: 20, fontWeight: 'bold', color: '#FFFFFF' }}>
+            把 AI 放进产品里
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 88, width: 468, fontSize: 14, color: 'rgba(255,255,255,0.72)', lineHeight: 1.8 }}>
+            课程问答：问“这章重点是什么”，答案只从本章内容里出，答不上就说答不上；
+            再按学习进度生成一份复习计划。
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 700, top: 394, width: 520, height: 178, background: '#F8FAFD', border: '1px solid #E1E7F0' }}>
+        <Text style={{ position: 'absolute', left: 26, top: 24, fontSize: 12, color: '#9AA5B4', letterSpacing: 2 }}>
+            V2 · 第 二 步
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 50, fontSize: 20, fontWeight: 'bold', color: '#0F2A47' }}>
+            从“能自学”到“能准入”
+        </Text>
+        <Text style={{ position: 'absolute', left: 26, top: 88, width: 468, fontSize: 14, color: '#4A5568', lineHeight: 1.8 }}>
+            学完前置课程，才能报名实训工坊；学习记录成为五平台闭环里的准入依据，而不只是一个好看的页面。
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 606, width: 1160, fontSize: 17, color: '#5A6678', letterSpacing: 0.3 }}>
+        一句话总结：它把“学没学”从一句口头确认，变成了可以查、可以复用的一行数据。
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 60, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        自学平台 · 路演答辩
+    </Text>
+    <Text style={{ position: 'absolute', left: 1130, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        10 / 11
+    </Text>
+</Slide>

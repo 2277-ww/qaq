@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>自学平台 · 功能演示</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="scenes.css">
+<script src="scenes.js"></script>
+</head>
+<body>
+<div id="stage">
+
+  <div class="topstrip">
+    <div class="tl"><span class="bar"></span><span>警院 WeChat 全生态 · 自学平台 · 功能演示</span></div>
+    <div class="tr">
+      <span id="sceneIdx" class="idx">01 / 12</span>
+      <span id="sceneName">片头</span>
+      <span style="opacity:.45">|</span>
+      <span>依据《五平台前端与功能联动约束规范 V2.0》</span>
+    </div>
+  </div>
+
+  <div class="win" id="win">
+    <div class="tbar">
+      <div class="dots"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i></div>
+      <div class="urlpill">
+        <svg width="11" height="12" viewBox="0 0 12 13" fill="none"><rect x="1.2" y="5.6" width="9.6" height="6.6" rx="1.6" stroke="#8FA0B8" stroke-width="1.2"/><path d="M3.6 5.4V3.9a2.4 2.4 0 0 1 4.8 0v1.5" stroke="#8FA0B8" stroke-width="1.2"/></svg>
+        <span id="url">learning.campus.edu.cn/course/list</span>
+      </div>
+      <span class="chip-demo">演示数据 · 未连接真实 SSO</span>
+    </div>
+
+    <div class="app">
+      <aside class="side">
+        <div class="logo">
+          <div class="mark">
+            <svg width="19" height="19" viewBox="0 0 20 20" fill="none">
+              <path d="M3 5.2 10 2.4l7 2.8v6.1c0 3.3-3 5.8-7 6.5-4-.7-7-3.2-7-6.5V5.2Z" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>
+              <path d="M7 9.6l2.1 2.1L13.4 7.4" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="nm">自学平台</div>
+            <div class="sub">SELF-LEARNING PLATFORM</div>
+          </div>
+        </div>
+
+        <nav class="nav" id="nav">
+          <div class="navhl" id="navhl"></div>
+          <div class="navi" data-k="home">
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M3 8.2 9 3l6 5.2V15H3V8.2Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+            <span>首页</span>
+          </div>
+          <div class="navi" data-k="catalog">
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><rect x="2.6" y="2.6" width="5.4" height="5.4" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10" y="2.6" width="5.4" height="5.4" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="2.6" y="10" width="5.4" height="5.4" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="10" y="10" width="5.4" height="5.4" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>
+            <span>课程目录</span>
+          </div>
+          <div class="navi" data-k="mine">
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.4" stroke="currentColor" stroke-width="1.3"/><path d="M7.6 6.9 11.4 9l-3.8 2.1V6.9Z" fill="currentColor"/></svg>
+            <span>我的学习</span>
+          </div>
+          <div class="navi" data-k="archive">
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M3 14.4V9.6M7 14.4V5.4M11 14.4v-3.6M15 14.4V3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <span>学习档案</span>
+          </div>
+          <div class="navi" data-k="teach">
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M2.6 5.4 9 2.6l6.4 2.8L9 8.2 2.6 5.4Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5.2 7.1v3.6c0 1.4 1.7 2.4 3.8 2.4s3.8-1 3.8-2.4V7.1" stroke="currentColor" stroke-width="1.3"/><path d="M15.4 5.6v4.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            <span>教学管理</span>
+            <span class="lock">无权限</span>
+          </div>
+          <div class="navi" data-k="sys">
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 2.4v2M9 13.6v2M2.4 9h2M13.6 9h2M4.3 4.3l1.4 1.4M12.3 12.3l1.4 1.4M13.7 4.3l-1.4 1.4M5.7 12.3l-1.4 1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            <span>系统管理</span>
+            <span class="lock">无权限</span>
+          </div>
+        </nav>
+
+        <div class="sidefoot">
+          <div class="who">
+            <div class="av" id="roleAv">王</div>
+            <div>
+              <div class="nm" id="roleName">王立军 · 20260001</div>
+              <div class="rl" id="roleDesc">学生 / student</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="main">
+        <header class="hd">
+          <div class="crumb" id="crumb"><span>教学空间</span><span style="opacity:.4">/</span><b>课程目录</b></div>
+          <div class="hdr">
+            <div class="sbox">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="6.2" cy="6.2" r="4.3" stroke="#9AA7B8" stroke-width="1.3"/><path d="m9.6 9.6 2.4 2.4" stroke="#9AA7B8" stroke-width="1.3" stroke-linecap="round"/></svg>
+              <span id="hintText">搜索课程、资源</span>
+            </div>
+            <div class="bell"><i></i><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M4.2 6.6a3.8 3.8 0 0 1 7.6 0c0 2.2.6 3.3 1.1 3.9H3.1c.5-.6 1.1-1.7 1.1-3.9Z" stroke="#5C6E88" stroke-width="1.25" stroke-linejoin="round"/><path d="M6.6 12.2a1.6 1.6 0 0 0 2.8 0" stroke="#5C6E88" stroke-width="1.25" stroke-linecap="round"/></svg></div>
+            <div class="rchip"><div class="av" id="chipAv">王</div><span id="chipRole">学生</span>
+              <svg width="9" height="6" viewBox="0 0 10 6" fill="none" style="margin-left:2px"><path d="m1 1 4 4 4-4" stroke="#1E4FA8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </header>
+        <div class="content" id="content"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="capwrap"><div class="cap" id="cap"><span class="bar"></span><span class="tx" id="capTx"></span></div></div>
+
+  <div class="cursor" id="cursor" style="opacity:0">
+    <svg width="22" height="22" viewBox="0 0 22 22"><path d="M3 2.2 17.4 10.6l-6.1 1.2-2.3 5.9L3 2.2Z" fill="#fff" stroke="#1A2230" stroke-width="1.3" stroke-linejoin="round"/></svg>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

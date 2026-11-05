@@ -1,0 +1,65 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 68, top: 60, width: 9, height: 9, background: '#E8622C' }} />
+    <Text style={{ position: 'absolute', left: 88, top: 56, fontSize: 14, color: '#E8622C', letterSpacing: 2 }}>
+        05　部署与访问
+    </Text>
+
+    <Text style={{ position: 'absolute', left: 66, top: 92, fontSize: 40, fontWeight: 'bold', color: '#0F2A47', letterSpacing: 0.5 }}>
+        现在就能打开，链接在这里
+    </Text>
+
+    <Box style={{ position: 'absolute', left: 60, top: 168, width: 1160, height: 238, background: '#0F2A47' }}>
+        <Text style={{ position: 'absolute', left: 40, top: 30, fontSize: 14, color: 'rgba(255,255,255,0.55)', letterSpacing: 3 }}>
+            公 网 地 址
+        </Text>
+        <Text style={{ position: 'absolute', left: 36, top: 62, fontSize: 74, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 }}>
+            https://8.138.34.151
+        </Text>
+        <Box style={{ position: 'absolute', left: 40, top: 168, width: 60, height: 3, background: '#E8622C' }} />
+        <Text style={{ position: 'absolute', left: 40, top: 186, fontSize: 15, color: 'rgba(255,255,255,0.6)' }}>
+            手机浏览器直接打开，和电脑上是同一套页面
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 428, width: 560, height: 168, background: '#F8FAFD', border: '1px solid #E1E7F0' }}>
+        <Text style={{ position: 'absolute', left: 24, top: 20, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.2 }}>
+            后台演示入口
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 46, fontSize: 15, color: '#4A5568' }}>
+            /admin/video_upload/
+        </Text>
+        <Box style={{ position: 'absolute', left: 24, top: 80, width: 512, height: 1, background: '#E1E7F0' }} />
+        <Text style={{ position: 'absolute', left: 24, top: 98, fontSize: 19, color: '#0F2A47' }}>
+            账号　admin
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 130, fontSize: 19, color: '#0F2A47' }}>
+            口令　现场提供
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 640, top: 428, width: 580, height: 168, background: '#F8FAFD', border: '1px solid #E1E7F0' }}>
+        <Text style={{ position: 'absolute', left: 24, top: 20, fontSize: 13, color: '#1E4FA8', letterSpacing: 1.2 }}>
+            它现在住在哪
+        </Text>
+        <Text style={{ position: 'absolute', left: 24, top: 48, width: 530, fontSize: 14, color: '#4A5568', lineHeight: 1.95 }}>
+            阿里云 ECS　·　2 核 2G　·　40G 磁盘
+            <br />
+            部署于 11-04，nginx / PHP / 数据库均已开机自启
+            <br />
+            每日 03:30 自动备份，保留 7 天
+        </Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 60, top: 614, width: 1160, height: 54, background: '#FFF3EC' }}>
+        <Text style={{ position: 'absolute', left: 20, top: 17, width: 1120, fontSize: 14, color: '#8A3A12', lineHeight: 1.5 }}>
+            如果浏览器提示“证书不受信任”：点“高级 → 继续访问”，或直接改用 http://8.138.34.151　｜　答辩结束后会更换后台口令
+        </Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 60, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        自学平台 · 路演答辩
+    </Text>
+    <Text style={{ position: 'absolute', left: 1130, top: 690, fontSize: 12, color: '#9AA5B4' }}>
+        09 / 11
+    </Text>
+</Slide>

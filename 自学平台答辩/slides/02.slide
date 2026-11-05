@@ -1,0 +1,53 @@
+<Slide style={{ width: 1280, height: 720, position: 'relative', background: '#FFFFFF' }}>
+    <Box style={{ position: 'absolute', left: 0, top: 0, width: 10, height: 720, background: '#12304F' }} />
+
+    <Text style={{ position: 'absolute', left: 100, top: 132, fontSize: 42, fontWeight: 'bold', color: '#12304F', letterSpacing: 4 }}>
+        目录
+    </Text>
+    <Text style={{ position: 'absolute', left: 102, top: 196, fontSize: 13, color: '#8B97A8', letterSpacing: 5 }}>
+        CONTENTS
+    </Text>
+    <Box style={{ position: 'absolute', left: 100, top: 232, width: 44, height: 3, background: '#1E4FA8' }} />
+
+    <Box style={{ position: 'absolute', left: 420, top: 150, width: 780, height: 1, background: '#1E4FA8' }} />
+
+    <Box style={{ position: 'absolute', left: 420, top: 151, width: 780, height: 98, flexDirection: 'row', alignItems: 'center', borderBottom: '1px solid #E5E7EB' }}>
+        <Text style={{ width: 96, fontSize: 34, fontWeight: 'bold', color: '#3D7BD9' }}>01</Text>
+        <Box style={{ flex: 1, flexDirection: 'column', gap: 4 }}>
+            <Text style={{ fontSize: 28, color: '#1A2230' }}>选题背景与平台定位</Text>
+            <Text style={{ fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>Background & Positioning</Text>
+        </Box>
+        <Text style={{ width: 70, fontSize: 16, color: '#8B97A8', textAlign: 'right' }}>P03</Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 420, top: 249, width: 780, height: 98, flexDirection: 'row', alignItems: 'center', borderBottom: '1px solid #E5E7EB' }}>
+        <Text style={{ width: 96, fontSize: 34, fontWeight: 'bold', color: '#3D7BD9' }}>02</Text>
+        <Box style={{ flex: 1, flexDirection: 'column', gap: 4 }}>
+            <Text style={{ fontSize: 28, color: '#1A2230' }}>需求分析与功能设计</Text>
+            <Text style={{ fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>Requirements & Design</Text>
+        </Box>
+        <Text style={{ width: 70, fontSize: 16, color: '#8B97A8', textAlign: 'right' }}>P06</Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 420, top: 347, width: 780, height: 98, flexDirection: 'row', alignItems: 'center', borderBottom: '1px solid #E5E7EB' }}>
+        <Text style={{ width: 96, fontSize: 34, fontWeight: 'bold', color: '#3D7BD9' }}>03</Text>
+        <Box style={{ flex: 1, flexDirection: 'column', gap: 4 }}>
+            <Text style={{ fontSize: 28, color: '#1A2230' }}>系统实现与验证</Text>
+            <Text style={{ fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>Implementation & Validation</Text>
+        </Box>
+        <Text style={{ width: 70, fontSize: 16, color: '#8B97A8', textAlign: 'right' }}>P11</Text>
+    </Box>
+
+    <Box style={{ position: 'absolute', left: 420, top: 445, width: 780, height: 98, flexDirection: 'row', alignItems: 'center', borderBottom: '1px solid #E5E7EB' }}>
+        <Text style={{ width: 96, fontSize: 34, fontWeight: 'bold', color: '#3D7BD9' }}>04</Text>
+        <Box style={{ flex: 1, flexDirection: 'column', gap: 4 }}>
+            <Text style={{ fontSize: 28, color: '#1A2230' }}>问题、结论与展望</Text>
+            <Text style={{ fontSize: 14, color: '#8B97A8', letterSpacing: 0.5 }}>Discussion & Conclusion</Text>
+        </Box>
+        <Text style={{ width: 70, fontSize: 16, color: '#8B97A8', textAlign: 'right' }}>P18</Text>
+    </Box>
+
+    <Text style={{ position: 'absolute', left: 420, top: 580, fontSize: 15, color: '#4A5568' }}>
+        警院 WeChat 全生态 · 自学平台　｜　项目答辩
+    </Text>
+</Slide>
