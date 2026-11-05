@@ -24,11 +24,18 @@ class ExamSyncTask extends Task
 
         $result = $service->flush(0, 200);
 
+        $byPeer = [];
+
+        foreach ((array)($result['byPeer'] ?? []) as $peer => $count) {
+            $byPeer[] = sprintf('%s:%d', $peer, $count);
+        }
+
         $this->successPrint(sprintf(
-            'exam sync: sent=%d failed=%d dead=%d mode=%s endpoint=%s',
+            'peer sync: sent=%d failed=%d dead=%d [%s] mode=%s endpoint=%s',
             $result['sent'],
             $result['failed'],
             $result['dead'],
+            count($byPeer) > 0 ? implode(' ', $byPeer) : '-',
             $result['mode'],
             $result['endpoint'] === '' ? '(local)' : $result['endpoint']
         ));

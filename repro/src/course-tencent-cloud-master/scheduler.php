@@ -13,7 +13,7 @@ $scheduler = new Scheduler();
 
 $script = __DIR__ . '/console.php';
 
-$bin = '/usr/local/bin/php';
+$bin = '/usr/bin/php';
 
 $scheduler->php($script, $bin, ['--task' => 'deliver', '--action' => 'main'])
     ->everyMinute();
@@ -23,6 +23,13 @@ $scheduler->php($script, $bin, ['--task' => 'vod_event', '--action' => 'main'])
 
 $scheduler->php($script, $bin, ['--task' => 'sync_learning', '--action' => 'main'])
     ->everyMinute(7);
+
+$scheduler->php($script, $bin, ['--task' => 'exam_sync', '--action' => 'main'])
+    ->everyMinute(3);
+
+// 跨平台进度对账：每天补一次推送缺口（方案 C 兜底）
+$scheduler->php($script, $bin, ['--task' => 'peer_reconcile', '--action' => 'main'])
+    ->daily(3, 47);
 
 $scheduler->php($script, $bin, ['--task' => 'teacher_live_notice', '--action' => 'consume'])
     ->everyMinute(9);
@@ -45,14 +52,11 @@ $scheduler->php($script, $bin, ['--task' => 'close_order', '--action' => 'main']
 $scheduler->php($script, $bin, ['--task' => 'refund', '--action' => 'main'])
     ->hourly(7);
 
-$scheduler->php($script, $bin, ['--task' => 'sync_course_index', '--action' => 'main'])
-    ->hourly(11);
+// [停用 sync_course_index] 搜索已改为 MySQL LIKE，XunSearch 未部署，该任务会抛 Missing field of type ID
 
-$scheduler->php($script, $bin, ['--task' => 'sync_article_index', '--action' => 'main'])
-    ->hourly(13);
+// [停用 sync_article_index] 搜索已改为 MySQL LIKE，XunSearch 未部署，该任务会抛 Missing field of type ID
 
-$scheduler->php($script, $bin, ['--task' => 'sync_question_index', '--action' => 'main'])
-    ->hourly(17);
+// [停用 sync_question_index] 搜索已改为 MySQL LIKE，XunSearch 未部署，该任务会抛 Missing field of type ID
 
 $scheduler->php($script, $bin, ['--task' => 'sync_course_score', '--action' => 'main'])
     ->hourly(19);
@@ -72,11 +76,8 @@ $scheduler->php($script, $bin, ['--task' => 'clean_log', '--action' => 'main'])
 $scheduler->php($script, $bin, ['--task' => 'unlock_user', '--action' => 'main'])
     ->daily(3, 7);
 
-$scheduler->php($script, $bin, ['--task' => 'revoke_vip', '--action' => 'main'])
-    ->daily(3, 11);
-
-$scheduler->php($script, $bin, ['--task' => 'sync_app_info', '--action' => 'main'])
-    ->daily(3, 13);
+$scheduler->php($script, $bin, ['--task' => 'sync_vod', '--action' => 'main'])
+    ->everyMinute(14);
 
 $scheduler->php($script, $bin, ['--task' => 'sync_tag_stat', '--action' => 'main'])
     ->daily(3, 17);

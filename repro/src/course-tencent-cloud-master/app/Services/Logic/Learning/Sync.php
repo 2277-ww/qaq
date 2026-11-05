@@ -9,6 +9,9 @@
  * 投递走统一网关，退避间隔与死信规则对齐接入说明 8.4：
  * 1s / 5s / 30s / 2min / 10min / 1h，第 6 次仍失败转死信；
  * 4xx 属契约错误，不重试，直接置死信并告警。
+ *
+ * 多对端：一条发送记录带 target，投递时按 target 取路径与白名单；
+ * 未启用的对端跳过（保留待发状态），启用后自动补发，不丢事件。
  */
 
 namespace App\Services\Logic\Learning;
@@ -20,6 +23,7 @@ use App\Repos\Course as CourseRepo;
 use App\Repos\ExamOutbox as ExamOutboxRepo;
 use App\Services\Learning\Collect as CollectService;
 use App\Services\Learning\Gateway as GatewayService;
+use App\Services\Learning\Peers as PeersService;
 use App\Services\Logic\Service as LogicService;
 
 class Sync extends LogicService
@@ -45,7 +49,23 @@ class Sync extends LogicService
 
         $result['queued'] = $queued;
 
+        $result['note'] = $this->policyNote($queued);
+
         return $result;
+    }
+
+    /**
+     * 没有新事件入箱时给出原因，避免使用者误以为推送失效
+     *
+     * @param int $queued
+     * @return string
+     */
+    protected function policyNote($queued)
+    {
+        if ($queued > 0) return '';
+
+        return '当前是进度中间态：不在跨平台事件目录内，由考试平台回源 '
+            . 'GET /api/v1/learning/progress 查询；课程首次完成时才推送 course.completed。';
     }
 
     /**
@@ -67,6 +87,8 @@ class Sync extends LogicService
         $result = $this->flush($userId);
 
         $result['queued'] = $queued;
+
+        $result['note'] = $this->policyNote($queued);
 
         return $result;
     }
@@ -167,15 +189,15 @@ class Sync extends LogicService
      * @param int $limit
      * @return array
      */
-    public function flush($userId = 0, $limit = 200)
+    public function flush($userId = 0, $limit = 200, $target = '')
     {
         $repo = new ExamOutboxRepo();
 
         $gateway = new GatewayService();
 
-        $events = $repo->findDue($limit, $userId);
+        $registry = new PeersService();
 
-        $path = (string)$this->getConfig()->path('exam.push_path', '/api/v1/exam/learning/progress');
+        $events = $repo->findDue($limit, $userId, $target);
 
         $maxRetry = (int)$this->getConfig()->path('exam.retry_max', 6);
 
@@ -183,15 +205,28 @@ class Sync extends LogicService
         $failed = 0;
         $dead = 0;
 
+        $byPeer = [];
+
         if ($events) {
 
             foreach ($events as $event) {
 
+                $peerKey = (string)$event->target;
+
+                if ($peerKey === '') $peerKey = 'exam';
+
+                /**
+                 * 未启用的对端不投递、也不算失败：事件留在待发状态，
+                 * 对端启用后由下一轮定时器自动补发。
+                 */
+                if (!$registry->isEnabled($peerKey)) continue;
+
                 $error = '';
                 $code = 0;
 
-                $ok = $gateway->send(
-                    $path,
+                $ok = $gateway->sendEvent(
+                    $peerKey,
+                    (string)$event->event_type,
                     $event->getPayloadArray(),
                     $event->event_id,
                     $event->request_id,
@@ -211,12 +246,21 @@ class Sync extends LogicService
 
                     $sent++;
 
+                    $byPeer[$peerKey] = ($byPeer[$peerKey] ?? 0) + 1;
+
                 } else {
 
                     $event->retry_count = (int)$event->retry_count + 1;
                     $event->last_error = kg_substr((string)$error, 0, 500);
 
-                    $isContractError = $code >= 400 && $code < 500;
+                    /**
+                     * 契约错误（4xx）不重试，但 429 与 408 例外：
+                     * 429 是网关限流、408 是请求超时，都属于「这次不行、下次可能行」，
+                     * 直接判死信会把正常流量当故障丢掉。APISIX 默认限流返回 429。
+                     */
+                    $retryable = in_array($code, [408, 429], true);
+
+                    $isContractError = $code >= 400 && $code < 500 && !$retryable;
 
                     if ($isContractError || $event->retry_count >= $maxRetry) {
 
@@ -250,9 +294,48 @@ class Sync extends LogicService
             'sent' => $sent,
             'failed' => $failed,
             'dead' => $dead,
+            'byPeer' => $byPeer,
             'mode' => $gateway->getMode(),
             'endpoint' => $gateway->getEndpoint(),
         ];
+    }
+
+    /**
+     * 各对端投递统计（页面与接口共用）
+     *
+     * @param int $userId
+     * @return array
+     */
+    public function peerStats($userId = 0)
+    {
+        $repo = new ExamOutboxRepo();
+
+        $registry = new PeersService();
+
+        $result = [];
+
+        foreach ($registry->all() as $key => $peer) {
+
+            $lastSent = $repo->findLastSentTime($userId, $key);
+
+            $result[] = [
+                'peer' => $key,
+                'name' => $peer['name'],
+                'enabled' => $peer['enabled'],
+                'events' => $peer['events'],
+                'extensions' => $peer['extensions'],
+                'base_uri' => $peer['enabled'] ? $registry->baseUri($key) : '',
+                'endpoint' => $peer['enabled'] ? $registry->endpoint($key) : '',
+                'mode' => $registry->baseUri($key) === '' ? 'local' : 'gateway',
+                'pending' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_PENDING, $key),
+                'sent' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_SENT, $key),
+                'failed' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_FAILED, $key),
+                'dead' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_DEAD, $key),
+                'last_sent_text' => $lastSent > 0 ? date('Y-m-d H:i', $lastSent) : '暂无',
+            ];
+        }
+
+        return $result;
     }
 
     /**
@@ -269,16 +352,25 @@ class Sync extends LogicService
 
         $lastSent = $repo->findLastSentTime($userId);
 
+        $registry = new PeersService();
+
+        $exam = $registry->get('exam');
+
         return [
             'pending' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_PENDING),
             'sent' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_SENT),
             'failed' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_FAILED),
             'dead' => $repo->countByStatus($userId, ExamOutboxModel::STATUS_DEAD),
+            'acked' => $repo->countAcked('exam', true, $userId),
             'last_sent_at' => $lastSent,
             'last_sent_text' => $lastSent > 0 ? date('Y-m-d H:i', $lastSent) : '暂无',
             'mode' => $gateway->getMode(),
             'endpoint' => $gateway->getEndpoint(),
-            'enabled' => (bool)$this->getConfig()->path('exam.enabled', true),
+            'enabled' => $exam['enabled'],
+            'auth_mode' => $registry->authMode('exam'),
+            'app_code' => $exam['inbound_app_code'],
+            'query_enabled' => $exam['query'],
+            'peers' => $this->peerStats($userId),
         ];
     }
 
