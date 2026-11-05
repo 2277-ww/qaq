@@ -366,3 +366,71 @@ systemctl reload php-fpm
 2. 网关新增 `forum-learning-events` 路由
 3. 本平台部署到网关后的 8080（当前是桩服务）
 4. 核实 `jy-identity.lua` 的七字段拼接顺序（论坛端点按本平台顺序实现，不一致需改 `SIGN_FIELDS`）
+
+---
+
+# 第六轮：论坛账号确认接入（2026-11-06）
+
+## 这次接的是身份，不是推送
+
+论坛上线了账号确认接口 `POST /answer/api/v1/account/verify`（v2.2.0，只读、不签发 token）。本平台用它做「论坛账号登录」，与学习进度推送是两条独立链路，只共用 `GatewaySign` 这一套 L2 签名实现。
+
+接口文档第 159 行顺带确认了四个预置 AppKey，其中 `jy-learning-svc` 与本平台配置一致——上一轮标记为阻塞的「AppKey 真名未确认」因此解除。
+
+## 变更
+
+| 文件 | 改动 |
+| --- | --- |
+| `app/Services/Gateway/AccountVerify.php` | 新增。调用账号确认接口，3s 超时，错误码映射 |
+| `app/Services/Gateway/LoginThrottle.php` | 新增。IP 固定窗口限流，Redis Lua 原子计数 |
+| `app/Services/Logic/Account/ForumLogin.php` | 新增。建号/复用、角色映射、失败分流 |
+| `app/Http/Home/Views/account/login_by_forum.volt` | 新增。登录页第三个 tab |
+| `db/migrations/20261106002000.php` | 新增。`kg_account` 加 `forum_uid` / `forum_name` |
+| `app/Models/Account.php`、`app/Repos/Account.php` | 字段与 `findByForumUid()` |
+| `app/Http/Home/Services/Account.php` | `loginByForum()` |
+| `app/Http/Home/Controllers/AccountController.php` | `POST /account/forum/login` |
+| `config/config.php`、`config.default.php` | 5 个 `gateway.account_*` |
+| `config/errors.php` | 5 条文案 |
+| `deploy/learning-progress/verify_account_link.py` | 新增。A 网关组 / B 平台组 |
+
+## 三个决定
+
+1. **首次登录自动建号**：统一身份不该要求先在本平台注册。只插 `kg_account`，`kg_user` 由 `afterCreate` 自动生成。
+2. **建的号没有可用密码**：写 `hash(random_bytes(32), salt)` 而非空串。本平台是 `md5(md5(pwd).md5(salt))`，空串会让哈希只取决于 salt。
+3. **不映射管理员**：论坛 `admin` 只当学员，`admin_role` 保持 0；`teacher` 映射到 `edu_role=2`（只影响教学内容，不涉及后台）。
+
+## 上线
+
+```bash
+# ① 迁移（必须先于代码）
+php vendor/bin/phinx migrate
+
+# ② 代码 + 清缓存
+redis-cli -n 3 eval "local ks=redis.call('keys','_PHCR_ANNOTATION_:*'); for i,k in ipairs(ks) do redis.call('del',k) end; return #ks" 0
+rm -f /www/ctc/storage/cache/volt/*.php
+systemctl reload php-fpm
+
+# ③ 密钥（与推送同一把，已注入则跳过）
+./apply_forum_peer.sh --config /www/ctc/config/config.php --secrets /etc/jingyuan-gateway/secrets.json
+
+# ④ 验收
+python3 verify_account_link.py --group gateway --secrets /etc/jingyuan-gateway/secrets.json \
+        --login <账号> --password '<密码>'
+python3 verify_account_link.py --group platform --base http://127.0.0.1
+```
+
+## 已验证
+
+| 项 | 结果 |
+| --- | --- |
+| 公网路由存在 | 无签名返回 40105（非 40300） |
+| 缺签名 / 篡改 | 40105 |
+| 时间戳超窗 | 40106 |
+| 未知 AppKey | 40108 |
+| 与论坛客户端签名对拍 | 5/5 一致（ASCII、中文、转义、斜杠、空体） |
+
+## 未验证（需真实账号）
+
+正确凭据 → confirmed、错误密码与不存在账号同结论、首次建号写 `forum_uid`、二次登录不重复建号、论坛不可达时的降级提示。
+
+详见 `docs/论坛账号登录对接说明_V1.0.md`。
