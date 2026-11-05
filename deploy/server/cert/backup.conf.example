@@ -1,0 +1,20 @@
+# 异地备份配置（选填，不配就只保留本地）
+#
+# 备份内容：/www/backup 整个目录（数据库 dump + 视频硬链接快照）
+# 触发时机：每次 ctc-backup.sh 执行完（每天 3:30）
+#
+# 方案 A：另一台服务器（需要先配好免密登录）
+#   REMOTE_TARGET="root@10.0.0.5:/data/ctc-backup"
+#
+# 方案 B：本机挂载的 NAS / 云盘
+#   REMOTE_TARGET="/mnt/nas/ctc-backup"
+#
+# 方案 C：阿里云 OSS（需要 ossutil，且 rsync 不认 oss://，改用 ossutil cp -r）
+#   这种情况建议另写一条 cron，例如：
+#   ossutil cp -r /www/backup/ctc-$(date +%Y%m%d)*.sql.gz oss://bucket/ctc/db/ --update
+#
+# 注意：视频快照是硬链接，rsync 到远端会被展开成完整文件（1.3G×份数）。
+# 如果带宽/空间紧张，异地只同步数据库 dump，视频按需单独拷：
+#   rsync -a /www/media/vod/ root@10.0.0.5:/data/ctc-vod/
+
+# REMOTE_TARGET="root@10.0.0.5:/data/ctc-backup"

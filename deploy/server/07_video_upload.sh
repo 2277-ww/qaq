@@ -39,7 +39,13 @@ php -l $APP/app/Http/Admin/Services/AuthNode.php
 chown apache:apache $APP/app/Http/Admin/Services/AuthNode.php
 
 echo "=== 4. nginx 配置 ==="
-cp -f $SRC/ctc.conf /etc/nginx/conf.d/ctc.conf
+# 8080 已于 2026-11-05 停用（只保留 443），不再复制 ctc.conf
+# 如需恢复 HTTP 入口：cp $SRC/ctc.conf /etc/nginx/conf.d/ctc.conf
+if [ -f /etc/nginx/conf.d/ctc-ssl.conf ]; then
+    echo "    使用已有 /etc/nginx/conf.d/ctc-ssl.conf"
+else
+    cp -f $SRC/ctc-ssl.conf /etc/nginx/conf.d/ctc-ssl.conf
+fi
 nginx -t
 
 echo "=== 5. 清理缓存 ==="
@@ -62,12 +68,13 @@ sleep 3
 echo "=== 7. 冒烟 ==="
 for u in /admin/video_upload/ /admin/video_upload/list; do
     printf '%-32s ' "$u"
-    curl -s -o /tmp/vu.html -w '%{http_code} %{size_download}B' --max-time 90 "http://127.0.0.1:8080$u"
+    curl -sk -o /tmp/vu.html -w '%{http_code} %{size_download}B' --max-time 90 \
+        -u "admin:${ADMIN_PASS:?请先导出 ADMIN_PASS}" "https://127.0.0.1$u"
     echo -n '  '
     grep -o '<title>[^<]*</title>' /tmp/vu.html | head -1
 done
 
 printf '%-32s ' "/media/vod/(目录探测)"
-curl -s -o /dev/null -w '%{http_code}\n' --max-time 15 http://127.0.0.1:8080/media/vod/
+curl -sk -o /dev/null -w '%{http_code}\n' --max-time 15 https://127.0.0.1/media/vod/
 
 echo "=== 完成 ==="

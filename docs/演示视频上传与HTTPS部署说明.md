@@ -81,7 +81,14 @@
 | 媒体库 | `https://8.138.34.151/admin/video_upload/list` |
 | 后台菜单 | 管理后台 → 视频上传 → 上传演示视频 / 媒体库 |
 
-后台为免登录模式，直接打开即可使用。
+后台入口已加 nginx basic auth（2026-11-05）：
+
+| 项 | 值 |
+|---|---|
+| 用户名 | `admin` |
+| 密码 | 见 `docs/运维加固与备份说明.md`，或执行 `bash /root/10_harden.sh --reset-pass` 重置 |
+
+原因：改造版的 `App\Services\Auth\Admin` 是「内置身份模式」，不读会话、恒返回内置账号，公网上任何人打开 `/admin/` 都能上传和删除。basic auth 在 nginx 层兜住，不动业务代码。
 
 ### 3.2 操作流程
 
@@ -209,13 +216,15 @@ acme.sh 安装时已写入 crontab：
 
 ### 5.4 443 站点
 
-`/etc/nginx/conf.d/ctc-ssl.conf`，与 8080 的 HTTP 站点并存：
+`/etc/nginx/conf.d/ctc-ssl.conf`：
 
 | 端口 | 内容 | 状态 |
 |---|---|---|
 | 80 | Halo 博客「警院成果展示广场」 | 未改动，仅增加 ACME 验证路径 |
-| 443 | 课程平台（HTTPS） | 新增 |
-| 8080 | 课程平台（HTTP 备用） | 保留，便于排查 |
+| 443 | 课程平台（HTTPS） | 唯一入口 |
+| 8080 | 课程平台（HTTP 备用） | **2026-11-05 已停用**，配置移到 `/root/nginx-backup/ctc-8080.conf.disabled.*` |
+
+8080 停用后，所有自检脚本改走 `https://127.0.0.1`（`curl -sk`）。要恢复见 `docs/运维加固与备份说明.md` 第 3 节。
 
 TLS 配置：`TLSv1.2` + `TLSv1.3`，ECDHE 套件，会话缓存 10m。
 
@@ -300,7 +309,7 @@ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' -H 'Range: bytes=0-102
      -H 'Referer: https://8.138.34.151/chapter/2' https://8.138.34.151$U                              # 206 1024
 ```
 
-8080 与 443 两套 server 都加了同一段规则。空 Referer 放行的原因是：部分播放器、下载工具、微信内置浏览器不带 Referer，全拦会把正常播放也挡掉；拦的是「别的网站嵌你的视频」。
+443 站点加了这段规则（8080 停用前两个站点都有）。空 Referer 放行的原因是：部分播放器、下载工具、微信内置浏览器不带 Referer，全拦会把正常播放也挡掉；拦的是「别的网站嵌你的视频」。
 
 证书看门狗状态端点：
 
@@ -419,7 +428,7 @@ ffprobe -v error -show_entries stream=codec_name,width,height -of csv=p=0 /www/m
 | `deploy/server/video-upload/app/Http/Admin/Views/video_upload/index.volt` | 上传页（拖拽、进度、绑定章节） |
 | `deploy/server/video-upload/app/Http/Admin/Views/video_upload/list.volt` | 媒体库页 |
 | `deploy/server/video-upload/patch_authnode.py` | 后台菜单节点注入（幂等） |
-| `deploy/server/video-upload/ctc.conf` | 8080 站点配置（含 media alias、防盗链） |
+| `deploy/server/video-upload/ctc-8080.conf.disabled` | 原 8080 站点配置（已停用，保留备查） |
 | `deploy/server/video-upload/ctc-ssl.conf` | 443 HTTPS 站点配置（含证书状态端点） |
 | `deploy/server/07_video_upload.sh` | 一键部署脚本 |
 | `deploy/server/08_transcode_and_watchdog.sh` | ffmpeg、看门狗、防盗链一键部署（幂等） |

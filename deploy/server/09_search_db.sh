@@ -59,9 +59,9 @@ echo "==> php-fpm 已重启"
 
 sleep 1
 
-# 自检：本地回环走 8080，避免受证书/安全组影响
-code=$(curl -s -o /tmp/ctc_search_check.html -w '%{http_code}' \
-    --max-time 20 "http://127.0.0.1:8080/search/?query=python" || echo 000)
+# 自检：走 443 回环（8080 已于 2026-11-05 停用，证书是 IP 证书用 -k 跳过校验）
+code=$(curl -sk -o /tmp/ctc_search_check.html -w '%{http_code}' \
+    --max-time 20 "https://127.0.0.1/search/?query=python" || echo 000)
 
 hits=$(grep -c 'search-course-card' /tmp/ctc_search_check.html 2>/dev/null || true)
 
