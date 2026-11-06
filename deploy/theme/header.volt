@@ -64,7 +64,12 @@
                         <dd><a href="{{ url({'for':'home.tc.index'}) }}">教学中心</a></dd>
                     {% endif %}
                     <dd><a href="{{ url({'for':'home.uc.index'}) }}">用户中心</a></dd>
+                    <dd><a href="{{ url({'for':'home.forum_login.logout'}) }}">退出登录</a></dd>
                 </dl>
+            </li>
+        {% else %}
+            <li class="layui-nav-item">
+                <a href="{{ url({'for':'home.forum_login.show'}) }}">登录</a>
             </li>
         {% endif %}
     </ul>

@@ -27,6 +27,10 @@
                SecurityValidator 的 postToken 分支，与项目既有约定一致。 #}
             <input type="hidden" name="csrf_token" value="{{ csrfToken.getToken() }}">
 
+            {# 回跳地址：由「个人中心未登录跳转」带上，登录成功后原路返回。
+               控制器已按 sanitizeRedirect 消毒，这里仍做 HTML 转义。 #}
+            <input type="hidden" name="redirect" value="{{ redirect_url }}">
+
             <div style="margin-bottom:14px;">
                 <input type="text" name="account" value="{{ posted_account }}"
                        placeholder="论坛用户名或邮箱" required maxlength="100"

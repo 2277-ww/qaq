@@ -46,6 +46,26 @@ class ForumLoginController extends Controller
     }
 
     /**
+     * @Get("/logout", name="home.forum_login.logout")
+     */
+    public function logoutAction()
+    {
+        /**
+         * @var \App\Services\Auth\Home $auth
+         */
+        $auth = $this->getDI()->get('auth');
+
+        try {
+            $auth->clearAuthInfo();
+            $this->session->destroy();
+        } catch (\Throwable $e) {
+            // 会话已失效时 destroy 可能抛异常，退出本身不因此失败
+        }
+
+        return $this->response->redirect(['for' => 'home.index']);
+    }
+
+    /**
      * @Post("/forum/login", name="home.forum_login.submit")
      */
     public function submitAction()
@@ -88,6 +108,17 @@ class ForumLoginController extends Controller
 
             $user = (new ForumLoginService())->handle($account, $password, 'auto');
 
+            /**
+             * 建立真实登录会话：saveAuthInfo 写 session 并登记 kg_user_session。
+             * 前提是 config 的 identity.enabled=false（内置身份模式会绕过会话，
+             * 所有人恒为内置账号），该开关由部署脚本一并切换。
+             *
+             * @var \App\Services\Auth\Home $auth
+             */
+            $auth = $this->getDI()->get('auth');
+
+            $auth->saveAuthInfo($user);
+
             $this->logEvent('info', 'Forum Login Succeeded', [
                 'account' => $account,
                 'userId' => (int)$user->id,
@@ -112,6 +143,14 @@ class ForumLoginController extends Controller
             return $this->renderForm($account);
         }
 
+        $redirect = $this->sanitizeRedirect(
+            (string)$this->request->getPost('redirect', null, '')
+        );
+
+        if ($redirect !== '') {
+            return $this->response->redirect($redirect);
+        }
+
         return $this->response->redirect(['for' => 'home.index']);
     }
 
@@ -130,6 +169,44 @@ class ForumLoginController extends Controller
         $this->view->setVar('forum_login_enabled', (new AccountVerify())->isEnabled());
 
         $this->view->setVar('posted_account', $account);
+
+        /**
+         * 回跳地址贯穿「GET 登录页 → 提交失败重渲染 → 登录成功跳转」，
+         * 每次出口都重新消毒，视图里不裸输出。
+         */
+        $raw = (string)$this->request->getPost('redirect', null, '');
+
+        if ($raw === '') {
+            $raw = (string)$this->request->getQuery('redirect', null, '');
+        }
+
+        $this->view->setVar('redirect_url', $this->sanitizeRedirect($raw));
+    }
+
+    /**
+     * 回跳地址消毒：只允许本站相对路径
+     *
+     * 规则：以单个 / 开头（排除 // 开头的协议相对地址），且不含 : 与空白。
+     * 通过后是站内路径，重定向不会跳到外部域名。
+     *
+     * @param string $target
+     * @return string 合法返回原值，否则空串
+     */
+    protected function sanitizeRedirect($target)
+    {
+        $target = trim((string)$target);
+
+        if ($target === '') return '';
+
+        if (strlen($target) > 512) return '';
+
+        if (!preg_match('#^/(?!/)#', $target)) return '';
+
+        if (strpos($target, ':') !== false) return '';
+
+        if (preg_match('#[\s\x00-\x1f]#', $target)) return '';
+
+        return $target;
     }
 
     /**
