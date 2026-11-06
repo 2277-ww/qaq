@@ -9,7 +9,7 @@ B="https://127.0.0.1"
 H="Host: 8.138.34.151"
 CFG="/www/ctc/config/config.php"
 SECRET="test-secret-exam-2026"
-MYSQL="mysql -uctc -pbyU1McsVMUAd8y6hRIlOebiT ctc"
+MYSQL="mysql -uctc -p${CTC_DB_PASSWORD:?请先 export CTC_DB_PASSWORD} ctc"
 
 cp -a "$CFG" /tmp/config.php.peer_bak
 
