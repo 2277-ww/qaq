@@ -14,6 +14,7 @@ __pycache__/
 
 # 临时文件
 .workbuddy/
+.tmp_prod/
 .DS_Store
 Thumbs.db
 
