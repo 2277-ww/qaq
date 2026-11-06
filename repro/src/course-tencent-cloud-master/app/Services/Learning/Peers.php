@@ -363,6 +363,11 @@ class Peers extends Service
     /**
      * 能力发现：对端对接前用它自检，不用猜路径与事件类型
      *
+     * 入站路径一律下发本平台 upstream 的真实路径（/api/v1/learning/...），
+     * 不带 internal 段。网关侧用 /api/v1/learning/internal/* 区分 L1/L2，
+     * 转发到本平台时由网关或本平台入口剥离该段。下发网关侧路径会让对端
+     * 直呼本平台得到 404，这是最容易踩的对接坑。
+     *
      * @return array
      */
     public function describe()
@@ -404,28 +409,28 @@ class Peers extends Service
                 ],
                 'inbound' => [
                     'enabled' => $peer['inbound'],
-                    'path' => $peer['inbound'] ? '/api/v1/learning/internal/peers/' . $key . '/events' : '',
+                    'path' => $peer['inbound'] ? '/api/v1/learning/peers/' . $key . '/events' : '',
                     'events' => $peer['inbound'] ? $peer['inbound_events'] : [],
                 ],
                 'receipts' => [
                     'enabled' => $peer['ack'],
-                    'path' => $peer['ack'] ? '/api/v1/learning/internal/peers/' . $key . '/receipts' : '',
+                    'path' => $peer['ack'] ? '/api/v1/learning/peers/' . $key . '/receipts' : '',
                     'events' => $peer['ack'] ? ['exam.progress.ack'] : [],
                 ],
                 'pull' => [
                     'enabled' => $peer['pull'],
-                    'path' => $peer['pull'] ? '/api/v1/learning/internal/peers/' . $key . '/pull' : '',
+                    'path' => $peer['pull'] ? '/api/v1/learning/peers/' . $key . '/pull' : '',
                     'limit' => $peer['pull'] ? (int)$peer['pull_limit'] : 0,
                     'cursor' => 'afterId',
                 ],
                 'replay' => [
                     'enabled' => $peer['replay'],
-                    'path' => $peer['replay'] ? '/api/v1/learning/internal/peers/' . $key . '/replay' : '',
+                    'path' => $peer['replay'] ? '/api/v1/learning/peers/' . $key . '/replay' : '',
                 ],
                 'query' => [
                     'enabled' => $peer['query'],
-                    'progressPath' => $peer['query'] ? '/api/v1/learning/internal/peers/' . $key . '/students/{userId}/progress' : '',
-                    'completionPath' => $peer['query'] ? '/api/v1/learning/internal/peers/' . $key . '/students/{userId}/completion/{courseId}' : '',
+                    'progressPath' => $peer['query'] ? '/api/v1/learning/peers/' . $key . '/students/{userId}/progress' : '',
+                    'completionPath' => $peer['query'] ? '/api/v1/learning/peers/' . $key . '/students/{userId}/completion/{courseId}' : '',
                 ],
                 'auth' => [
                     'appCode' => $peer['inbound_app_code'],
@@ -434,7 +439,7 @@ class Peers extends Service
                     'signature' => 'hex(hmac-sha256(secret, appCode + "\\n" + requestId + "\\n" + timestamp + "\\n" + sha256(rawBody)))',
                 ],
                 'handshake' => [
-                    'path' => '/api/v1/learning/internal/peers/' . $key . '/handshake',
+                    'path' => '/api/v1/learning/peers/' . $key . '/handshake',
                     'auth' => 'none',
                 ],
             ];

@@ -14,16 +14,16 @@
  *
  * 预留（实训平台 / 论坛平台对接）：
  *   GET  /api/v1/learning/peers                          能力发现：对端、事件类型、路径
- *   POST /api/v1/learning/internal/peers/{source}/events          接收对端回传事件（服务态）
- *   GET  /api/v1/learning/internal/peers/{source}/events/{eventId} 查询回传事件受理状态
+ *   POST /api/v1/learning/peers/{source}/events          接收对端回传事件（服务态）
+ *   GET  /api/v1/learning/peers/{source}/events/{eventId} 查询回传事件受理状态
  *
  * 预留（考试平台对接，双向）：
- *   POST /api/v1/learning/internal/peers/{source}/receipts        接收投递回执（服务态）
- *   GET  /api/v1/learning/internal/peers/{source}/pull            按游标增量拉取（服务态）
- *   POST /api/v1/learning/internal/peers/{source}/replay          失败事件重放（服务态，需 Idempotency-Key）
- *   GET  /api/v1/learning/internal/peers/{source}/handshake       对接握手：契约版本、鉴权要求、能力清单
- *   GET  /api/v1/learning/internal/peers/{source}/students/{userId}/progress      服务态查学习进度
- *   GET  /api/v1/learning/internal/peers/{source}/students/{userId}/completion/{courseId}  服务态查准入判定
+ *   POST /api/v1/learning/peers/{source}/receipts        接收投递回执（服务态）
+ *   GET  /api/v1/learning/peers/{source}/pull            按游标增量拉取（服务态）
+ *   POST /api/v1/learning/peers/{source}/replay          失败事件重放（服务态，需 Idempotency-Key）
+ *   GET  /api/v1/learning/peers/{source}/handshake       对接握手：契约版本、鉴权要求、能力清单
+ *   GET  /api/v1/learning/peers/{source}/students/{userId}/progress      服务态查学习进度
+ *   GET  /api/v1/learning/peers/{source}/students/{userId}/completion/{courseId}  服务态查准入判定
  *
  * 鉴权三条通道（按可信度从高到低）：
  * 1) 用户态：统一网关注入 X-User-Id / X-Auth-Mode / X-Timestamp / X-Internal-Sign，
@@ -49,6 +49,7 @@
 namespace App\Http\Api\Controllers;
 
 use App\Exceptions\BadRequest as BadRequestException;
+use App\Library\Logger as AppLogger;
 use App\Services\Learning\Gateway;
 use App\Services\Learning\GatewaySign;
 use App\Services\Learning\IdentityKey;
@@ -181,7 +182,16 @@ class LearningController extends Controller
             'token_not_configured' => '对端令牌未配置，无法校验',
         ];
 
-        $message = $map[$peer['error']] ?? '网关身份头校验失败';
+        /**
+         * 签名/时间窗错误由 TrustedHeader 给出，对端错误由 PeerAuth 给出。
+         * 优先报前者：否则无签名请求会统一显示「缺少 X-App-Code」，
+         * 调用方会去补 AppCode，而真正缺的是 X-Internal-Sign。
+         */
+        $reasonCode = $trusted['error'] !== '' ? $trusted['error'] : $peer['error'];
+
+        $message = $map[$reasonCode] ?? '网关身份头校验失败';
+
+        $this->logReject($peer, $trusted, $message);
 
         /**
          * 在 beforeExecuteRoute 里中断 dispatch 时，框架不会把 response 送出去。
@@ -195,6 +205,55 @@ class LearningController extends Controller
         ]);
 
         return false;
+    }
+
+    /**
+     * 记录入站鉴权拒绝
+     *
+     * 这类失败在对接期几乎一定是配置问题（密钥没配、白名单没加、时钟偏移），
+     * 而响应体只能告诉调用方「被拒」，具体卡在哪一道闸只有这里知道。
+     * 不记日志时排障只能翻 nginx access log 去猜 401 的来源，而它看不出
+     * 是签名为空、签名不符、还是 AppCode 未登记。
+     *
+     * 只记判定依据，不记 X-Internal-Sign 原文与任何密钥：签名可被离线复算，
+     * 密钥一旦进日志就等于泄露，而日志的留存与访问面远大于配置文件。
+     *
+     * @param array $peer PeerAuth 结果
+     * @param array $trusted TrustedHeader 结果
+     * @param string $message 对外提示语
+     * @return void
+     */
+    protected function logReject(array $peer, array $trusted, $message)
+    {
+        try {
+
+            $logger = (new AppLogger())->getInstance('gateway');
+
+            $requestId = (string)($peer['requestId'] ?? '');
+
+            if ($requestId === '') {
+                $requestId = (string)($trusted['requestId'] ?? '');
+            }
+
+            $logger->warning('Learning Api Auth Rejected: ' . kg_json_encode([
+                'requestId' => $requestId,
+                'path' => (string)parse_url((string)$this->request->getURI(), PHP_URL_PATH),
+                'method' => (string)$this->request->getMethod(),
+                'ip' => (string)$this->request->getClientAddress(),
+                'trustedError' => (string)($trusted['error'] ?? ''),
+                'peerError' => (string)($peer['error'] ?? ''),
+                'appCode' => (string)($peer['appCode'] ?? ''),
+                'authMode' => (string)($peer['authMode'] ?? ''),
+                'reason' => (string)$message,
+            ]));
+
+        } catch (\Throwable $e) {
+
+            /**
+             * 日志失败不能改变鉴权结论。拒绝仍要拒绝，放行仍要放行——
+             * 若在这里抛出，等于用一个日志故障把 401 变成了 500。
+             */
+        }
     }
 
     /**
@@ -312,7 +371,7 @@ class LearningController extends Controller
 
         $authMode = $registry->authMode($source);
 
-        $prefix = '/api/v1/learning/internal/peers/' . $source;
+        $prefix = '/api/v1/learning/peers/' . $source;
 
         return $this->ok([
             'contract' => 'learning-progress/1.0',
@@ -352,7 +411,16 @@ class LearningController extends Controller
              */
             'gatewayEntry' => [
                 'baseUri' => (new Gateway())->getBaseUri(),
-                'route' => '/api/v1/learning/*',
+                /**
+                 * 网关上用 internal 段区分 L1/L2，转到本平台 upstream 时必须
+                 * 剥离该段：本平台路由注册在 /api/v1/learning/*，没有 internal 别名。
+                 * 这里下发两条路径，避免对端照网关侧路径直呼本平台而得到 404。
+                 * 入站 X-Internal-Sign 的 canonical 只含七个头、不含 path，
+                 * 因此剥离前缀不会让签名失效（这与出站 L2 的约束不同）。
+                 */
+                'gatewayRoute' => '/api/v1/learning/internal/*',
+                'upstreamRoute' => '/api/v1/learning/*',
+                'pathRewrite' => 'strip /internal',
                 'note' => '服务态调用走网关 L2；learning-internal 配额为 200 QPS/AppKey',
                 'l2' => [
                     'enabled' => (new GatewaySign())->isEnabled($source),
@@ -360,7 +428,11 @@ class LearningController extends Controller
                     'headers' => GatewaySign::HEADERS,
                     'algorithm' => GatewaySign::ALG,
                     'canonical' => (new GatewaySign())->canonicalPattern(),
-                    'skewSeconds' => (int)$this->getConfig()->path('gateway.timestamp_skew', 300),
+                    /**
+                     * 控制器基类没有 getConfig()（那是 Service trait 的能力），
+                     * 这里直接从 DI 取配置对象，避免握手接口 500。
+                     */
+                    'skewSeconds' => (int)\Phalcon\Di::getDefault()->getShared('config')->path('gateway.timestamp_skew', 300),
                     'nonceTtlSeconds' => 600,
                     'queryRule' => '按 (key, value) 字典序排序后重新编码，空格编码为 "+"',
                     'errors' => GatewaySign::ERRORS,
@@ -371,9 +443,17 @@ class LearningController extends Controller
                     'note' => '网关重算后注入，对端无需自行生成；本平台按 gateway.verify_sign 校验',
                 ],
             ],
-            'outboundReady' => (new Gateway())->isConfigured($source),
-            'notice' => (new Gateway())->isConfigured($source)
-                ? '' : '本平台尚未配置该对端网关地址，进度事件只入箱、暂不外发；配好 base_uri 后自动补发',
+            /**
+             * isConfigured() 只判网关 mode，不看对端开关；而 peers.*.enabled=false
+             * 时投递根本不会启动。两个条件都满足才算「可外发」，否则握手会把一个
+             * 关闭的对端报成就绪，对接方会一直等收不到事件。
+             */
+            'outboundReady' => $peer['enabled'] && (new Gateway())->isConfigured($source),
+            'notice' => !$peer['enabled']
+                ? '该对端未启用（peers.' . $source . '.enabled=false），进度事件只入箱、不外发；启用后自动补发'
+                : ((new Gateway())->isConfigured($source)
+                    ? ''
+                    : '本平台尚未配置该对端网关地址，进度事件只入箱、暂不外发；配好 base_uri 后自动补发'),
             'capabilities' => [
                 'push' => [
                     'enabled' => $peer['enabled'],
@@ -799,13 +879,22 @@ class LearningController extends Controller
      */
     protected function assertReadable($userKey)
     {
-        if (($this->trusted['mode'] ?? '') === 'peer') {
+        /**
+         * 网关 L2 服务态在链路里有两种写法：TrustedHeader 给出的 mode=service，
+         * 以及 beforeExecuteRoute 归一化后的 peer-service（URL 带 {source} 通道）。
+         * 两者都已通过 X-Internal-Sign 验签，权限等价、都可读任意用户。
+         * 只认 service 会让所有经网关的机器调用在方法首行就 403，
+         * 而 401 系列验收全绿，极易误判成「入站已通」。
+         */
+        $mode = (string)($this->trusted['mode'] ?? '');
+
+        if ($mode === 'peer') {
             throw new \App\Exceptions\Forbidden('sys.forbidden');
         }
 
         if (!$this->trusted['verified']) return;
 
-        if ($this->trusted['mode'] === 'service') return;
+        if ($mode === 'service' || $mode === 'peer-service') return;
 
         if ((string)$this->trusted['userId'] === (string)$userKey) return;
 

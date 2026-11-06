@@ -245,11 +245,24 @@ class Gateway extends Service
          */
         $body = kg_json_encode($payload);
 
-        foreach ($signer->headers('POST', $path, $body, $peer) as $name => $value) {
+        $l2Headers = $signer->headers('POST', $path, $body, $peer, $timestamp);
+
+        foreach ($l2Headers as $name => $value) {
             $httpHeaders[] = sprintf('%s: %s', $name, $value);
         }
 
         foreach ($headers as $name => $value) {
+
+            /**
+             * L2 五头与内部签名七字段都含 X-Timestamp。两个同名头都发时，
+             * 网关（OpenResty）读到的是重复头（Lua table）而非字符串，
+             * 实测会被判 40106「时间戳格式非法」。经网关时由 L2 头携带
+             * 同一个时间戳（上方 headers() 传入的就是内部签名用的
+             * $timestamp，值必然一致）；本地直连（L2 未启用、无五头）
+             * 时才由内部签名头自己携带。
+             */
+            if ($name === 'X-Timestamp' && isset($l2Headers['X-Timestamp'])) continue;
+
             $httpHeaders[] = sprintf('%s: %s', $name, $value);
         }
 

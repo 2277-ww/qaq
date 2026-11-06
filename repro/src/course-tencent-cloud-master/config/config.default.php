@@ -250,13 +250,15 @@ $config['gateway']['app_secret'] = '';
  * 考试平台对接
  *
  * push_path: 经网关投递学习进度的路径（由考试平台契约约定）。
+ *            必须带 internal 段：网关对 /api/v1/exam/* 走 L1 会话鉴权（实测 40101），
+ *            服务态调用没有用户令牌；internal 段才是 L2 服务签名档（2026-11-06 公网实测）。
  * user_prefix: 未接入 OIDC 前对外 userId 的占位前缀，接入后以 kg_identity_binding.sub 为准。
  * min_progress_delta: 进度增量上报的最小百分比差，低于该值合并到下一次。
  * retry_max: 投递失败最大重试次数，超过转死信。
  */
 $config['exam']['enabled'] = true;
 
-$config['exam']['push_path'] = '/api/v1/exam/learning/progress';
+$config['exam']['push_path'] = '/api/v1/exam/internal/learning/progress';
 
 $config['exam']['user_prefix'] = 'usr_';
 
@@ -288,7 +290,7 @@ $config['peers']['exam'] = [
     'name' => '考试平台',
     'base_uri' => '',
     'app_code' => 'learning',
-    'push_path' => '/api/v1/exam/learning/progress',
+    'push_path' => '/api/v1/exam/internal/learning/progress',
     'events' => ['course.completed'],
     'extensions' => false,
     'extension_path' => '',
@@ -312,7 +314,7 @@ $config['peers']['training'] = [
     'name' => '实训平台',
     'base_uri' => '',
     'app_code' => 'learning',
-    'push_path' => '/api/v1/training/learning/progress',
+    'push_path' => '/api/v1/workshop/internal/learning/progress',
     'events' => ['course.completed'],
     'extensions' => false,
     'extension_path' => '',

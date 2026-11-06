@@ -140,15 +140,20 @@ class GatewaySign extends Service
      * @param string $path 含 query 也可，内部会拆分
      * @param string $body 原始请求体
      * @param string $peer 对端标识
+     * @param string $timestamp 外部统一的时间戳（秒级）；留空取当前时间。
+     *                          Gateway::send() 内部签名头与 L2 头共用同一个值，
+     *                          避免跨秒边界时两个头不一致。
      * @return array
      */
-    public function headers($method, $path, $body = '', $peer = '')
+    public function headers($method, $path, $body = '', $peer = '', $timestamp = '')
     {
         if (!$this->isEnabled($peer)) return [];
 
         $appKey = $this->appKey($peer);
 
-        $timestamp = (string)time();
+        $timestamp = trim((string)$timestamp);
+
+        if ($timestamp === '') $timestamp = (string)time();
 
         $nonce = $this->nonce();
 
